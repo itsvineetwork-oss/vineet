@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C Bank</title>
+<style>
+  :root { --bg:#f4f6fa; --card:#fff; --text:#1a1f2b; --muted:#6b7280; --accent:#1d4ed8; --accent-2:#1e40af; --ok:#15803d; --err:#b91c1c; --border:#e5e7eb; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0f1419; --card:#1a212b; --text:#e5e7eb; --muted:#9ca3af; --accent:#3b82f6; --accent-2:#60a5fa; --ok:#4ade80; --err:#f87171; --border:#2a3340; } }
+  * { box-sizing:border-box }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); }
+  header { background:var(--accent); color:#fff; padding:16px; display:flex; align-items:center; justify-content:space-between; }
+  header h1 { margin:0; font-size:20px; }
+  header small { opacity:.85 }
+  main { max-width:1000px; margin:0 auto; padding:16px; display:grid; gap:16px; grid-template-columns:1fr; }
+  @media (min-width:800px) { main { grid-template-columns:1fr 1fr; } .wide { grid-column:1/-1; } }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; }
+  .card h2 { margin:0 0 12px; font-size:16px; }
+  label { display:block; font-size:13px; color:var(--muted); margin-top:8px; }
+  input, select { width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--text); font:inherit; }
+  button { margin-top:12px; padding:9px 14px; border:0; border-radius:6px; background:var(--accent); color:#fff; font:inherit; font-weight:600; cursor:pointer; }
+  button:hover { background:var(--accent-2) }
+  button.danger { background:var(--err) }
+  .msg { margin-top:10px; font-size:14px; min-height:20px; }
+  .msg.ok { color:var(--ok) } .msg.err { color:var(--err) }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; }
+  .stat { background:var(--bg); border-radius:8px; padding:12px; }
+  .stat .v { font-size:22px; font-weight:700; } .stat .k { font-size:12px; color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--border); }
+  th { color:var(--muted); font-weight:600; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .in { color:var(--ok) } .out { color:var(--err) }
+  .session { font-size:13px; color:var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>C Bank</h1>
+  <small>C backend · HTML frontend</small>
+</header>
+<main>
+  <section class="card wide">
+    <h2>Bank summary</h2>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="card">
+    <h2>Open account</h2>
+    <form id="f-open">
+      <label>Holder name <input name="name" required maxlength="63"></label>
+      <label>PIN (4–7 digits) <input name="pin" type="password" pattern="\d{4,7}" required></label>
+      <label>Type <select name="type"><option value="S">Savings</option><option value="C">Current</option></select></label>
+      <label>Initial deposit <input name="amount" type="number" min="0" step="0.01" value="0"></label>
+      <button>Open account</button>
+      <div class="msg" id="m-open"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Login</h2>
+    <form id="f-login">
+      <label>Account number <input name="number" type="number" required></label>
+      <label>PIN <input name="pin" type="password" required></label>
+      <button>View account</button>
+      <div class="msg" id="m-login"></div>
+    </form>
+    <p class="session" id="session"></p>
+  </section>
+
+  <section class="card">
+    <h2>Deposit</h2>
+    <form id="f-deposit">
+      <label>Account number <input name="number" type="number" required></label>
+      <label>Amount <input name="amount" type="number" min="0.01" step="0.01" required></label>
+      <button>Deposit</button>
+      <div class="msg" id="m-deposit"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Withdraw</h2>
+    <form id="f-withdraw">
+      <label>Account number <input name="number" type="number" required></label>
+      <label>PIN <input name="pin" type="password" required></label>
+      <label>Amount <input name="amount" type="number" min="0.01" step="0.01" required></label>
+      <button>Withdraw</button>
+      <div class="msg" id="m-withdraw"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Transfer</h2>
+    <form id="f-transfer">
+      <label>From account <input name="number" type="number" required></label>
+      <label>PIN <input name="pin" type="password" required></label>
+      <label>To account <input name="to" type="number" required></label>
+      <label>Amount <input name="amount" type="number" min="0.01" step="0.01" required></label>
+      <button>Transfer</button>
+      <div class="msg" id="m-transfer"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Close account</h2>
+    <form id="f-close">
+      <label>Account number <input name="number" type="number" required></label>
+      <label>PIN <input name="pin" type="password" required></label>
+      <button class="danger">Close account</button>
+      <div class="msg" id="m-close"></div>
+    </form>
+  </section>
+
+  <section class="card wide" id="statement" hidden>
+    <h2>Account & statement</h2>
+    <div class="stats" id="acct"></div>
+    <table>
+      <thead><tr><th>ID</th><th>Date</th><th>Type</th><th class="num">Amount</th><th class="num">Balance</th><th>Other</th></tr></thead>
+      <tbody id="txs"></tbody>
+    </table>
+  </section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtDate = t => new Date(t * 1000).toLocaleString();
+
+async function api(path, data) {
+  const r = await fetch('/api/' + path, data ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) } : {});
+  const j = await r.json().catch(() => ({ ok:false, error:'Bad response' }));
+  if (!j.ok) throw new Error(j.error || 'Request failed');
+  return j;
+}
+function show(id, text, ok) { const el = $('#' + id); el.textContent = text; el.className = 'msg ' + (ok ? 'ok' : 'err'); }
+function formData(f) { const o = {}; new FormData(f).forEach((v, k) => o[k] = v); return o; }
+
+async function loadSummary() {
+  try {
+    const s = await api('summary');
+    $('#stats').innerHTML = [['Accounts', s.accounts], ['Active', s.active], ['Transactions', s.transactions], ['Total balance', '₹ ' + s.total_balance]]
+      .map(([k, v]) => `<div class="stat"><div class="v">${esc(v)}</div><div class="k">${k}</div></div>`).join('');
+  } catch (e) { $('#stats').textContent = e.message; }
+}
+
+function renderAccount(j) {
+  const a = j.account;
+  $('#statement').hidden = false;
+  $('#acct').innerHTML = [['Account', a.number], ['Name', a.name], ['Type', a.type], ['Balance', '₹ ' + a.balance], ['Status', a.active ? 'ACTIVE' : 'CLOSED']]
+    .map(([k, v]) => `<div class="stat"><div class="v">${esc(v)}</div><div class="k">${k}</div></div>`).join('');
+  $('#txs').innerHTML = (j.transactions || []).map(t => {
+    const cls = /IN|DEPOSIT|OPEN/.test(t.type) ? 'in' : 'out';
+    return `<tr><td>${t.id}</td><td>${fmtDate(t.at)}</td><td class="${cls}">${t.type}</td><td class="num ${cls}">${t.amount}</td><td class="num">${t.balance}</td><td>${t.counterpart || ''}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">No transactions</td></tr>';
+  $('#statement').scrollIntoView({ behavior:'smooth' });
+}
+
+let session = null;
+async function refreshSession() { if (session) { try { renderAccount(await api('account', session)); } catch {} } }
+
+function bind(id, path, onOk) {
+  $('#f-' + id).addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const f = ev.target, d = formData(f);
+    try { const j = await api(path, d); show('m-' + id, onOk(j, d), true); f.reset(); loadSummary(); refreshSession(); }
+    catch (e) { show('m-' + id, e.message, false); }
+  });
+}
+bind('open', 'open', j => `Account opened. Number: ${j.account.number}`);
+bind('deposit', 'deposit', j => `Deposited. Balance ₹ ${j.account.balance}`);
+bind('withdraw', 'withdraw', j => `Withdrawn. Balance ₹ ${j.account.balance}`);
+bind('transfer', 'transfer', j => `Transferred. Balance ₹ ${j.account.balance}`);
+bind('close', 'close', () => { session = null; $('#session').textContent = ''; $('#statement').hidden = true; return 'Account closed'; });
+
+$('#f-login').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const d = formData(ev.target);
+  try { const j = await api('account', d); session = d; $('#session').textContent = 'Viewing account ' + j.account.number; show('m-login', 'OK', true); renderAccount(j); }
+  catch (e) { show('m-login', e.message, false); }
+});
+loadSummary();
+</script>
+</body>
+</html>
