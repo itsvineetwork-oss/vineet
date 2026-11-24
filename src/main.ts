@@ -10,7 +10,7 @@ import { skillsScene } from "./sections/skills";
 import { educationScene } from "./sections/education";
 import { contactScene } from "./sections/contact";
 import { analytics } from "./content";
-import { C, lang, setLang } from "./i18n";
+import { C } from "./i18n";
 import { probe, url } from "./engine/assets";
 import { scratch } from "./engine/sound";
 import type { Scene } from "./sections/scene";
@@ -30,7 +30,6 @@ const hasResume = C().contact.resume ? await probe(C().contact.resume) : false;
 // ---- accessible HTML copy (also shown on phones), rendered from the active language
 function renderCopy() {
   const { about, projects, experience, skills, education, contact, ui, identity } = C();
-  document.documentElement.lang = lang() === "hi" ? "hi" : "en";
   document.querySelector<HTMLElement>('[data-copy="tagline"]')!.textContent = identity.tagline;
   document.querySelector<HTMLElement>('[data-copy="about"]')!.innerHTML =
     `<p class="lead">${esc(about.intro)}</p><h3>${esc(ui.approach)}</h3><ul>${about.approach.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>`;
@@ -65,16 +64,13 @@ function renderCopy() {
   const set = (key: string, text: string) => { const el = document.querySelector<HTMLElement>(`[data-ui="${key}"]`); if (el) el.textContent = text; };
   set("explore", ui.explore); set("openTo", ui.openTo); set("footer", ui.footer);
   set("f-name", ui.form.name); set("f-email", ui.form.email); set("f-message", ui.form.message); set("f-send", ui.form.send);
-  $("replay").textContent = ui.buttons.replay; $("finish").textContent = ui.buttons.finish; $("lang").textContent = ui.buttons.lang;
   document.title = `${identity.fullName} — ${identity.title}`;
 }
 renderCopy();
 $("year").textContent = String(new Date().getFullYear());
 
-// ---- motion preference (OS setting, or the toolbar toggle, remembered per browser)
-const motionBtn = $<HTMLButtonElement>("motion");
-let motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-try { const saved = localStorage.getItem("motion"); if (saved) motion = saved === "on"; } catch {}
+// ---- motion preference: the OS "reduce motion" setting shows finished drawings immediately
+const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ---- build every scene (strokes are laid out now, drawn later)
 const scenes: Scene[] = [home(), aboutScene(), projectsScene(), ...projectScenes(), experienceScene(), skillsScene(), educationScene(), contactScene()];
@@ -90,13 +86,8 @@ const toast = $("toast");
 let toastTimer = 0;
 const say = (msg: string) => { toast.textContent = msg; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1800); };
 
-function applyMotion() {
-  document.body.classList.toggle("no-motion", !motion);
-  motionBtn.textContent = motion ? C().ui.buttons.motionOn : C().ui.buttons.motionOff;
-  motionBtn.setAttribute("aria-pressed", String(!motion));
-  if (!motion) scenes.forEach((s) => s.finish());
-}
-applyMotion();
+document.body.classList.toggle("no-motion", !motion);
+if (!motion) scenes.forEach((s) => s.finish());
 
 // ---- one page at a time: a section may only draw once every section before it is drawn,
 //      and the visitor cannot scroll past a page that is still being drawn (Finish skips ahead).
@@ -206,27 +197,7 @@ function applyFilter(tag: string) {
 filters.addEventListener("click", (e) => { const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-tag]"); if (b) applyFilter(b.dataset.tag!); });
 renderFilters();
 
-// ---- replay: draw the current page again from a blank sheet
-$("replay").addEventListener("click", () => {
-  if (!motion) return;
-  const s = gate() ?? current;
-  gsap.to(window, { scrollTo: { y: s.section, offsetY: 56, autoKill: false }, duration: 0.5 });
-  s.rebuild(); played.add(s.id); s.director.play();
-});
-
 // ---- toolbar
-$("finish").addEventListener("click", () => { const s = gate() ?? current; played.add(s.id); s.finish(); });
-motionBtn.addEventListener("click", () => {
-  motion = !motion;
-  try { localStorage.setItem("motion", motion ? "on" : "off"); } catch {}
-  applyMotion();
-  if (motion) {
-    played.clear(); pending.clear();
-    scenes.forEach((s) => { s.rebuild(); if (index(s) < index(current)) { s.finish(); played.add(s.id); } });
-    ScrollTrigger.refresh();
-    start(current);
-  }
-});
 const soundBtn = $<HTMLButtonElement>("sound");
 const paintSound = () => { soundBtn.textContent = scratch.enabled ? C().ui.buttons.soundOn : C().ui.buttons.soundOff; soundBtn.setAttribute("aria-pressed", String(scratch.enabled)); };
 soundBtn.addEventListener("click", () => { scratch.toggle(); paintSound(); });
@@ -244,18 +215,6 @@ function applyTheme() {
 }
 applyTheme();
 themeBtn.addEventListener("click", () => { blueprint = !blueprint; try { localStorage.setItem("theme", blueprint ? "blueprint" : "paper"); } catch {} applyTheme(); });
-
-// ---- language: re-render the copy and redraw every page in the new language, keeping the reading position
-$("lang").addEventListener("click", () => {
-  setLang(lang() === "hi" ? "en" : "hi");
-  renderCopy(); renderFilters(); applyTheme(); paintSound(); applyMotion();
-  const keep = new Set(scenes.filter((s) => s.done).map((s) => s.id));
-  scenes.forEach((s) => { s.rebuild(); if (keep.has(s.id) && s !== current) { s.finish(); played.add(s.id); } });
-  applyFilter(activeFilter);
-  ScrollTrigger.refresh();
-  if (motion) { s_play(current); } else scenes.forEach((s) => s.finish());
-});
-function s_play(s: Scene) { played.add(s.id); s.director.play(); }
 
 // ---- contact form: posts to the configured endpoint, or opens the mail app
 const form = $<HTMLFormElement>("cform");

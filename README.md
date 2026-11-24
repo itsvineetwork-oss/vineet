@@ -33,7 +33,7 @@ npm run preview
 - Photo: put `portrait.jpg` in `public/` (3:4). It is sketched, then revealed. Without the file a monogram medallion is drawn.
 - Screenshots: put the files listed in each project's `images` array under `public/shots/`. Missing files are skipped.
 - Resume: put `resume.pdf` in `public/`. The header button and contact link appear only when the file exists.
-- Toolbar: Replay draws the current page again, Finish skips ahead; the line under the menu shows which pages are drawn. Blueprint switches to white ink on blue paper (remembered per browser, follows the OS dark setting at first).
+- Toolbar: the line under the menu shows which pages are drawn. Blueprint switches to white ink on blue paper (remembered per browser, follows the OS dark setting at first). The OS "reduce motion" setting shows finished drawings immediately.
 - Contact form: set `contact.formEndpoint` (e.g. a Formspree form URL) to receive messages; without it the form opens the visitor's mail app using `contact.email`.
 - Share image: `public/og.png` is the Home sheet. Regenerate with `npm run preview` then `node scripts/og.mjs`. Set `VITE_SITE_URL` (in `.env` or the workflow) to the deployed URL so `og:image` is absolute.
 
@@ -50,7 +50,7 @@ src/sections/  one scene per section: lays out strokes and the timeline
 src/main.ts    scroll triggers, navigation, toolbar (Finish / Animations / Sound)
 ```
 
-A section draws itself when it scrolls into view, one page at a time: the visitor cannot scroll or navigate past a page until it is drawn ("Finish" skips ahead). Clicking a menu item erases the current page, scrolls, and draws the target; pages already drawn are simply shown.
+A section draws itself when it scrolls into view, one page at a time: the visitor cannot scroll or navigate past a page until it is drawn. Clicking a menu item erases the current page, scrolls, and draws the target; pages already drawn are simply shown.
 
 ## Accessibility and performance
 
@@ -59,9 +59,8 @@ A section draws itself when it scrolls into view, one page at a time: the visito
 - Keyboard: skip link, focusable navigation and buttons.
 - No WebGL, no large assets. The whole site is ~76 kB gzipped.
 
-## Languages, filters, analytics, domain
+## Filters, analytics, domain
 
-- **Hindi / English**: the header button switches languages. Hindi text lives in `src/content.hi.ts` (same shape as `src/content.ts`). Devanagari cannot be stroke-drawn with the Hershey fonts, so Hindi text is written in the Kalam handwriting font with a wipe; diagrams and English labels are still drawn.
 - **Project filters**: chips above the projects are built from each project's `stack` and `integrations`. Filtered-out projects are skipped by the one-page-at-a-time order.
 - **Analytics**: set `analytics` in `src/content.ts` (`goatcounter`, `plausible` or `umami`). Nothing loads until it is configured.
 - **Custom domain**: add `public/CNAME` containing the domain (e.g. `vineetsharma.dev`), point the domain's DNS at GitHub Pages, and enable it in Settings → Pages. The workflow then builds for the root path and uses the domain for the share image URL.
