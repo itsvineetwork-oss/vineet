@@ -105,7 +105,10 @@ a { color: var(--ink); }
 .topbar nav a:hover, .topbar nav a:focus-visible { color: var(--ink); border-bottom-color: var(--red); outline: none; }
 .topbar nav a.active { color: var(--ink); border-bottom-color: var(--ink); }
 .tools { display: flex; gap: 6px; white-space: nowrap; }
-.viewas { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; color: var(--graphite); margin-top: -2px; }
+.viewas { grid-column: 1 / -1; grid-row: 2; display: flex; gap: 6px; align-items: center; justify-self: start; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; color: var(--graphite); }
+.tools { grid-row: 1; }
+.topbar .progress { grid-row: 3; }
+@media (min-width: 1001px) { .topbar { grid-template-rows: auto auto auto; row-gap: 4px; } .viewas { grid-column: 2; justify-self: center; } }
 .viewas span { margin-right: 4px; }
 .viewas button { font: inherit; letter-spacing: .14em; background: transparent; border: 1px solid var(--line); color: var(--graphite); padding: 3px 8px; border-radius: 2px; cursor: pointer; }
 .viewas button[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: var(--paper); }
@@ -278,7 +281,9 @@ body.inspecting .page, body.inspecting .project { outline: 1px dashed color-mix(
 .plinks a { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border-bottom: 2px solid var(--red); padding-bottom: 2px; }
 @media (max-width: 1000px) {
   .topbar { grid-template-columns: auto 1fr; grid-template-rows: auto auto auto auto; row-gap: 6px; padding: 8px 14px; }
-  .viewas { overflow-x: auto; scrollbar-width: none; }
+  .topbar nav { grid-row: 2; }
+  .viewas { grid-row: 3; overflow-x: auto; scrollbar-width: none; }
+  .topbar .progress { grid-row: 4; }
   .topbar nav { grid-column: 1 / -1; justify-content: flex-start; gap: 14px; }
   .tools { justify-self: end; }
 }
