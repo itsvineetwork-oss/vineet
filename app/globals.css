@@ -13,7 +13,7 @@ button { font: inherit; }
 a { color: inherit; }
 
 .stage { position: fixed; inset: 0; }
-.stage canvas { display: block; width: 100%; height: 100%; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
 
 /* HUD */
 .hud { position: fixed; inset: 0; pointer-events: none; display: grid; grid-template-rows: auto 1fr auto; padding: 24px; mix-blend-mode: normal; }
@@ -40,7 +40,7 @@ a { color: inherit; }
 .reticle { position: fixed; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: var(--ink); opacity: .55; transition: transform .2s, opacity .2s; }
 .reticle.hot { transform: scale(2.6); opacity: .9; background: var(--brass); }
 
-.enter { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(236,234,230,.72); backdrop-filter: blur(10px); pointer-events: auto; cursor: pointer; transition: opacity .6s; }
+.enter { user-select: none; position: fixed; inset: 0; display: grid; place-items: center; background: rgba(236,234,230,.72); backdrop-filter: blur(10px); pointer-events: auto; cursor: pointer; transition: opacity .6s; }
 .enter.hidden { opacity: 0; pointer-events: none; }
 .enter .card { text-align: center; max-width: 520px; padding: 24px; }
 .enter .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .3em; color: var(--mute); }

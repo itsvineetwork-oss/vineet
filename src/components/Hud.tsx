@@ -9,13 +9,15 @@ export default function Hud() {
   const hover = useGallery((s) => s.hover);
   const entered = useGallery((s) => s.entered);
   const locked = useGallery((s) => s.locked);
+  const lockOK = useGallery((s) => s.lockOK);
   const active = useGallery((s) => s.active);
   const setEntered = useGallery((s) => s.setEntered);
   const requestGoTo = useGallery((s) => s.requestGoTo);
   const r = rooms[room];
   const [fine, setFine] = useState(true);
   useEffect(() => { setFine(matchMedia("(pointer: fine)").matches); }, []);
-  const showPrompt = !entered || (fine && !locked && !active);
+  const showPrompt = !entered || (fine && lockOK && !locked && !active);
+  const dragMode = entered && (!fine || !lockOK);
 
   return (
     <>
@@ -31,7 +33,7 @@ export default function Hud() {
         <div className="bottom">
           <div className="keys">
             <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>walk</span>
-            <span><kbd>mouse</kbd>look</span>
+            <span><kbd>{dragMode ? "drag" : "mouse"}</kbd>look</span>
             <span><kbd>scroll</kbd>next room</span>
             <span><kbd>click</kbd>open artwork</span>
             <span><kbd>esc</kbd>release</span>

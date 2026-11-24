@@ -4,6 +4,8 @@ import type { Object3D } from "three";
 type State = {
   entered: boolean;
   locked: boolean;
+  /** False once pointer lock is known to be unavailable (embedded frames, some browsers). */
+  lockOK: boolean;
   room: number;
   travelling: boolean;
   hover: string | null;
@@ -11,6 +13,7 @@ type State = {
   meshes: Map<string, Object3D>;
   setEntered: (v: boolean) => void;
   setLocked: (v: boolean) => void;
+  setLockOK: (v: boolean) => void;
   setRoom: (i: number) => void;
   setTravelling: (v: boolean) => void;
   setHover: (id: string | null) => void;
@@ -24,6 +27,7 @@ type State = {
 export const useGallery = create<State>((set, get) => ({
   entered: false,
   locked: false,
+  lockOK: true,
   room: 0,
   travelling: false,
   hover: null,
@@ -32,6 +36,7 @@ export const useGallery = create<State>((set, get) => ({
   goTo: null,
   setEntered: (entered) => set({ entered }),
   setLocked: (locked) => set({ locked }),
+  setLockOK: (lockOK) => set({ lockOK }),
   setRoom: (room) => set({ room }),
   setTravelling: (travelling) => set({ travelling }),
   setHover: (hover) => { if (get().hover !== hover) set({ hover }); },

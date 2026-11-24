@@ -116,6 +116,18 @@ export default function Player() {
 
   useEffect(() => {
     const el = gl.domElement;
+    const fine = () => matchMedia("(pointer: fine)").matches;
+    // Pointer lock is refused inside some embedded frames; detect that and fall back to drag-to-look.
+    const tryLock = () => {
+      const s = useGallery.getState();
+      if (!s.lockOK || !fine()) return;
+      try {
+        const r = (el.requestPointerLock as undefined | (() => Promise<void> | void))?.call(el);
+        if (r && typeof (r as Promise<void>).catch === "function") (r as Promise<void>).catch(() => s.setLockOK(false));
+      } catch { s.setLockOK(false); }
+      setTimeout(() => { if (document.pointerLockElement !== el) useGallery.getState().setLockOK(false); }, 700);
+    };
+    const onLockError = () => useGallery.getState().setLockOK(false);
     const onKey = (down: boolean) => (e: KeyboardEvent) => {
       keys.current[e.code] = down;
       if (down && e.code === "Escape" && useGallery.getState().active) useGallery.getState().setActive(null);
@@ -132,9 +144,9 @@ export default function Player() {
       if (s.active || s.travelling) return;
       if (document.pointerLockElement === el) {
         if (s.hover) openArtwork(s.hover);
-      } else if (s.entered && matchMedia("(pointer: fine)").matches) {
+      } else if (s.entered && s.lockOK) {
         // Defer so an artwork's own click handler (which opens a case study) runs first.
-        setTimeout(() => { if (!useGallery.getState().active) el.requestPointerLock?.(); }, 0);
+        setTimeout(() => { if (!useGallery.getState().active) tryLock(); }, 0);
       }
     };
     const onWheel = (e: WheelEvent) => {
@@ -149,12 +161,16 @@ export default function Player() {
         wheelAcc.current = 0;
       }
     };
-    // touch: drag to look
-    const onPD = (e: PointerEvent) => { if (e.pointerType === "touch" && !touch.current) touch.current = { id: e.pointerId, x: e.clientX, y: e.clientY }; };
+    // drag to look (touch always; mouse when pointer lock is unavailable)
+    const onPD = (e: PointerEvent) => {
+      if (touch.current || document.pointerLockElement === el) return;
+      if (e.pointerType === "touch" || (e.button === 0 && !useGallery.getState().lockOK)) touch.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    };
     const onPM = (e: PointerEvent) => {
       if (!touch.current || e.pointerId !== touch.current.id || useGallery.getState().active) return;
-      yaw.current -= (e.clientX - touch.current.x) * 0.005;
-      pitch.current = THREE.MathUtils.clamp(pitch.current - (e.clientY - touch.current.y) * 0.005, -1.2, 1.2);
+      const k = e.pointerType === "touch" ? 0.005 : 0.0035;
+      yaw.current -= (e.clientX - touch.current.x) * k;
+      pitch.current = THREE.MathUtils.clamp(pitch.current - (e.clientY - touch.current.y) * k, -1.2, 1.2);
       touch.current.x = e.clientX; touch.current.y = e.clientY;
     };
     const onPU = (e: PointerEvent) => { if (touch.current && e.pointerId === touch.current.id) touch.current = null; };
@@ -163,6 +179,7 @@ export default function Player() {
     window.addEventListener("keyup", ku);
     document.addEventListener("mousemove", onMove);
     document.addEventListener("pointerlockchange", onLock);
+    document.addEventListener("pointerlockerror", onLockError);
     el.addEventListener("click", onClick);
     window.addEventListener("wheel", onWheel, { passive: true });
     el.addEventListener("pointerdown", onPD);
@@ -174,7 +191,7 @@ export default function Player() {
     const unsub = useGallery.subscribe((s, prev) => {
       if (s.goTo !== null && s.goTo !== prev.goTo) { const i = s.goTo; s.requestGoTo(null); travelTo(i); }
       if (prev.active && !s.active) closeArtwork();
-      if (s.entered && !prev.entered && matchMedia("(pointer: fine)").matches) el.requestPointerLock?.();
+      if (s.entered && !prev.entered) tryLock();
     });
 
     return () => {
@@ -182,6 +199,7 @@ export default function Player() {
       window.removeEventListener("keyup", ku);
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("pointerlockchange", onLock);
+      document.removeEventListener("pointerlockerror", onLockError);
       el.removeEventListener("click", onClick);
       window.removeEventListener("wheel", onWheel);
       el.removeEventListener("pointerdown", onPD);
