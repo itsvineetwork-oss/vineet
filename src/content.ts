@@ -107,4 +107,6 @@ export const contact = {
   linkedin: "",   // TODO e.g. "https://www.linkedin.com/in/your-handle"
   github: "https://github.com/itsvineetwork-oss",
   resume: "/resume.pdf", // put resume.pdf in /public; the link only appears when the file exists
+  /** Formspree (or similar) endpoint, e.g. "https://formspree.io/f/abcdwxyz". Blank: the form opens the visitor's mail app instead (needs `email`). */
+  formEndpoint: "",
 };

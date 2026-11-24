@@ -13,6 +13,46 @@
   --wipe: 0%;
 }
 
+/* Blueprint: white ink on blue paper */
+:root[data-theme="blueprint"] {
+  --paper: #1f3f7a;
+  --paper-2: #1a366a;
+  --ink: #f3f6fb;
+  --graphite: #c7d3e8;
+  --red: #ffb15c;
+  --blue: #9cc4ff;
+  --mute: #a9b8d6;
+  --line: rgba(243, 246, 251, 0.18);
+  color-scheme: dark;
+}
+:root[data-theme="blueprint"] body {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px;
+  background-position: 0 0, 0 0;
+}
+:root[data-theme="blueprint"] .topbar { background: color-mix(in srgb, var(--paper) 88%, transparent); }
+:root[data-theme="blueprint"] .tools .resume { background: var(--ink); color: var(--paper); }
+:root[data-theme="blueprint"] .cta:hover { background: var(--ink); color: var(--paper); }
+:root[data-theme="blueprint"] /* contact form */
+.cform { opacity: 0; margin-top: 14px; max-width: 560px; display: grid; gap: 12px; font-family: var(--hand); }
+.cform label { display: grid; gap: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--graphite); }
+.cform input, .cform textarea { font: 17px var(--hand); color: var(--ink); background: transparent; border: 0; border-bottom: 1.5px solid var(--graphite); padding: 6px 2px; border-radius: 0; outline: none; }
+.cform textarea { min-height: 96px; resize: vertical; border: 1.5px solid var(--graphite); padding: 8px; border-radius: 3px; }
+.cform input:focus, .cform textarea:focus { border-color: var(--red); }
+.cform .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cform button { justify-self: start; font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; background: var(--ink); color: var(--paper); border: 1.5px solid var(--ink); padding: 10px 18px; border-radius: 3px; cursor: pointer; transform: rotate(-0.4deg); }
+.cform button[disabled] { opacity: .6; cursor: wait; }
+.cform .status { font-family: var(--mono); font-size: 12px; color: var(--graphite); min-height: 1.2em; }
+.cform .status.ok { color: var(--ink); }
+.cform .status.err { color: var(--red); }
+.cform .hp { position: absolute; left: -9999px; }
+@media (max-width: 600px) { .cform .row { grid-template-columns: 1fr; } }
+
+.toast { background: var(--ink); color: var(--paper); }
+:root[data-theme="blueprint"] .tools button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
 * { box-sizing: border-box; }
 html { scroll-padding-top: 64px; }
 body {
@@ -93,8 +133,23 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 
 /* text that is revealed with an ink wipe after the drawing */
 [data-reveal] { opacity: 0; clip-path: inset(0 calc(100% - var(--wipe)) 0 0); }
-.no-motion [data-reveal], .is-drawn [data-reveal] { opacity: 1; clip-path: none; }
+.no-motion [data-reveal], .is-drawn [data-reveal], .no-motion .cform, .is-drawn .cform { opacity: 1; clip-path: none; }
 .no-motion .pencil { display: none; }
+
+/* contact form */
+.cform { opacity: 0; margin-top: 14px; max-width: 560px; display: grid; gap: 12px; font-family: var(--hand); }
+.cform label { display: grid; gap: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--graphite); }
+.cform input, .cform textarea { font: 17px var(--hand); color: var(--ink); background: transparent; border: 0; border-bottom: 1.5px solid var(--graphite); padding: 6px 2px; border-radius: 0; outline: none; }
+.cform textarea { min-height: 96px; resize: vertical; border: 1.5px solid var(--graphite); padding: 8px; border-radius: 3px; }
+.cform input:focus, .cform textarea:focus { border-color: var(--red); }
+.cform .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cform button { justify-self: start; font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; background: var(--ink); color: var(--paper); border: 1.5px solid var(--ink); padding: 10px 18px; border-radius: 3px; cursor: pointer; transform: rotate(-0.4deg); }
+.cform button[disabled] { opacity: .6; cursor: wait; }
+.cform .status { font-family: var(--mono); font-size: 12px; color: var(--graphite); min-height: 1.2em; }
+.cform .status.ok { color: var(--ink); }
+.cform .status.err { color: var(--red); }
+.cform .hp { position: absolute; left: -9999px; }
+@media (max-width: 600px) { .cform .row { grid-template-columns: 1fr; } }
 
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 12px); background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 12px; letter-spacing: .08em; padding: 10px 16px; border-radius: 3px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 30; max-width: calc(100% - 32px); text-align: center; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }

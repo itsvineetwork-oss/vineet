@@ -190,6 +190,46 @@ motionBtn.addEventListener("click", () => {
 const soundBtn = document.getElementById("sound") as HTMLButtonElement;
 soundBtn.addEventListener("click", () => { const on = scratch.toggle(); soundBtn.textContent = `Sound: ${on ? "on" : "off"}`; soundBtn.setAttribute("aria-pressed", String(on)); });
 
+// ---- blueprint theme (remembered per browser; follows the OS dark setting the first time)
+const themeBtn = document.getElementById("theme") as HTMLButtonElement;
+let blueprint = matchMedia("(prefers-color-scheme: dark)").matches;
+try { const saved = localStorage.getItem("theme"); if (saved) blueprint = saved === "blueprint"; } catch {}
+function applyTheme() {
+  document.documentElement.setAttribute("data-theme", blueprint ? "blueprint" : "paper");
+  themeBtn.setAttribute("aria-pressed", String(blueprint));
+  themeBtn.textContent = blueprint ? "Paper" : "Blueprint";
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", blueprint ? "#1f3f7a" : "#f4f1ea");
+}
+applyTheme();
+themeBtn.addEventListener("click", () => { blueprint = !blueprint; try { localStorage.setItem("theme", blueprint ? "blueprint" : "paper"); } catch {} applyTheme(); });
+
+// ---- contact form: posts to the configured endpoint, or opens the mail app
+const form = document.getElementById("cform") as HTMLFormElement;
+const status = document.getElementById("cf-status")!;
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = (document.getElementById("cf-name") as HTMLInputElement).value.trim();
+  const email = (document.getElementById("cf-email") as HTMLInputElement).value.trim();
+  const msg = (document.getElementById("cf-msg") as HTMLTextAreaElement).value.trim();
+  const setStatus = (t: string, cls = "") => { status.textContent = t; status.className = `status ${cls}`; };
+  if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !msg) { setStatus("Please fill in your name, a valid email and a message.", "err"); return; }
+  const btn = form.querySelector("button")!;
+  if (contact.formEndpoint) {
+    btn.disabled = true; setStatus("Sending…");
+    try {
+      const r = await fetch(contact.formEndpoint, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ name, email, message: msg }) });
+      if (!r.ok) throw new Error(String(r.status));
+      form.reset(); setStatus("Sent. I will reply by email.", "ok");
+    } catch { setStatus("Could not send. Please email me directly.", "err"); }
+    btn.disabled = false;
+  } else if (contact.email) {
+    location.href = `mailto:${contact.email}?subject=${encodeURIComponent("Portfolio message from " + name)}&body=${encodeURIComponent(msg + "\n\n" + name + " <" + email + ">")}`;
+    setStatus("Opening your mail app…");
+  } else {
+    setStatus("The form is not connected yet (set contact.formEndpoint or contact.email).", "err");
+  }
+});
+
 // ---- deep link on load
 if (location.hash && byId.has(location.hash.slice(1))) {
   const s = byId.get(location.hash.slice(1))!;

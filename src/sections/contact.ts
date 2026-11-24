@@ -45,6 +45,7 @@ export const contactScene = () =>
     }
     d.write(sk.paragraph("Open to software and automation work. The fastest way to reach me is email.", cx, cy + 236, 15, 460, { color: INK }).strokes, { speed: 1700, gap: 0.003 });
     d.reveal(revealables(section), "-=0.4");
+    d.reveal(section.querySelectorAll(".cform"), "<");
     // a final signature
     d.write(sk.text("- Vineet", 1100, 540, 32, { color: INK, width: 1.6 }, "scriptc", 2, "right").strokes, { speed: 800 });
   });

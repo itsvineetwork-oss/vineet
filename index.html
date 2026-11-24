@@ -8,6 +8,11 @@
   <meta property="og:title" content="Vineet — The Live Sketch Portfolio" />
   <meta property="og:description" content="Software developer and Python programmer. Watch the portfolio being drawn." />
   <meta property="og:type" content="website" />
+  <meta property="og:image" content="%VITE_SITE_URL%og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="%VITE_SITE_URL%og.png" />
   <meta name="theme-color" content="#f4f1ea" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,6 +38,7 @@
       <button id="finish" type="button" title="Finish drawing this section">Finish</button>
       <button id="motion" type="button" aria-pressed="false" title="Turn drawing animations off">Motion: on</button>
       <button id="sound" type="button" aria-pressed="false" title="Pencil sound">Sound: off</button>
+      <button id="theme" type="button" aria-pressed="false" title="White ink on blue paper">Blueprint</button>
     </div>
     <div id="progress" class="progress" aria-hidden="true"></div>
   </header>
@@ -146,6 +152,16 @@
       <div class="copy copy-contact">
         <p class="sr-only">Open to software and automation work. The fastest way to reach me is email.</p>
         <ul class="links" id="contact-links"></ul>
+        <form class="cform" id="cform" novalidate>
+          <div class="row">
+            <label>Your name<input id="cf-name" name="name" type="text" autocomplete="name" required /></label>
+            <label>Your email<input id="cf-email" name="email" type="email" autocomplete="email" required /></label>
+          </div>
+          <label>Message<textarea id="cf-msg" name="message" required></textarea></label>
+          <label class="hp" aria-hidden="true">Leave empty<input name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+          <button type="submit">Send message</button>
+          <p class="status" id="cf-status" role="status" aria-live="polite"></p>
+        </form>
       </div>
     </section>
   </main>

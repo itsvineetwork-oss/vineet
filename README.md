@@ -33,7 +33,9 @@ npm run preview
 - Photo: put `portrait.jpg` in `public/` (3:4). It is sketched, then revealed. Without the file a monogram medallion is drawn.
 - Screenshots: put the files listed in each project's `images` array under `public/shots/`. Missing files are skipped.
 - Resume: put `resume.pdf` in `public/`. The header button and contact link appear only when the file exists.
-- Toolbar: Replay draws the current page again, Finish skips ahead; the line under the menu shows which pages are drawn.
+- Toolbar: Replay draws the current page again, Finish skips ahead; the line under the menu shows which pages are drawn. Blueprint switches to white ink on blue paper (remembered per browser, follows the OS dark setting at first).
+- Contact form: set `contact.formEndpoint` (e.g. a Formspree form URL) to receive messages; without it the form opens the visitor's mail app using `contact.email`.
+- Share image: `public/og.png` is the Home sheet. Regenerate with `npm run preview` then `node scripts/og.mjs`. Set `VITE_SITE_URL` (in `.env` or the workflow) to the deployed URL so `og:image` is absolute.
 
 ## How the drawing engine works
 
