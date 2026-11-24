@@ -1,11 +1,12 @@
 import { makeScene } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
-import { about, identity } from "../content";
+import { C } from "../i18n";
 import { exists, url } from "../engine/assets";
 
 export const aboutScene = () =>
   makeScene("about", [1200, 640], (sk, d) => {
-    const h = sk.text("About", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
+    const { about, identity, ui } = C();
+    const h = sk.text(ui.headings.about, 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
 
@@ -33,11 +34,11 @@ export const aboutScene = () =>
 
     // text column (x 520..1140): intro, approach, tags
     const tx = 520, tw = 620;
-    d.write(sk.label("WHO I AM", tx, 190, 11, { color: GRAPHITE }).strokes, { speed: 1000 });
+    d.write(sk.label(ui.whoIAm, tx, 190, 11, { color: GRAPHITE }).strokes, { speed: 1000 });
     const intro = sk.paragraph(about.intro, tx, 222, 18, tw, { color: INK });
     d.write(intro.strokes, { speed: 1700, gap: 0.003 });
     let y = 222 + intro.height + 36;
-    d.write(sk.label("HOW I APPROACH ENGINEERING PROBLEMS", tx, y, 11, { color: GRAPHITE }).strokes, { speed: 1000 });
+    d.write(sk.label(ui.approach, tx, y, 11, { color: GRAPHITE }).strokes, { speed: 1000 });
     const b = sk.bullets(about.approach, tx, y + 32, 17, tw, { color: INK });
     d.write(b.strokes, { speed: 1700, gap: 0.003 });
     y = y + 32 + b.height + 30;

@@ -13,6 +13,8 @@ export type Scene = {
   /** Jump to the fully drawn state. */
   finish: () => void;
   erased: boolean;
+  /** Filtered out (e.g. a project that does not match the stack filter); skipped by the page order. */
+  hidden: boolean;
   /** True once the drawing has completed (or was finished / skipped). */
   done: boolean;
   /** Called whenever the drawing completes. */
@@ -50,7 +52,10 @@ export function makeScene(id: string, viewBox: [number, number], build: Builder,
     if (!paths.length) return 0;
     director.tl.pause();
     scene.erased = true;
-    gsap.to(paths, { strokeDashoffset: (_i: number, el: SVGPathElement) => -Number(el.dataset.len || 0), duration: 0.45, ease: "power1.in", stagger: { each: 0.004, from: "end" }, onComplete: () => paths.forEach((el) => (el.style.visibility = "hidden")) });
+    const lines = paths.filter((el): el is SVGPathElement => el instanceof SVGPathElement);
+    const texts = paths.filter((el): el is SVGTextElement => el instanceof SVGTextElement);
+    gsap.to(lines, { strokeDashoffset: (_i: number, el: SVGPathElement) => -Number(el.dataset.len || 0), duration: 0.45, ease: "power1.in", stagger: { each: 0.004, from: "end" }, onComplete: () => lines.forEach((el) => (el.style.visibility = "hidden")) });
+    gsap.to(texts, { opacity: 0, duration: 0.35, onComplete: () => texts.forEach((el) => (el.style.visibility = "hidden")) });
     gsap.to(section.querySelectorAll("[data-reveal]"), { opacity: 0, duration: 0.3 });
     return 0.5;
   };
@@ -63,7 +68,7 @@ export function makeScene(id: string, viewBox: [number, number], build: Builder,
     section.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => { el.style.opacity = "1"; el.style.setProperty("--wipe", "100%"); });
     if (!scene.done) complete();
   };
-  const scene: Scene = { id, section, director, rebuild: run, erase, finish, erased: false, done: false };
+  const scene: Scene = { id, section, director, rebuild: run, erase, finish, erased: false, hidden: false, done: false };
   run();
   return scene;
 }

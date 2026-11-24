@@ -1,6 +1,6 @@
 import { makeScene, revealables } from "./scene";
 import { Sketcher, INK, GRAPHITE, RED, BLUE, type Stroke } from "../engine/sketch";
-import { skills } from "../content";
+import { C } from "../i18n";
 
 const icons: Record<string, (sk: Sketcher, x: number, y: number) => Stroke[]> = {
   code: (sk, x, y) => sk.sketchPath(`M ${x - 22} ${y - 18} L ${x - 40} ${y} L ${x - 22} ${y + 18} M ${x + 22} ${y - 18} L ${x + 40} ${y} L ${x + 22} ${y + 18} M ${x + 8} ${y - 24} L ${x - 8} ${y + 24}`, { color: INK, tool: "ink", width: 1.6 }),
@@ -13,10 +13,11 @@ const icons: Record<string, (sk: Sketcher, x: number, y: number) => Stroke[]> = 
 
 export const skillsScene = () =>
   makeScene("skills", [1200, 880], (sk, d, section) => {
-    const h = sk.text("Skills", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
+    const { skills, ui } = C();
+    const h = sk.text(ui.headings.skills, 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
-    d.write(sk.label("TECHNICAL BLUEPRINT  ·  SCALE 1:1", 72, 160, 11, { color: GRAPHITE }).strokes, { speed: 900 });
+    d.write(sk.label(ui.blueprint, 72, 160, 11, { color: GRAPHITE }).strokes, { speed: 900 });
 
     // blueprint grid, drawn fast without the pencil
     const grid: Stroke[] = [];

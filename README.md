@@ -59,6 +59,13 @@ A section draws itself when it scrolls into view, one page at a time: the visito
 - Keyboard: skip link, focusable navigation and buttons.
 - No WebGL, no large assets. The whole site is ~76 kB gzipped.
 
+## Languages, filters, analytics, domain
+
+- **Hindi / English**: the header button switches languages. Hindi text lives in `src/content.hi.ts` (same shape as `src/content.ts`). Devanagari cannot be stroke-drawn with the Hershey fonts, so Hindi text is written in the Kalam handwriting font with a wipe; diagrams and English labels are still drawn.
+- **Project filters**: chips above the projects are built from each project's `stack` and `integrations`. Filtered-out projects are skipped by the one-page-at-a-time order.
+- **Analytics**: set `analytics` in `src/content.ts` (`goatcounter`, `plausible` or `umami`). Nothing loads until it is configured.
+- **Custom domain**: add `public/CNAME` containing the domain (e.g. `vineetsharma.dev`), point the domain's DNS at GitHub Pages, and enable it in Settings → Pages. The workflow then builds for the root path and uses the domain for the share image URL.
+
 ## Deploy
 
 GitHub Actions deploys `dist/` to GitHub Pages on push to `main` (Settings → Pages → Source: GitHub Actions).

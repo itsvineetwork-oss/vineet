@@ -1,7 +1,7 @@
 import { makeScene, revealables } from "./scene";
 import { Sketcher, INK, GRAPHITE, RED, BLUE, type Stroke } from "../engine/sketch";
 import { Director } from "../engine/director";
-import { projects } from "../content";
+import { C } from "../i18n";
 import { exists, url } from "../engine/assets";
 
 /** A node box with a title, used by the diagrams. */
@@ -88,17 +88,20 @@ const diagrams = { erp: erpDiagram, calculator: calculatorDiagram, automation: a
 
 export const projectsScene = () =>
   makeScene("projects", [1200, 190], (sk, d) => {
-    const h = sk.text("Projects", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
+    const { ui } = C();
+    const h = sk.text(ui.headings.projects, 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
-    d.write(sk.label("ENGINEERING NOTEBOOK  -  SELECTED WORK", 72, 160, 11, { color: GRAPHITE }).strokes, { speed: 900 });
+    d.write(sk.label(ui.notebook, 72, 160, 11, { color: GRAPHITE }).strokes, { speed: 900 });
   });
 
 /** One scene per project: number and title, the diagram on the left, written notes on the right. */
 export const projectScenes = () =>
-  projects.map((p, i) => {
-    const el = document.getElementById(`p-${p.id}`) as HTMLElement;
-    return makeScene(`p-${p.id}`, [1200, 520], (sk, d, section) => {
+  C().projects.map((p0, i) => {
+    const el = document.getElementById(`p-${p0.id}`) as HTMLElement;
+    return makeScene(`p-${p0.id}`, [1200, 520], (sk, d, section) => {
+      const { ui } = C();
+      const p = C().projects.find((x) => x.id === p0.id) ?? p0;
       d.draw(sk.line(70, 20, 1130, 20, { color: GRAPHITE, width: 0.8 }, { roughness: 0.5 }), { speed: 3000, noPencil: true });
       d.write(sk.label(`0${i + 1}`, 72, 64, 22, { color: RED, width: 1.6 }).strokes, { speed: 900 });
       d.write(sk.text(p.name, 130, 66, 36, { color: INK, width: 1.8 }, "scriptc", 2).strokes, { speed: 900, gap: 0.015 });
@@ -113,10 +116,10 @@ export const projectScenes = () =>
         d.write(para.strokes, { speed: 1800, gap: 0.002 });
         y += 24 + para.height + 18;
       };
-      block("PROBLEM", p.problem);
-      block("MY CONTRIBUTION", p.contribution);
+      block(ui.problem, p.problem);
+      block(ui.contribution, p.contribution);
       // stack runs under the diagram, where there is room for the long list
-      d.write(sk.label("STACK", 72, 424, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
+      d.write(sk.label(ui.stack, 72, 424, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
       d.write(sk.paragraph([...p.stack, ...(p.integrations || [])].join(", "), 72, 446, 14, 740, { color: INK }).strokes, { speed: 1800, gap: 0.002 });
 
       const shots = (p.images || []).filter(exists).slice(0, 2);
@@ -124,7 +127,7 @@ export const projectScenes = () =>
         const r = sk.image(url(src), tx + j * 24, y + 10 + j * 20, 200, 125, { color: GRAPHITE });
         d.draw(r.frame, { speed: 1600 }).draw(r.hatch, { speed: 6000, noPencil: true }).revealImage(r);
       });
-      if (shots.length) d.write(sk.label("SCREENSHOTS", tx, y + 10 + shots.length * 20 + 150, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
+      if (shots.length) d.write(sk.label(ui.screenshots, tx, y + 10 + shots.length * 20 + 150, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
       d.reveal(revealables(section), "-=0.3", 0.05);
     }, el);
   });

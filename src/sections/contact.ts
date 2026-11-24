@@ -1,14 +1,15 @@
 import { makeScene, revealables } from "./scene";
 import { INK, GRAPHITE, RED, BLUE } from "../engine/sketch";
-import { contact } from "../content";
+import { C } from "../i18n";
 import { exists } from "../engine/assets";
 
 export const contactScene = () =>
   makeScene("contact", [1200, 560], (sk, d, section) => {
-    const h = sk.text("Contact", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
+    const { contact, identity, ui } = C();
+    const h = sk.text(ui.headings.contact, 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
-    d.write(sk.label("LAST PAGE OF THE SKETCHBOOK", 72, 160, 11, { color: GRAPHITE }).strokes, { speed: 900 });
+    d.write(sk.label(ui.lastPage, 72, 160, 11, { color: GRAPHITE }).strokes, { speed: 900 });
 
     // envelope
     const ex = 300, ey = 300;
@@ -18,13 +19,13 @@ export const contactScene = () =>
       ...sk.sketchPath(`M ${ex - 150} ${ey + 90} L ${ex - 40} ${ey - 20} M ${ex + 150} ${ey + 90} L ${ex + 40} ${ey - 20}`, { color: GRAPHITE, width: 1.2 }),
       ...sk.rect(ex + 80, ey - 70, 46, 46, { color: RED, width: 1.2 }, { fill: "#000", hachureGap: 5 }),
     ], { speed: 1300 });
-    d.write(sk.text("say hello", ex, ey + 150, 30, { color: BLUE, width: 1.5 }, "scripts", 2, "center").strokes, { speed: 900 });
+    d.write(sk.text(ui.sayHello, ex, ey + 150, 30, { color: BLUE, width: 1.5 }, "scripts", 2, "center").strokes, { speed: 900 });
 
     // contact card on the right, with lines for the real links underneath (HTML)
     const cx = 640, cy = 230;
     d.draw(sk.rect(cx, cy, 460, 200, { color: INK, tool: "ink", width: 1.6 }, { roughness: 1.3 }), { speed: 1600 });
     d.draw(sk.line(cx, cy + 50, cx + 460, cy + 50, { color: GRAPHITE }), { speed: 2000 });
-    d.write(sk.label("VINEET SHARMA  ·  SOFTWARE DEVELOPER", cx + 20, cy + 32, 13, { color: INK }).strokes, { speed: 900 });
+    d.write(sk.label(`${identity.fullName.toUpperCase()}  -  ${identity.title.split("|")[0].trim().toUpperCase()}`, cx + 20, cy + 32, 13, { color: INK }).strokes, { speed: 900 });
     const rows: [string, string][] = [["EMAIL", contact.email], ["LINKEDIN", contact.linkedin.replace(/^https?:\/\/(www\.)?/, "")], ["GITHUB", contact.github.replace(/^https?:\/\/(www\.)?/, "")]];
     rows.forEach(([k, v], i) => {
       d.write(sk.label(k, cx + 20, cy + 90 + i * 40, 11, { color: GRAPHITE }).strokes, { speed: 900 });
@@ -41,11 +42,11 @@ export const contactScene = () =>
         ...sk.line(rx + 14, ry + 68, rx + 76, ry + 68, { color: GRAPHITE }),
         ...sk.line(rx + 14, ry + 86, rx + 56, ry + 86, { color: GRAPHITE }),
       ], { speed: 1400 });
-      d.write(sk.label("RESUME (PDF)", rx + 45, ry + 140, 10, { color: GRAPHITE }, "center").strokes, { speed: 1000 });
+      d.write(sk.label(ui.resumePdf, rx + 45, ry + 140, 10, { color: GRAPHITE }, "center").strokes, { speed: 1000 });
     }
-    d.write(sk.paragraph("Open to software and automation work. The fastest way to reach me is email.", cx, cy + 236, 15, 460, { color: INK }).strokes, { speed: 1700, gap: 0.003 });
+    d.write(sk.paragraph(ui.openTo, cx, cy + 236, 15, 460, { color: INK }).strokes, { speed: 1700, gap: 0.003 });
     d.reveal(revealables(section), "-=0.4");
     d.reveal(section.querySelectorAll(".cform"), "<");
     // a final signature
-    d.write(sk.text("- Vineet", 1100, 540, 32, { color: INK, width: 1.6 }, "scriptc", 2, "right").strokes, { speed: 800 });
+    d.write(sk.text(ui.signature, 1100, 540, 32, { color: INK, width: 1.6 }, "scriptc", 2, "right").strokes, { speed: 800 });
   });

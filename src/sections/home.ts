@@ -1,9 +1,10 @@
 import { makeScene, revealables } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
-import { identity } from "../content";
+import { C } from "../i18n";
 
 export const home = () =>
   makeScene("home", [1200, 600], (sk, d, section) => {
+    const { identity } = C();
     // drawing sheet: double border and a title block in the corner
     d.draw(sk.rect(50, 40, 1100, 520, { color: GRAPHITE, width: 1.2 }, { roughness: 1.4 }), { speed: 1800 });
     d.draw(sk.rect(62, 52, 1076, 496, { color: GRAPHITE, width: 0.8 }, { roughness: 0.5 }), { speed: 3000, noPencil: true });

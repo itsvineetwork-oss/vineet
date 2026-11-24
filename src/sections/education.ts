@@ -1,10 +1,11 @@
 import { makeScene, revealables } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
-import { education } from "../content";
+import { C } from "../i18n";
 
 export const educationScene = () =>
   makeScene("education", [1200, 560], (sk, d, section) => {
-    const h = sk.text("Education", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
+    const { education, ui } = C();
+    const h = sk.text(ui.headings.education, 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
 

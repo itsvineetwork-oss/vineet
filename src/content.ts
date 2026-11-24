@@ -102,7 +102,7 @@ export const education = [
   },
 ];
 
-export const contact = {
+export const contactInfo = {
   email: "",      // TODO e.g. "you@example.com" (rendered only when filled)
   linkedin: "",   // TODO e.g. "https://www.linkedin.com/in/your-handle"
   github: "https://github.com/itsvineetwork-oss",
@@ -110,3 +110,45 @@ export const contact = {
   /** Formspree (or similar) endpoint, e.g. "https://formspree.io/f/abcdwxyz". Blank: the form opens the visitor's mail app instead (needs `email`). */
   formEndpoint: "",
 };
+export const contact = contactInfo;
+
+/** Optional analytics. provider: "goatcounter" (site = your code, e.g. "vineet"), "plausible" (site = domain), "umami" (site = website id, host = script URL). */
+export const analytics: { provider: "" | "goatcounter" | "plausible" | "umami"; site: string; host?: string } = { provider: "", site: "" };
+
+export const ui = {
+  nav: { home: "Home", about: "About", projects: "Projects", experience: "Experience", skills: "Skills", education: "Education", contact: "Contact" },
+  headings: { about: "About", projects: "Projects", experience: "Experience", skills: "Skills", education: "Education", contact: "Contact" },
+  explore: "Explore the sketchbook ↓",
+  whoIAm: "WHO I AM",
+  approach: "HOW I APPROACH ENGINEERING PROBLEMS",
+  problem: "PROBLEM",
+  contribution: "MY CONTRIBUTION",
+  stack: "STACK",
+  screenshots: "SCREENSHOTS",
+  notebook: "ENGINEERING NOTEBOOK  -  SELECTED WORK",
+  blueprint: "TECHNICAL BLUEPRINT  -  SCALE 1:1",
+  lastPage: "LAST PAGE OF THE SKETCHBOOK",
+  sayHello: "say hello",
+  openTo: "Open to software and automation work. The fastest way to reach me is email.",
+  resumePdf: "RESUME (PDF)",
+  now: "NOW",
+  signature: "- Vineet",
+  buttons: { resume: "Resume", replay: "Replay", finish: "Finish", motionOn: "Motion: on", motionOff: "Motion: off", soundOn: "Sound: on", soundOff: "Sound: off", blueprint: "Blueprint", paper: "Paper", lang: "हिन्दी" },
+  toasts: { stillDrawing: "This page is still being drawn. Wait, or press Finish.", finishFirst: "Finish this page first (or press Finish)." },
+  form: { name: "Your name", email: "Your email", message: "Message", send: "Send message", invalid: "Please fill in your name, a valid email and a message.", sending: "Sending…", sent: "Sent. I will reply by email.", failed: "Could not send. Please email me directly.", opening: "Opening your mail app…", notConnected: "The form is not connected yet (set contact.formEndpoint or contact.email)." },
+  filters: { all: "All", label: "Filter by stack" },
+  footer: "Drawn live with SVG strokes · no video",
+};
+
+export type Content = {
+  identity: typeof identity;
+  about: typeof about;
+  projects: Project[];
+  experience: typeof experience;
+  skills: typeof skills;
+  education: typeof education;
+  contact: typeof contactInfo;
+  ui: typeof ui;
+};
+
+export const en: Content = { identity, about, projects, experience, skills, education, contact: contactInfo, ui };

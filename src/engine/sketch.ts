@@ -17,7 +17,19 @@ function ensureFilters(svg: SVGSVGElement) {
   svg.insertBefore(defs, svg.firstChild);
 }
 
-export type Stroke = { el: SVGPathElement; len: number };
+export type Stroke = { el: SVGPathElement | SVGTextElement; len: number };
+
+/** Scripts the Hershey fonts cannot write (Devanagari etc.) are set in a handwriting web font and wiped in. */
+export const needsFont = (str: string) => /[^\u0000-\u024F\u2000-\u206F\u20B9]/.test(str);
+export const HAND_FONT = '"Kalam", "Noto Sans Devanagari", "Architects Daughter", sans-serif';
+
+let measurer: CanvasRenderingContext2D | null = null;
+export function measureFont(str: string, px: number, weight = 400) {
+  measurer ??= document.createElement("canvas").getContext("2d");
+  if (!measurer) return str.length * px * 0.55;
+  measurer.font = `${weight} ${px}px ${HAND_FONT}`;
+  return measurer.measureText(str).width;
+}
 
 export type StrokeStyle = {
   color?: string;
@@ -77,6 +89,34 @@ export class Sketcher {
     el.style.visibility = "hidden"; // round caps would otherwise show a dot before the stroke starts
     el.dataset.len = String(len);
     return { el, len };
+  }
+
+  /** Web-font text (for scripts Hershey cannot draw). One Stroke whose "length" is its width, revealed with a wipe. */
+  fontText(str: string, x: number, y: number, size: number, st: StrokeStyle = {}, align: "left" | "center" | "right" = "left", weight = 400): Stroke {
+    const el = document.createElementNS(NS, "text");
+    const px = size * 1.25;
+    el.textContent = str;
+    el.setAttribute("x", String(x)); el.setAttribute("y", String(y));
+    el.setAttribute("font-family", HAND_FONT);
+    el.setAttribute("font-size", String(px));
+    el.setAttribute("font-weight", String(weight));
+    el.setAttribute("fill", st.color ?? INK);
+    el.setAttribute("text-anchor", align === "center" ? "middle" : align === "right" ? "end" : "start");
+    if (st.opacity !== undefined) el.setAttribute("opacity", String(st.opacity));
+    el.classList.add("sk", "sk-font");
+    const w = measureFont(str, px, weight);
+    const x0 = align === "center" ? x - w / 2 : align === "right" ? x - w : x;
+    // wipe from left to right: clip rect grows with the stroke's progress
+    const clipId = `clip-${Math.random().toString(36).slice(2, 9)}`;
+    const clip = document.createElementNS(NS, "clipPath"); clip.setAttribute("id", clipId);
+    const rect = document.createElementNS(NS, "rect");
+    rect.setAttribute("x", String(x0 - 4)); rect.setAttribute("y", String(y - px * 1.1)); rect.setAttribute("width", "0"); rect.setAttribute("height", String(px * 1.6));
+    clip.appendChild(rect); this.layer.appendChild(clip);
+    el.setAttribute("clip-path", `url(#${clipId})`);
+    el.dataset.clip = clipId; el.dataset.w = String(w + 8);
+    el.style.visibility = "hidden";
+    this.layer.appendChild(el);
+    return { el, len: w };
   }
 
   /** A raw path. */
@@ -142,6 +182,10 @@ export class Sketcher {
 
   /** Handwritten text, one stroke group per character. */
   text(str: string, x: number, y: number, size: number, st: StrokeStyle = {}, font: FontName = "scriptc", tracking = 0, align: "left" | "center" | "right" = "left") {
+    if (needsFont(str)) {
+      const stroke = this.fontText(str, x, y, size, st, align, font === "scriptc" ? 700 : 400);
+      return { strokes: [stroke], width: stroke.len };
+    }
     const w = layoutText(str, 0, 0, size, font, tracking).width;
     const x0 = align === "center" ? x - w / 2 : align === "right" ? x - w : x;
     const { paths } = layoutText(str, x0, y, size, font, tracking);
@@ -164,9 +208,12 @@ export class Sketcher {
     const words = str.split(/\s+/);
     const lines: string[] = [];
     let line = "";
+    const wide = needsFont(str);
+    const width = (t: string) => (wide ? measureFont(t, size * 1.25) : measure(t, size, font, 1));
+    if (wide) lineHeight = Math.max(lineHeight, 1.7);
     for (const w of words) {
       const test = line ? `${line} ${w}` : w;
-      if (measure(test, size, font, 1) > maxWidth && line) { lines.push(line); line = w; } else line = test;
+      if (width(test) > maxWidth && line) { lines.push(line); line = w; } else line = test;
     }
     if (line) lines.push(line);
     const strokes: Stroke[] = [];
@@ -189,7 +236,7 @@ export class Sketcher {
 
   /** Small boxed tag, like a stamp on a drawing. */
   tag(str: string, x: number, y: number, size = 12, st: StrokeStyle = { color: GRAPHITE }) {
-    const w = measure(str, size, "futural", 1) + size * 1.2;
+    const w = (needsFont(str) ? measureFont(str, size * 1.25) : measure(str, size, "futural", 1)) + size * 1.2;
     const strokes = [...this.rect(x, y - size * 1.3, w, size * 1.9, st, { roughness: 0.8 }), ...this.label(str, x + size * 0.6, y, size, st).strokes];
     return { strokes, width: w };
   }
@@ -219,7 +266,7 @@ export class Sketcher {
   }
 
   /** Every stroke currently on the page. */
-  strokes(): SVGPathElement[] { return Array.from(this.layer.querySelectorAll("path.sk")); }
+  strokes(): (SVGPathElement | SVGTextElement)[] { return Array.from(this.layer.querySelectorAll<SVGPathElement | SVGTextElement>("path.sk, text.sk")); }
 
   /** Drop everything drawn so far. */
   clear() { this.layer.innerHTML = ""; this.seed = 1; }

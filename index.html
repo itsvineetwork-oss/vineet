@@ -16,28 +16,29 @@
   <meta name="theme-color" content="#f4f1ea" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Kalam:wght@400;700&display=swap" />
 </head>
 <body>
-  <a class="skip" href="#home">Skip to content</a>
+  <a class="skip" href="#home" data-ui="skip">Skip to content</a>
 
   <header class="topbar">
     <a class="logo" href="#home" aria-label="Vineet — home">V.</a>
     <nav aria-label="Sections">
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#projects">Projects</a>
-      <a href="#experience">Experience</a>
-      <a href="#skills">Skills</a>
-      <a href="#education">Education</a>
-      <a href="#contact">Contact</a>
+      <a href="#home" data-nav="home">Home</a>
+      <a href="#about" data-nav="about">About</a>
+      <a href="#projects" data-nav="projects">Projects</a>
+      <a href="#experience" data-nav="experience">Experience</a>
+      <a href="#skills" data-nav="skills">Skills</a>
+      <a href="#education" data-nav="education">Education</a>
+      <a href="#contact" data-nav="contact">Contact</a>
     </nav>
     <div class="tools">
       <a id="resume-link" class="resume" href="#" hidden target="_blank" rel="noopener">Resume</a>
+      <button id="lang" type="button" title="भाषा / Language">हिन्दी</button>
       <button id="replay" type="button" title="Draw this section again">Replay</button>
       <button id="finish" type="button" title="Finish drawing this section">Finish</button>
-      <button id="motion" type="button" aria-pressed="false" title="Turn drawing animations off">Motion: on</button>
-      <button id="sound" type="button" aria-pressed="false" title="Pencil sound">Sound: off</button>
+      <button id="motion" type="button" aria-pressed="false">Motion: on</button>
+      <button id="sound" type="button" aria-pressed="false">Sound: off</button>
       <button id="theme" type="button" aria-pressed="false" title="White ink on blue paper">Blueprint</button>
     </div>
     <div id="progress" class="progress" aria-hidden="true"></div>
@@ -47,119 +48,61 @@
     <section id="home" class="page page-home" aria-labelledby="home-h">
       <h1 id="home-h" class="sr-only">Vineet — Software Developer | Python Programmer</h1>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <p class="sr-only">Building software, automation systems, and practical engineering solutions.</p>
+      <p class="sr-only" data-copy="tagline">Building software, automation systems, and practical engineering solutions.</p>
       <div class="copy copy-home">
-        <p data-reveal><a class="cta" href="#about">Explore the sketchbook ↓</a></p>
+        <p data-reveal><a class="cta" href="#about" data-ui="explore">Explore the sketchbook ↓</a></p>
       </div>
     </section>
 
     <section id="about" class="page" aria-labelledby="about-h">
-      <h2 id="about-h" class="sr-only">About</h2>
+      <h2 id="about-h" class="sr-only" data-ui="h-about">About</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy sr-only">
-        <p class="lead" data-reveal>I am a software developer and Python programmer. I build ERP systems, engineering calculators and automation tools that people use every day at work.</p>
-        <h3 data-reveal>How I approach engineering problems</h3>
-        <ul>
-          <li data-reveal>Understand the real workflow before writing code.</li>
-          <li data-reveal>Prefer simple, well-structured systems over clever ones.</li>
-          <li data-reveal>Automate the repetitive, document the rest.</li>
-        </ul>
-      </div>
+      <div class="copy sr-only" data-copy="about"></div>
     </section>
 
     <section id="projects" class="page page-projects" aria-labelledby="projects-h">
-      <h2 id="projects-h" class="sr-only">Projects</h2>
+      <h2 id="projects-h" class="sr-only" data-ui="h-projects">Projects</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="filters" id="filters" role="group" aria-label="Filter by stack"></div>
       <div class="copy copy-projects">
-        <article class="project" id="p-erp">
-          <svg class="stage" aria-hidden="true" focusable="false"></svg>
-          <h3 class="sr-only" data-reveal>PremnathRail ERP</h3>
-          <dl class="sr-only">
-            <dt data-reveal>Problem</dt><dd data-reveal>Day-to-day operations ran across spreadsheets, documents and email, with no single system of record.</dd>
-            <dt data-reveal>My contribution</dt><dd data-reveal>Design and development of the ERP: data model, API, backend services and the web frontend.</dd>
-            <dt data-reveal>Stack</dt><dd data-reveal>Next.js · React · TypeScript · FastAPI · SQLAlchemy · PostgreSQL · Docker</dd>
-            <dt data-reveal>Integrations</dt><dd data-reveal>Microsoft Entra ID · SharePoint</dd>
-            <dt data-reveal>Key features</dt><dd data-reveal>Frontend → API → backend services → PostgreSQL. Role-based access with Microsoft Entra ID sign-in. Document flows connected to SharePoint. Deployed with Docker on a VPS.</dd>
-          </dl>
-        </article>
-        <article class="project" id="p-calculators">
-          <svg class="stage" aria-hidden="true" focusable="false"></svg>
-          <h3 class="sr-only" data-reveal>Python Engineering Calculators</h3>
-          <dl class="sr-only">
-            <dt data-reveal>Problem</dt><dd data-reveal>Engineering calculations were repeated by hand, with inconsistent inputs and no record of results.</dd>
-            <dt data-reveal>My contribution</dt><dd data-reveal>Python tools that take validated inputs, run the calculation and produce a clear, repeatable output.</dd>
-            <dt data-reveal>Stack</dt><dd data-reveal>Python</dd>
-          </dl>
-          <p class="plinks" data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub ↗</a></p>
-        </article>
-        <article class="project" id="p-automation">
-          <svg class="stage" aria-hidden="true" focusable="false"></svg>
-          <h3 class="sr-only" data-reveal>Automation Projects</h3>
-          <dl class="sr-only">
-            <dt data-reveal>Problem</dt><dd data-reveal>Recurring tasks such as reports, data transfers and document generation took hours each week.</dd>
-            <dt data-reveal>My contribution</dt><dd data-reveal>Scripts and small services that run these tasks on a schedule or on demand.</dd>
-            <dt data-reveal>Stack</dt><dd data-reveal>Python · REST APIs · PostgreSQL</dd>
-          </dl>
-          <p class="plinks" data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub ↗</a></p>
-        </article>
+        <article class="project" id="p-erp"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div></article>
+        <article class="project" id="p-calculators"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div></article>
+        <article class="project" id="p-automation"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div></article>
       </div>
     </section>
 
     <section id="experience" class="page" aria-labelledby="experience-h">
-      <h2 id="experience-h" class="sr-only">Experience</h2>
+      <h2 id="experience-h" class="sr-only" data-ui="h-experience">Experience</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy sr-only">
-        <div class="job">
-          <h3 data-reveal>Software Developer · Premnath Rail</h3>
-          <p class="meta" data-reveal>Present</p>
-          <ul>
-            <li data-reveal>Built and maintain the PremnathRail ERP.</li>
-            <li data-reveal>Python engineering calculators for the engineering team.</li>
-            <li data-reveal>Automation of reporting and document workflows.</li>
-          </ul>
-        </div>
-      </div>
+      <div class="copy sr-only" data-copy="experience"></div>
     </section>
 
     <section id="skills" class="page" aria-labelledby="skills-h">
-      <h2 id="skills-h" class="sr-only">Skills</h2>
+      <h2 id="skills-h" class="sr-only" data-ui="h-skills">Skills</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy copy-skills sr-only">
-        <div class="skill"><h3 data-reveal>Programming</h3><p data-reveal>Python, JavaScript, TypeScript, C</p></div>
-        <div class="skill"><h3 data-reveal>Backend</h3><p data-reveal>FastAPI, REST APIs, SQLAlchemy</p></div>
-        <div class="skill"><h3 data-reveal>Frontend</h3><p data-reveal>HTML, CSS, JavaScript, Next.js, React</p></div>
-        <div class="skill"><h3 data-reveal>Database</h3><p data-reveal>PostgreSQL, SQL</p></div>
-        <div class="skill"><h3 data-reveal>Infrastructure</h3><p data-reveal>Docker, VPS deployment, Git</p></div>
-        <div class="skill"><h3 data-reveal>Integrations</h3><p data-reveal>Microsoft Entra ID, SharePoint</p></div>
-      </div>
+      <div class="copy copy-skills sr-only" data-copy="skills"></div>
     </section>
 
     <section id="education" class="page" aria-labelledby="education-h">
-      <h2 id="education-h" class="sr-only">Education</h2>
+      <h2 id="education-h" class="sr-only" data-ui="h-education">Education</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy sr-only">
-        <h3 data-reveal>BCA — Bachelor of Computer Applications</h3>
-        <ul>
-          <li data-reveal>Programming fundamentals, data structures, databases.</li>
-          <li data-reveal>Web development and software engineering.</li>
-        </ul>
-      </div>
+      <div class="copy sr-only" data-copy="education"></div>
     </section>
 
     <section id="contact" class="page" aria-labelledby="contact-h">
-      <h2 id="contact-h" class="sr-only">Contact</h2>
+      <h2 id="contact-h" class="sr-only" data-ui="h-contact">Contact</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
       <div class="copy copy-contact">
-        <p class="sr-only">Open to software and automation work. The fastest way to reach me is email.</p>
+        <p class="sr-only" data-ui="openTo">Open to software and automation work. The fastest way to reach me is email.</p>
         <ul class="links" id="contact-links"></ul>
         <form class="cform" id="cform" novalidate>
           <div class="row">
-            <label>Your name<input id="cf-name" name="name" type="text" autocomplete="name" required /></label>
-            <label>Your email<input id="cf-email" name="email" type="email" autocomplete="email" required /></label>
+            <label><span data-ui="f-name">Your name</span><input id="cf-name" name="name" type="text" autocomplete="name" required /></label>
+            <label><span data-ui="f-email">Your email</span><input id="cf-email" name="email" type="email" autocomplete="email" required /></label>
           </div>
-          <label>Message<textarea id="cf-msg" name="message" required></textarea></label>
+          <label><span data-ui="f-message">Message</span><textarea id="cf-msg" name="message" required></textarea></label>
           <label class="hp" aria-hidden="true">Leave empty<input name="_gotcha" tabindex="-1" autocomplete="off" /></label>
-          <button type="submit">Send message</button>
+          <button type="submit" data-ui="f-send">Send message</button>
           <p class="status" id="cf-status" role="status" aria-live="polite"></p>
         </form>
       </div>
@@ -170,7 +113,7 @@
 
   <footer class="foot">
     <span>© <span id="year"></span> Vineet Sharma</span>
-    <span>Drawn live with SVG strokes · no video</span>
+    <span data-ui="footer">Drawn live with SVG strokes · no video</span>
   </footer>
 
   <script type="module" src="/src/main.ts"></script>

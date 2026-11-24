@@ -41,8 +41,23 @@ export class Director {
     if (!PENCIL) o = { ...o, noPencil: true };
     const sub = gsap.timeline();
     for (const s of strokes) {
-      const start = s.el.getPointAtLength(0);
-      if (s.el.dataset.word && o.noPencil) sub.to(this.pt, { p: 1, duration: 0.07 / TEMPO });
+      if (s.el instanceof SVGTextElement) {
+        // web-font text: wipe the clip rect open at writing speed
+        const rect = s.el.ownerSVGElement?.querySelector<SVGRectElement>(`#${s.el.dataset.clip} rect`);
+        const textEl = s.el;
+        const state = { w: 0 };
+        sub.to(state, {
+          w: Number(textEl.dataset.w || s.len), duration: Math.max(0.05, s.len / (speed * 0.9)), ease: "none",
+          onStart: () => { textEl.style.visibility = "visible"; scratch.drawing(1); },
+          onUpdate: () => rect?.setAttribute("width", String(state.w)),
+          onComplete: () => rect?.setAttribute("width", String(textEl.dataset.w || s.len)),
+        });
+        if (gap > 0) sub.to(this.pt, { p: 1, duration: gap });
+        continue;
+      }
+      const path = s.el as SVGPathElement;
+      const start = path.getPointAtLength(0);
+      if (path.dataset.word && o.noPencil) sub.to(this.pt, { p: 1, duration: 0.07 / TEMPO });
       // lift the pencil and carry it to the next stroke, like a hand moving across the page
       if (!o.noPencil) {
         const from = this.last;
@@ -55,7 +70,7 @@ export class Director {
           onStart: () => { this.pencil.show(true); this.pencil.raise(); this.pencil.press(0); scratch.drawing(0); },
           onUpdate: () => this.pencil.moveTo(pos.x, pos.y),
         });
-        const end = s.el.getPointAtLength(s.len);
+        const end = path.getPointAtLength(s.len);
         this.last = { x: end.x, y: end.y };
       }
       const dur = Math.max(0.03, s.len / speed);
@@ -67,9 +82,9 @@ export class Director {
         onStart: () => { s.el.style.visibility = "visible"; if (!o.noPencil) this.pencil.press(1); scratch.drawing(1); s.el.style.strokeDashoffset = String(s.len); },
         onUpdate: () => {
           s.el.style.strokeDashoffset = String(state.off);
-          if (!o.noPencil) { const pt = s.el.getPointAtLength(Math.max(0, s.len - state.off)); this.pencil.moveTo(pt.x, pt.y); }
+          if (!o.noPencil) { const pt = path.getPointAtLength(Math.max(0, s.len - state.off)); this.pencil.moveTo(pt.x, pt.y); }
         },
-        onComplete: () => { s.el.style.strokeDashoffset = "0"; const dashed = s.el.dataset.dashed; if (dashed) s.el.style.strokeDasharray = dashed; },
+        onComplete: () => { s.el.style.strokeDashoffset = "0"; const dashed = path.dataset.dashed; if (dashed) s.el.style.strokeDasharray = dashed; },
       });
       if (gap > 0) sub.to(this.pt, { p: 1, duration: gap, onStart: () => { this.pencil.press(0); scratch.drawing(0); } });
     }
@@ -86,6 +101,7 @@ export class Director {
   erase(strokes: Stroke[], o: DrawOpts = {}) {
     const sub = gsap.timeline();
     for (const s of strokes) {
+      if (s.el instanceof SVGTextElement) { sub.to(s.el, { opacity: 0, duration: 0.3 }, "<0.01"); continue; }
       const state = { off: 0 };
       sub.to(state, { off: -s.len, duration: Math.max(0.05, s.len / (o.speed ?? 2400)), ease: "none", onUpdate: () => { s.el.style.strokeDasharray = `${s.len}`; s.el.style.strokeDashoffset = String(state.off); } }, "<0.01");
     }
@@ -112,10 +128,12 @@ export class Director {
   label(name: string) { this.tl.addLabel(name); return this; }
 
   play() { this.tl.play(0); }
-  finish(strokes: SVGPathElement[] = []) {
+  finish(strokes: (SVGPathElement | SVGTextElement)[] = []) {
     this.tl.progress(1);
     for (const el of strokes) {
-      el.style.visibility = "visible"; el.style.strokeDashoffset = "0";
+      el.style.visibility = "visible";
+      if (el instanceof SVGTextElement) { el.ownerSVGElement?.querySelector(`#${el.dataset.clip} rect`)?.setAttribute("width", el.dataset.w || "9999"); el.style.opacity = "1"; continue; }
+      el.style.strokeDashoffset = "0";
       if (el.dataset.dashed) el.style.strokeDasharray = el.dataset.dashed;
       // hatching over a revealed image stays lifted; everything else returns to its drawn opacity
       el.style.opacity = el.dataset.hatch ? "0" : el.getAttribute("opacity") || "1";

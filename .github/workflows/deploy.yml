@@ -24,10 +24,17 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-        env:
-          BASE_PATH: /${{ github.event.repository.name }}/
-          VITE_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+      # With a custom domain (public/CNAME), the site is served from the root; otherwise from /<repo>/.
+      - name: Build
+        run: |
+          if [ -f public/CNAME ]; then
+            export BASE_PATH=/
+            export VITE_SITE_URL="https://$(tr -d '[:space:]' < public/CNAME)/"
+          else
+            export BASE_PATH="/${{ github.event.repository.name }}/"
+            export VITE_SITE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          fi
+          npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

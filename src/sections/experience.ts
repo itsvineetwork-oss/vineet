@@ -1,10 +1,11 @@
 import { makeScene } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
-import { experience } from "../content";
+import { C } from "../i18n";
 
 export const experienceScene = () =>
   makeScene("experience", [1200, 560], (sk, d, section) => {
-    const h = sk.text("Experience", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
+    const { experience, ui } = C();
+    const h = sk.text(ui.headings.experience, 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
 
@@ -12,7 +13,7 @@ export const experienceScene = () =>
     const y = 300;
     d.draw(sk.arrow(90, y, 1120, y, { color: INK, tool: "ink", width: 1.8 }, 14), { speed: 1800 });
     d.draw(sk.line(90, y - 14, 90, y + 14, { color: INK, tool: "ink", width: 1.8 }), { speed: 1200 });
-    d.write(sk.label("NOW", 1120, y - 20, 11, { color: GRAPHITE }, "right").strokes, { speed: 900 });
+    d.write(sk.label(ui.now, 1120, y - 20, 11, { color: GRAPHITE }, "right").strokes, { speed: 900 });
 
     const items = section.querySelectorAll<HTMLElement>(".job");
     const n = experience.length;
