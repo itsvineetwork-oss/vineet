@@ -70,7 +70,15 @@ function renderCopy() {
   document.title = `${identity.fullName} — ${identity.title}`;
 }
 renderCopy();
-$("year").textContent = String(new Date().getFullYear());
+// ---- title block: revision, date, live IST clock
+$("tb-rev").textContent = __REVISION__;
+$("tb-date").textContent = __BUILD_DATE__;
+{
+  const clock = $("tb-clock");
+  const fmt = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const tickClock = () => { clock.textContent = fmt.format(new Date()); };
+  tickClock(); setInterval(tickClock, 1000);
+}
 
 // ---- motion preference: the OS "reduce motion" setting shows finished drawings immediately
 const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -327,6 +335,89 @@ if (analytics.provider && analytics.site) {
   else if (analytics.provider === "umami" && analytics.host) { s.defer = true; s.dataset.websiteId = analytics.site; s.src = analytics.host; }
   if (s.src) document.head.appendChild(s);
 }
+
+// ---- command palette (Ctrl/Cmd + K)
+type Cmd = { label: string; hint: string; run: () => void; keywords?: string };
+const palette = $("palette"), pInput = $<HTMLInputElement>("palette-input"), pList = $("palette-list");
+let pItems: Cmd[] = [], pSel = 0;
+const navTo = (id: string) => { palette.hidden = true; document.body.style.overflow = ""; document.querySelector<HTMLAnchorElement>(`.topbar nav a[href="#${id}"]`)?.click(); };
+function commands(): Cmd[] {
+  const { ui, contact } = C();
+  const list: Cmd[] = sections.map((id) => ({ label: `Go to ${ui.nav[id as keyof typeof ui.nav]}`, hint: "Section", run: () => navTo(id), keywords: id }));
+  list.push({ label: blueprint ? "Switch to Paper" : "Switch to Blueprint", hint: "Theme", run: () => themeBtn.click(), keywords: "theme dark light mode" });
+  list.push({ label: scratch.enabled ? "Sound off" : "Sound on", hint: "Audio", run: () => soundBtn.click(), keywords: "audio mute" });
+  list.push({ label: "Toggle inspect mode", hint: "I", run: () => setInspect(!inspecting), keywords: "x-ray dimensions debug" });
+  if (contact.email) list.push({ label: "Copy email", hint: "Clipboard", run: () => { navigator.clipboard?.writeText(contact.email); stamp.textContent = C().ui.copied; stamp.classList.add("show"); setTimeout(() => stamp.classList.remove("show"), 1400); navTo("contact"); }, keywords: "mail contact" });
+  if (hasResume) list.push({ label: "Download resume (PDF)", hint: "File", run: () => window.open(url(contact.resume), "_blank", "noopener"), keywords: "cv" });
+  if (contact.github) list.push({ label: "View GitHub", hint: "Link", run: () => window.open(contact.github, "_blank", "noopener"), keywords: "code repos" });
+  if (contact.linkedin) list.push({ label: "View LinkedIn", hint: "Link", run: () => window.open(contact.linkedin, "_blank", "noopener") });
+  C().projects.forEach((p) => list.push({ label: `Open case study: ${p.name}`, hint: "Project", run: () => { palette.hidden = true; document.body.style.overflow = ""; openCase(p.id); }, keywords: p.stack.join(" ") }));
+  return list;
+}
+function renderPalette() {
+  const q = pInput.value.trim().toLowerCase();
+  pItems = commands().filter((c) => !q || (c.label + " " + (c.keywords || "")).toLowerCase().includes(q));
+  pSel = Math.min(pSel, Math.max(0, pItems.length - 1));
+  pList.innerHTML = pItems.map((c, i) => `<li role="option" aria-selected="${i === pSel}" data-i="${i}">${esc(c.label)}<small>${esc(c.hint)}</small></li>`).join("") || `<li><small>No matching command</small></li>`;
+}
+function openPalette() { palette.hidden = false; document.body.style.overflow = "hidden"; pInput.value = ""; pSel = 0; renderPalette(); pInput.focus(); }
+function closePalette() { palette.hidden = true; document.body.style.overflow = ""; }
+pInput.addEventListener("input", () => { pSel = 0; renderPalette(); });
+pInput.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowDown") { pSel = Math.min(pItems.length - 1, pSel + 1); renderPalette(); e.preventDefault(); }
+  else if (e.key === "ArrowUp") { pSel = Math.max(0, pSel - 1); renderPalette(); e.preventDefault(); }
+  else if (e.key === "Enter") { pItems[pSel]?.run(); if (!palette.hidden && pItems[pSel]) closePalette(); }
+});
+pList.addEventListener("click", (e) => { const li = (e.target as HTMLElement).closest<HTMLElement>("li[data-i]"); if (li) { pItems[Number(li.dataset.i)]?.run(); if (!palette.hidden) closePalette(); } });
+palette.addEventListener("click", (e) => { if ((e.target as HTMLElement).closest("[data-close]")) closePalette(); });
+
+// ---- inspect mode (I): CAD dimension lines and live metadata over every sheet
+const inspectLayer = $("inspect");
+let inspecting = false;
+let hud: HTMLElement | null = null;
+let fpsFrames = 0, fpsLast = performance.now(), fps = 0;
+function paintInspect() {
+  if (!inspecting) return;
+  const docH = document.documentElement.scrollHeight;
+  inspectLayer.style.height = `${docH}px`;
+  const blocks = Array.from(document.querySelectorAll<HTMLElement>("main > .page, .project"));
+  inspectLayer.innerHTML = blocks.map((el) => {
+    const r = el.getBoundingClientRect();
+    const paths = el.querySelectorAll(":scope > svg path.sk, :scope > .stage-wrap svg path.sk").length;
+    const drawn = el.classList.contains("is-drawn") ? "DRAWN" : "IN PROGRESS";
+    return `<div class="box" style="left:${r.left + scrollX}px;top:${r.top + scrollY}px;width:${r.width}px;height:${r.height}px">
+      <i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>
+      <div class="dim"><span>${Math.round(r.width)} px</span></div>
+      <div class="vdim"><span>${Math.round(r.height)} px</span></div>
+      <div class="meta">#${el.id}<br>SVG PATHS: ${paths}<br>${drawn}</div>
+    </div>`;
+  }).join("");
+}
+function paintHud() {
+  if (!hud) return;
+  const dpr = devicePixelRatio.toFixed(2);
+  hud.innerHTML = `VIEWPORT ${innerWidth} × ${innerHeight} @${dpr}x<br>SCROLL ${Math.round(scrollY)} / ${document.documentElement.scrollHeight - innerHeight}<br>FPS ${fps}<br>SVG PATHS ${document.querySelectorAll("path.sk").length}<br>REV ${__REVISION__}`;
+}
+function setInspect(on: boolean) {
+  inspecting = on;
+  document.body.classList.toggle("inspecting", on);
+  inspectLayer.hidden = !on;
+  if (on && !hud) { hud = document.createElement("div"); hud.className = "inspect-hud"; document.body.appendChild(hud); }
+  if (!on && hud) { hud.remove(); hud = null; }
+  paintInspect(); paintHud();
+}
+(function fpsLoop() { fpsFrames++; const now = performance.now(); if (now - fpsLast >= 1000) { fps = fpsFrames; fpsFrames = 0; fpsLast = now; if (inspecting) paintHud(); } requestAnimationFrame(fpsLoop); })();
+window.addEventListener("scroll", () => { if (inspecting) { paintInspect(); paintHud(); } }, { passive: true });
+window.addEventListener("resize", () => { if (inspecting) { paintInspect(); paintHud(); } });
+
+// ---- keyboard: Ctrl/Cmd+K palette, I inspect, Esc closes
+window.addEventListener("keydown", (e) => {
+  const typing = (e.target as HTMLElement).matches?.("input, textarea") && e.target !== pInput;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); palette.hidden ? openPalette() : closePalette(); return; }
+  if (typing || e.target === pInput) { if (e.key === "Escape" && e.target === pInput) closePalette(); return; }
+  if (e.key.toLowerCase() === "i" && !e.ctrlKey && !e.metaKey && !e.altKey) { setInspect(!inspecting); }
+  if (e.key === "Escape") { if (!palette.hidden) closePalette(); else if (inspecting) setInspect(false); }
+});
 
 // ---- deep link on load
 if (location.hash && byId.has(location.hash.slice(1))) {

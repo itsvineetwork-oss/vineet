@@ -124,9 +124,29 @@
   <div class="stamp global" id="dispatched-stamp" aria-hidden="true">DISPATCHED</div>
 
   <footer class="foot">
-    <span>© <span id="year"></span> Vineet Sharma</span>
-    <span data-ui="footer">Drawn live with SVG strokes · no video</span>
+    <div class="tblock" aria-label="Drawing title block">
+      <div class="cell wide"><b>TITLE</b><span>VINEET SHARMA — LIVE SKETCH PORTFOLIO</span></div>
+      <div class="cell"><b>DRAWN BY</b><span>Vineet Sharma</span></div>
+      <div class="cell"><b>REVISION</b><span id="tb-rev">—</span></div>
+      <div class="cell"><b>SCALE</b><span>1 : 1 (responsive)</span></div>
+      <div class="cell"><b>STATUS</b><span class="ok" data-ui="s-statusValue">OPEN TO ROLES</span></div>
+      <div class="cell"><b>DATE</b><span id="tb-date">—</span></div>
+      <div class="cell"><b>LOCAL TIME · IST</b><span id="tb-clock" aria-live="off">--:--:--</span></div>
+      <div class="cell"><b>SHEETS</b><span>7 of 7</span></div>
+      <div class="cell"><b>MEDIUM</b><span>SVG strokes · no video</span></div>
+      <div class="cell wide note"><b>NOTES</b><span data-ui="footer">Drawn live with SVG strokes · no video</span><span class="kbd"><kbd>Ctrl</kbd>+<kbd>K</kbd> commands · <kbd>I</kbd> inspect</span></div>
+    </div>
   </footer>
+
+  <div id="palette" class="palette" hidden>
+    <div class="palette-veil" data-close></div>
+    <div class="palette-box" role="dialog" aria-modal="true" aria-label="Commands">
+      <input id="palette-input" type="text" placeholder="Type a command…" autocomplete="off" spellcheck="false" />
+      <ul id="palette-list" role="listbox"></ul>
+      <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> run</span><span><kbd>esc</kbd> close</span></div>
+    </div>
+  </div>
+  <div id="inspect" class="inspect-layer" hidden aria-hidden="true"></div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>

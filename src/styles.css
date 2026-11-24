@@ -171,7 +171,49 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 12px); background: var(--ink); color: var(--paper); font-family: var(--mono); font-size: 12px; letter-spacing: .08em; padding: 10px 16px; border-radius: 3px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 30; max-width: calc(100% - 32px); text-align: center; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-.foot { max-width: 1240px; margin: 0 auto; padding: 28px 20px 30vh; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--mute); letter-spacing: .06em; }
+/* CAD title block footer */
+.tblock { display: grid; grid-template-columns: repeat(4, 1fr); border: 1.5px solid var(--ink); font-family: var(--mono); font-size: 12px; color: var(--ink); }
+.tblock .cell { padding: 8px 12px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); display: grid; gap: 2px; min-width: 0; }
+.tblock .cell:nth-child(4n) { border-right: 0; }
+.tblock .cell.wide { grid-column: span 4; border-right: 0; }
+.tblock .cell:nth-last-child(1) { border-bottom: 0; }
+.tblock b { font-size: 9px; letter-spacing: .2em; color: var(--graphite); font-weight: 500; }
+.tblock span { overflow-wrap: anywhere; }
+.tblock .ok { color: var(--red); }
+.tblock .kbd { color: var(--graphite); font-size: 11px; }
+.tblock kbd, .palette kbd { font: 10px var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; padding: 1px 5px; margin: 0 1px; }
+@media (max-width: 700px) { .tblock { grid-template-columns: repeat(2, 1fr); } .tblock .cell:nth-child(4n) { border-right: 1px solid var(--ink); } .tblock .cell:nth-child(2n) { border-right: 0; } .tblock .cell.wide { grid-column: span 2; } }
+
+/* command palette */
+.palette { position: fixed; inset: 0; z-index: 60; }
+.palette[hidden] { display: none; }
+.palette-veil { position: absolute; inset: 0; background: rgba(0,0,0,.22); }
+.palette-box { position: relative; width: min(560px, calc(100% - 32px)); margin: 12vh auto 0; background: var(--paper); border: 2px solid var(--ink); box-shadow: 6px 6px 0 var(--line); transform: rotate(-.3deg); animation: sheetIn .35s cubic-bezier(.22, 1, .36, 1); }
+.palette-box input { width: 100%; font: 18px var(--hand); color: var(--ink); background: transparent; border: 0; border-bottom: 1.5px solid var(--ink); padding: 14px 16px; outline: none; }
+.palette-box ul { list-style: none; margin: 0; padding: 6px 0; max-height: 50vh; overflow-y: auto; }
+.palette-box li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.palette-box li[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+.palette-box li small { color: var(--graphite); font-size: 10px; letter-spacing: .14em; }
+.palette-box li[aria-selected="true"] small { color: var(--paper); opacity: .7; }
+.palette-foot { display: flex; gap: 16px; padding: 8px 16px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 10px; color: var(--graphite); }
+
+/* inspect mode: CAD dimension lines and metadata over every section */
+.inspect-layer { position: absolute; left: 0; top: 0; width: 100%; height: 0; z-index: 34; pointer-events: none; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--red); }
+.inspect-layer[hidden] { display: none; }
+.inspect-layer .box { position: absolute; border: 1px dashed var(--red); }
+.inspect-layer .box i { position: absolute; width: 10px; height: 10px; border: 1px solid var(--red); background: var(--paper); margin: -5px; }
+.inspect-layer .box i.tl { left: 0; top: 0; } .inspect-layer .box i.tr { right: 0; top: 0; } .inspect-layer .box i.bl { left: 0; bottom: 0; } .inspect-layer .box i.br { right: 0; bottom: 0; }
+.inspect-layer .dim { position: absolute; left: 0; right: 0; top: -14px; height: 10px; border-left: 1px solid var(--red); border-right: 1px solid var(--red); }
+.inspect-layer .dim::before { content: ""; position: absolute; left: 0; right: 0; top: 5px; border-top: 1px solid var(--red); }
+.inspect-layer .dim span { position: absolute; left: 50%; top: -4px; transform: translate(-50%, -100%); background: var(--paper); padding: 0 6px; }
+.inspect-layer .vdim { position: absolute; top: 0; bottom: 0; right: -16px; width: 10px; border-top: 1px solid var(--red); border-bottom: 1px solid var(--red); }
+.inspect-layer .vdim::before { content: ""; position: absolute; top: 0; bottom: 0; left: 5px; border-left: 1px solid var(--red); }
+.inspect-layer .vdim span { position: absolute; top: 50%; left: 14px; transform: translateY(-50%) rotate(90deg); transform-origin: left center; background: var(--paper); padding: 0 6px; white-space: nowrap; }
+.inspect-layer .meta { position: absolute; left: 8px; top: 8px; background: var(--paper); border: 1px solid var(--red); padding: 4px 8px; line-height: 1.6; }
+.inspect-hud { position: fixed; right: 16px; bottom: 16px; z-index: 34; background: var(--paper); border: 1.5px solid var(--red); color: var(--red); padding: 8px 12px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; line-height: 1.7; pointer-events: none; }
+body.inspecting .page, body.inspecting .project { outline: 1px dashed color-mix(in srgb, var(--red) 40%, transparent); }
+
+.foot { max-width: 1240px; margin: 0 auto; padding: 28px 20px 30vh; }
 
 .project.hidden { display: none; }
 .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: -6px 0 10px; }

@@ -66,6 +66,14 @@ The first sheet draws itself when the site opens. After that, drawing is tied to
 - Diagram nodes show a spec card on hover (`nodes` in each project); "Inspect case study" opens a slide-over sheet (features, `tradeoffs`, `outcome`, screenshots, links).
 - Pen easing on every stroke; a soft paper tick on hover when Sound is on; red stamps (COPIED, DISPATCHED) bounce in.
 
+## Keyboard
+
+- `Ctrl`/`Cmd` + `K`: command palette (go to a section, theme, sound, copy email, resume, GitHub, case studies).
+- `I`: inspect mode (CAD dimension lines, path counts and a live HUD with viewport, scroll, FPS and revision).
+- `Esc`: closes the palette, the case-study sheet or inspect mode.
+
+The footer is a CAD title block: revision and date come from git at build time; the clock is live IST.
+
 ## Filters, analytics, domain
 
 - **Project filters**: chips above the projects are built from each project's `stack` and `integrations`. Filtered-out projects are skipped by the one-page-at-a-time order.
