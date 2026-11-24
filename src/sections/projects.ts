@@ -118,6 +118,7 @@ export const projectScenes = () =>
       };
       block(ui.problem, p.problem);
       block(ui.contribution, p.contribution);
+      if (p.outcome) block(ui.outcome, p.outcome);
       // stack runs under the diagram, where there is room for the long list
       d.write(sk.label(ui.stack, 72, 424, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
       d.write(sk.paragraph([...p.stack, ...(p.integrations || [])].join(", "), 72, 446, 14, 740, { color: INK }).strokes, { speed: 1800, gap: 0.002 });

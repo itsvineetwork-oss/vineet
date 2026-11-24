@@ -86,8 +86,10 @@ if (!motion) scenes.forEach((s) => s.finish());
 //      Scroll fast and it draws fast; scroll back up and it un-draws.
 const triggers = new Map<Scene, ScrollTrigger>();
 if (motion) {
-  const LINE = 0.84; // a page draws while it travels from the bottom of the screen up to this line
+  const LINE = 0.96; // a page draws while it travels from the bottom edge of the screen up to this line
   scenes.forEach((s, i) => {
+    // the first sheet draws itself when the site opens; everything after it is driven by scrolling
+    if (s.id === "home") { s.director.tl.play(0); return; }
     // the Projects heading ends where the first project page begins; every other page ends at its own bottom
     const endEl = s.id === "projects" ? scenes[i + 1].section : s.section;
     const st = ScrollTrigger.create({
@@ -100,7 +102,7 @@ if (motion) {
         return Math.max(0, Math.min(top, end - 200));
       },
       end: () => endEnd(),
-      scrub: 0.4,
+      scrub: 0.25,
       animation: s.director.tl,
       onUpdate: (self) => { const d = self.progress >= 0.999; s.done = d; s.section.classList.toggle("is-drawn", d); },
     });
@@ -112,12 +114,23 @@ if (motion) {
     }
   });
 }
-scenes.forEach((s) => {
-  ScrollTrigger.create({
-    trigger: s.section, start: "top 50%", end: "bottom 50%",
-    onToggle: (st) => { if (st.isActive) document.querySelectorAll(".topbar nav a").forEach((a) => a.classList.toggle("active", a.getAttribute("href") === `#${s.id.startsWith("p-") ? "projects" : s.id}`)); },
-  });
-});
+// ---- scroll spy: the menu section that contains the middle of the screen is the active one
+const bar = document.querySelector<HTMLElement>(".topbar")!;
+const barHeight = () => bar.offsetHeight;
+document.documentElement.style.setProperty("--bar", `${barHeight()}px`);
+let activeId = "";
+function spy() {
+  const mid = barHeight() + (innerHeight - barHeight()) * 0.45;
+  let id = activeId;
+  for (const el of document.querySelectorAll<HTMLElement>("main > .page")) {
+    const r = el.getBoundingClientRect();
+    if (r.top <= mid && r.bottom > mid) { id = el.id; break; }
+  }
+  if (scrollY + innerHeight >= document.documentElement.scrollHeight - 2) id = "contact";
+  if (id !== activeId) { activeId = id; document.querySelectorAll(".topbar nav a").forEach((a) => a.classList.toggle("active", a.getAttribute("href") === `#${id}`)); paintProgress(); }
+}
+window.addEventListener("scroll", spy, { passive: true });
+window.addEventListener("resize", () => { document.documentElement.style.setProperty("--bar", `${barHeight()}px`); spy(); });
 
 // ---- navigation: a cinematic scroll; the pages in between draw on the way
 document.querySelectorAll<HTMLAnchorElement>(".topbar nav a, a.cta, a.logo").forEach((a) => {
@@ -128,7 +141,7 @@ document.querySelectorAll<HTMLAnchorElement>(".topbar nav a, a.cta, a.logo").for
     e.preventDefault();
     history.replaceState(null, "", `#${id}`);
     const dist = Math.abs(s.section.getBoundingClientRect().top);
-    gsap.to(window, { scrollTo: { y: s.section, offsetY: 56, autoKill: true }, duration: Math.min(2.2, 0.6 + dist / 2500), ease: "power2.inOut" });
+    gsap.to(window, { scrollTo: { y: s.section, offsetY: barHeight() - 2, autoKill: true }, duration: Math.min(2.2, 0.6 + dist / 2500), ease: "power2.inOut" });
   });
 });
 
@@ -142,11 +155,30 @@ function paintProgress() {
     const group = scenes.filter((s) => belongsTo(s) === id && !s.hidden);
     const seg = progress.querySelector<HTMLElement>(`[data-for="${id}"]`)!;
     seg.classList.toggle("done", group.length > 0 && group.every((s) => s.done));
-    seg.classList.toggle("live", group.some((s) => !s.done && (triggers.get(s)?.progress ?? 0) > 0));
+    seg.classList.toggle("live", id === activeId && !group.every((s) => s.done));
   }
 }
 paintProgress();
 setInterval(paintProgress, 500);
+spy();
+
+// ---- contact card: click the email row to copy it (a red stamp confirms); other rows open their link
+const stamp = $("copied-stamp");
+document.querySelector(".card-links")?.addEventListener("click", (e) => {
+  const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a.row");
+  if (!a || !a.href.startsWith("mailto:")) return;
+  e.preventDefault();
+  const v = a.dataset.copy || "";
+  const done = () => { stamp.textContent = C().ui.copied; stamp.classList.add("show"); setTimeout(() => stamp.classList.remove("show"), 1400); };
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(v).then(done, () => { location.href = a.href; });
+  else location.href = a.href;
+});
+
+// ---- hero: a stamp-style CV button when the file exists
+{
+  const cv = $<HTMLAnchorElement>("cv-stamp");
+  if (hasResume) { cv.href = url(C().contact.resume); cv.hidden = false; }
+}
 
 // ---- project filters by stack: hidden projects are skipped by the page order
 const filters = $("filters");

@@ -46,7 +46,7 @@
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
       <p class="sr-only" data-copy="tagline">Building software, automation systems, and practical engineering solutions.</p>
       <div class="copy copy-home">
-        <p data-reveal><a class="cta" href="#about" data-ui="explore">Explore the sketchbook ↓</a></p>
+        <p data-reveal><a class="cta" href="#about" data-ui="explore">Explore the sketchbook ↓</a> <a class="cta stampbtn" id="cv-stamp" href="#" hidden target="_blank" rel="noopener" data-ui="downloadCv">Download CV ↓</a></p>
       </div>
     </section>
 
@@ -87,10 +87,10 @@
 
     <section id="contact" class="page" aria-labelledby="contact-h">
       <h2 id="contact-h" class="sr-only" data-ui="h-contact">Contact</h2>
-      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="stage-wrap"><svg class="stage" aria-hidden="true" focusable="false"></svg><div class="card-links" aria-label="Contact links"></div><div class="stamp" id="copied-stamp" aria-hidden="true">COPIED</div></div>
       <div class="copy copy-contact">
         <p class="sr-only" data-ui="openTo">Open to software and automation work. The fastest way to reach me is email.</p>
-        <ul class="links" id="contact-links"></ul>
+        <ul class="links sr-only" id="contact-links"></ul>
         <form class="cform" id="cform" novalidate>
           <div class="row">
             <label><span data-ui="f-name">Your name</span><input id="cf-name" name="name" type="text" autocomplete="name" required /></label>

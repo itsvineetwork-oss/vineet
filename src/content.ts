@@ -32,6 +32,8 @@ export type Project = {
   stack: string[];
   integrations?: string[];
   features: string[];
+  /** Measurable result, e.g. "Replaced 15 spreadsheets with one system". Shown only when filled. */
+  outcome?: string;
   /** Optional screenshots under /public, e.g. "/shots/erp-1.png". Revealed with a sketch-to-image effect. */
   images?: string[];
   links?: { label: string; href: string }[];
@@ -47,6 +49,7 @@ export const projects: Project[] = [
     stack: ["Next.js", "React", "TypeScript", "FastAPI", "SQLAlchemy", "PostgreSQL", "Docker"],
     integrations: ["Microsoft Entra ID", "SharePoint"], // TODO verify which integrations are live
     features: ["Frontend → API → backend services → PostgreSQL", "Role-based access with Microsoft Entra ID sign-in", "Document flows connected to SharePoint", "Deployed with Docker on a VPS"],
+    outcome: "", // TODO e.g. "Replaced N spreadsheets; quotations now take minutes instead of days"
     images: ["/shots/erp-1.png", "/shots/erp-2.png"], // add the files under public/shots; missing files are skipped
     links: [],  // TODO add live / GitHub links if public
     diagram: "erp",
@@ -124,6 +127,9 @@ export const ui = {
   problem: "PROBLEM",
   contribution: "MY CONTRIBUTION",
   stack: "STACK",
+  outcome: "OUTCOME",
+  copied: "COPIED",
+  downloadCv: "Download CV ↓",
   screenshots: "SCREENSHOTS",
   notebook: "ENGINEERING NOTEBOOK  -  SELECTED WORK",
   blueprint: "TECHNICAL BLUEPRINT  -  SCALE 1:1",

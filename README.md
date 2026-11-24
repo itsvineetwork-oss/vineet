@@ -50,7 +50,7 @@ src/sections/  one scene per section: lays out strokes and the timeline
 src/main.ts    scroll triggers, navigation, toolbar (Finish / Animations / Sound)
 ```
 
-Drawing is tied to scrolling: each page's timeline follows the scroll position through that page, so scrolling fast draws fast, scrolling slowly draws slowly, and scrolling back up un-draws. Menu items scroll there cinematically and the pages in between draw on the way.
+The first sheet draws itself when the site opens. After that, drawing is tied to scrolling: each page's timeline follows the scroll position through that page, so scrolling fast draws fast, scrolling slowly draws slowly, and scrolling back up un-draws. Menu items scroll there cinematically and the pages in between draw on the way.
 
 ## Accessibility and performance
 

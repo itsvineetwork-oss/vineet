@@ -26,11 +26,26 @@ export const contactScene = () =>
     d.draw(sk.rect(cx, cy, 460, 200, { color: INK, tool: "ink", width: 1.6 }, { roughness: 1.3 }), { speed: 1600 });
     d.draw(sk.line(cx, cy + 50, cx + 460, cy + 50, { color: GRAPHITE }), { speed: 2000 });
     d.write(sk.label(`${identity.fullName.toUpperCase()}  -  ${identity.title.split("|")[0].trim().toUpperCase()}`, cx + 20, cy + 32, 13, { color: INK }).strokes, { speed: 900 });
-    const rows: [string, string][] = [["EMAIL", contact.email], ["LINKEDIN", contact.linkedin.replace(/^https?:\/\/(www\.)?/, "")], ["GITHUB", contact.github.replace(/^https?:\/\/(www\.)?/, "")]];
-    rows.forEach(([k, v], i) => {
-      d.write(sk.label(k, cx + 20, cy + 90 + i * 40, 11, { color: GRAPHITE }).strokes, { speed: 900 });
-      d.draw(sk.line(cx + 110, cy + 94 + i * 40, cx + 430, cy + 94 + i * 40, { color: GRAPHITE, width: 0.8 }, { roughness: 0.6 }), { speed: 2000, noPencil: true });
-      if (v) d.write(sk.label(v, cx + 118, cy + 90 + i * 40, 12, { color: INK }).strokes, { speed: 1200 });
+    const strip = (u: string) => u.replace(/^(mailto:|https?:\/\/(www\.)?)/, "").replace(/\/$/, "");
+    const rows = ([["EMAIL", contact.email, contact.email ? `mailto:${contact.email}` : ""], ["LINKEDIN", strip(contact.linkedin), contact.linkedin], ["GITHUB", strip(contact.github), contact.github]] as [string, string, string][]).filter((r) => r[1]);
+    const overlay = section.querySelector<HTMLElement>(".card-links");
+    if (overlay) overlay.innerHTML = "";
+    rows.forEach(([k, v, href], i) => {
+      const y = cy + 90 + i * 40;
+      d.write(sk.label(k, cx + 20, y, 11, { color: GRAPHITE }).strokes, { speed: 900 });
+      d.draw(sk.line(cx + 110, y + 4, cx + 430, y + 4, { color: GRAPHITE, width: 0.8 }, { roughness: 0.6 }), { speed: 2000, noPencil: true });
+      d.write(sk.label(v, cx + 118, y, 12, { color: INK }).strokes, { speed: 1200 });
+      // clickable, copyable overlay on top of the drawn row (positioned in % of the SVG box)
+      if (overlay) {
+        const a = document.createElement("a");
+        a.href = href; a.className = "row"; a.title = k === "EMAIL" ? "Copy email" : `Open ${v}`;
+        if (href.startsWith("http")) { a.target = "_blank"; a.rel = "noopener"; }
+        a.style.left = `${((cx + 110) / 1200) * 100}%`; a.style.top = `${((y - 16) / 560) * 100}%`;
+        a.style.width = `${(330 / 1200) * 100}%`; a.style.height = `${(30 / 560) * 100}%`;
+        a.setAttribute("aria-label", `${k}: ${v}`);
+        a.dataset.copy = v;
+        overlay.appendChild(a);
+      }
     });
     if (exists(contact.resume)) {
       // a small document with folded corner, labelled RESUME

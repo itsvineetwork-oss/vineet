@@ -54,7 +54,7 @@
 :root[data-theme="blueprint"] .tools button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
 * { box-sizing: border-box; }
-html { scroll-padding-top: 64px; }
+html { scroll-padding-top: var(--bar, 64px); }
 body {
   margin: 0;
   background: var(--paper);
@@ -102,7 +102,7 @@ a { color: var(--ink); }
 
 /* pages */
 main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
-.page { padding: 48px 0 40px; border-bottom: 1px dashed var(--line); scroll-margin-top: 64px; }
+.page { padding: 48px 0 40px; border-bottom: 1px dashed var(--line); scroll-margin-top: var(--bar, 64px); }
 .page .stage { display: block; width: 100%; height: auto; overflow: visible; }
 .sk-pencil { filter: url(#none); }
 .pencil { pointer-events: none; transition: opacity .25s; }
@@ -161,6 +161,13 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 .filters button { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; background: transparent; border: 1px solid var(--graphite); color: var(--graphite); padding: 4px 9px; border-radius: 2px; cursor: pointer; transform: rotate(-0.3deg); }
 .filters button:nth-child(even) { transform: rotate(0.4deg); }
 .filters button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.stage-wrap { position: relative; }
+.card-links .row { position: absolute; display: block; cursor: pointer; border-radius: 3px; }
+.card-links .row:hover, .card-links .row:focus-visible { background: color-mix(in srgb, var(--red) 10%, transparent); outline: none; }
+.stamp { position: absolute; left: 70%; top: 56%; transform: rotate(-12deg) scale(0.6); font-family: var(--mono); font-size: 18px; letter-spacing: .3em; color: var(--red); border: 3px double var(--red); padding: 6px 12px; border-radius: 4px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+.stamp.show { opacity: .95; transform: rotate(-12deg) scale(1); }
+.stampbtn { border: 2px double var(--red); color: var(--red); transform: rotate(1.2deg); margin-left: 10px; }
+.stampbtn:hover { background: var(--red); color: var(--paper); }
 .plinks { margin: -6px 0 0; }
 .plinks a { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border-bottom: 2px solid var(--red); padding-bottom: 2px; }
 @media (max-width: 1000px) {
