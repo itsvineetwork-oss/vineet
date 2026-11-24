@@ -7,16 +7,16 @@ export const identity = {
   name: "Vineet Sharma",
   welcome: "Welcome",
   fullName: "Vineet Sharma",
-  title: "Software Developer | Python Programmer",
+  title: "Python Programmer | Junior Software Engineer",
   tagline: "Building software, automation systems, and practical engineering solutions.",
-  location: "Faridabad, India",
+  location: "Faridabad, Greater Delhi Area, India",
 };
 
 export const about = {
   /** Optional photo under /public (3:4). Used only when no traced portrait exists in src/data/portrait.json; otherwise a monogram. */
   photo: "",
   intro:
-    "I am a software developer and Python programmer. I build ERP systems, engineering calculators and automation tools that people use every day at work.",
+    "I am a Python programmer and junior software engineer at Premnath Rail, building the company's ERP, engineering calculators and automation tools while completing a BCA in Cloud Computing and Security at Amity University Online.",
   approach: [
     "Understand the real workflow before writing code.",
     "Prefer simple, well-structured systems over clever ones.",
@@ -131,9 +131,15 @@ export const projects: Project[] = [
 export const experience = [
   {
     company: "Premnath Rail",
-    role: "Software Developer",
-    period: "Present", // TODO add start date, e.g. "2023 — Present"
+    role: "Junior Software Engineer",
+    period: "Jul 2025 — Present",
     points: ["Built and maintain the PremnathRail ERP", "Python engineering calculators for the engineering team", "Automation of reporting and document workflows"],
+  },
+  {
+    company: "Freelance",
+    role: "Frontend Developer",
+    period: "Apr 2023 — Jun 2024",
+    points: ["Websites and frontend work for clients in Faridabad", "HTML, CSS and JavaScript builds", "Self-employed"],
   },
 ];
 
@@ -148,16 +154,26 @@ export const skills: { category: string; items: string[]; icon: "code" | "server
 
 export const education = [
   {
-    degree: "BCA — Bachelor of Computer Applications",
-    institution: "", // TODO institution name
-    period: "",      // TODO years
-    notes: ["Programming fundamentals, data structures, databases", "Web development and software engineering"],
+    degree: "BCA — Cloud Computing & Security",
+    institution: "Amity University Online",
+    period: "Jun 2023 — Jul 2026",
+    notes: ["Bachelor of Computer Applications, specialising in cloud computing and security", "Studied alongside full-time work at Premnath Rail"],
+  },
+  {
+    degree: "High School Diploma",
+    institution: "Govt. Sr. Sec. School, Sarai Khawaja, Faridabad",
+    period: "2008 — 2022",
+    notes: [],
   },
 ];
 
 /** Credentials and coding profiles, drawn as stamps under Education. Empty list: nothing is shown. */
 export const credentials: { label: string; issuer?: string; href?: string }[] = [
-  // TODO e.g. { label: "AWS Cloud Practitioner", issuer: "Amazon", href: "https://..." }
+  { label: "Programming for Everybody (Python)" },
+  { label: "Vibe Coding with Cursor AI" },
+  { label: "Basics of AI" },
+  { label: "Advanced Excel" },
+  { label: "Strategic Human Resource Management" },
 ];
 
 /** A short quote from someone you built for. Shown only when filled. */
@@ -165,15 +181,15 @@ export const testimonial = { quote: "", author: "", role: "" };
 
 /** 30-second summary card in the hero. */
 export const tldr = {
-  target: "Full-stack / backend software developer",
+  target: "Python / full-stack software developer",
   stack: ["Python", "FastAPI", "Next.js", "TypeScript", "PostgreSQL", "Docker"],
-  experience: "End-to-end ERP and automation builder at Premnath Rail",
+  experience: "Junior Software Engineer at Premnath Rail (ERP, calculators, automation); earlier freelance frontend",
   availability: "Open to roles", // TODO e.g. "Immediate · remote or relocation"
 };
 
 export const contactInfo = {
-  email: "",      // TODO e.g. "you@example.com" (rendered only when filled)
-  linkedin: "",   // TODO e.g. "https://www.linkedin.com/in/your-handle"
+  email: "aarav2024i@gmail.com",
+  linkedin: "https://www.linkedin.com/in/vineet-sharma95/",
   github: "https://github.com/itsvineetwork-oss",
   resume: "/resume.pdf", // put resume.pdf in /public; the link only appears when the file exists
   whatsapp: "",   // TODO international number without spaces, e.g. "919876543210"; shows a WHATSAPP row

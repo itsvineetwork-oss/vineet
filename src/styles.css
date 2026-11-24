@@ -267,7 +267,8 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 .pbtns a:hover { background: var(--ink); color: var(--paper); }
 
 /* credentials strip */
-.creds { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.creds { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (max-width: 700px) { .creds { position: static; width: auto; height: auto; overflow: visible; clip: auto; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; } }
 .creds[hidden] { display: none; }
 .creds a, .creds span { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--red); border: 2px double var(--red); padding: 6px 10px; text-decoration: none; transform: rotate(-1deg); }
 .creds a:nth-child(even), .creds span:nth-child(even) { transform: rotate(1.2deg); }
