@@ -21,6 +21,8 @@ export type DrawOpts = {
  */
 /** Global tempo: >1 is faster. */
 export const TEMPO = 1.3;
+/** Show the pencil cursor that follows the strokes. */
+export const PENCIL = false;
 
 export class Director {
   readonly tl: gsap.core.Timeline;
@@ -36,9 +38,11 @@ export class Director {
   /** Draw strokes one after another. */
   draw(strokes: Stroke[], o: DrawOpts = {}) {
     const speed = (o.speed ?? 900) * TEMPO, gap = (o.gap ?? 0.02) / TEMPO;
+    if (!PENCIL) o = { ...o, noPencil: true };
     const sub = gsap.timeline();
     for (const s of strokes) {
       const start = s.el.getPointAtLength(0);
+      if (s.el.dataset.word && o.noPencil) sub.to(this.pt, { p: 1, duration: 0.07 / TEMPO });
       // lift the pencil and carry it to the next stroke, like a hand moving across the page
       if (!o.noPencil) {
         const from = this.last;
