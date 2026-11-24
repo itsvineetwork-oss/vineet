@@ -133,8 +133,8 @@ function ciosDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   d.draw([...sk.circle(gx, gy, 10, { color: INK, tool: "ink" }), ...sk.circle(gx + 40, gy - 18, 8, { color: INK, tool: "ink" }), ...sk.circle(gx + 46, gy + 22, 8, { color: INK, tool: "ink" }), ...sk.circle(gx + 86, gy + 4, 12, { color: RED, width: 1.4 }),
     ...sk.line(gx + 5, gy - 3, gx + 36, gy - 16, { color: GRAPHITE }), ...sk.line(gx + 5, gy + 3, gx + 42, gy + 20, { color: GRAPHITE }), ...sk.line(gx + 48, gy - 16, gx + 80, gy, { color: GRAPHITE }), ...sk.line(gx + 54, gy + 20, gx + 80, gy + 8, { color: GRAPHITE })], { speed: 1400 });
   d.write(sk.label("entity graph", gx + 44, gy + 48, 10, { color: GRAPHITE }, "center").strokes, { speed: 900 });
-  const note = sk.text("explainable, not a chatbot", ox + 640, y + 230, 16, { color: RED, width: 1.1 }, "scripts", 1, "center");
-  d.draw([sk.highlight(ox + 640 - note.width / 2, y + 230, note.width, 16)], { speed: 1400, noPencil: true });
+  const note = sk.text("explainable, not a chatbot", ox + 560, y + 232, 16, { color: RED, width: 1.1 }, "scripts", 1, "center");
+  d.draw([sk.highlight(ox + 560 - note.width / 2, y + 232, note.width, 16)], { speed: 1400, noPencil: true });
   d.write(note.strokes, { speed: 1000 });
 }
 
