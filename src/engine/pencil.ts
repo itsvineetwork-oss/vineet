@@ -22,9 +22,13 @@ export class Pencil {
     this.g.appendChild(this.tilt);
     svg.appendChild(this.g);
   }
-  moveTo(x: number, y: number) { this.g.setAttribute("transform", `translate(${x.toFixed(1)},${y.toFixed(1)})`); }
+  private pressure = 1;
+  moveTo(x: number, y: number) {
+    const wobble = this.pressure ? Math.sin(x * 0.11 + y * 0.07) * 2.2 : 0;
+    this.g.setAttribute("transform", `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${wobble.toFixed(1)})`);
+  }
   /** 1 = touching the paper, 0 = lifted. */
-  press(p: number) { this.tilt.setAttribute("transform", `rotate(-38) translate(${(1 - p) * 6},${-(1 - p) * 10})`); }
+  press(p: number) { this.pressure = p; this.tilt.setAttribute("transform", `rotate(-38) translate(${(1 - p) * 7},${-(1 - p) * 12})`); }
   show(v: boolean) { this.g.style.opacity = v ? "1" : "0"; }
   raise() { this.g.parentNode?.appendChild(this.g); }
 }

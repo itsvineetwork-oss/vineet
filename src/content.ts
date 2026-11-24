@@ -12,6 +12,8 @@ export const identity = {
 };
 
 export const about = {
+  /** Optional photo under /public, e.g. "/portrait.jpg" (square or 3:4). Sketched first, then revealed. */
+  photo: "",
   intro:
     "I am a software developer and Python programmer. I build ERP systems, engineering calculators and automation tools that people use every day at work.",
   approach: [

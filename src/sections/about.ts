@@ -8,24 +8,25 @@ export const aboutScene = () =>
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
 
-    // portrait in the left column (x 80..440)
-    const cx = 260, cy = 360;
-    d.draw(sk.ellipse(cx, cy, 300, 360, { color: GRAPHITE, width: 1.1 }, { roughness: 1.8 }), { speed: 1500 });
-    d.draw([
-      ...sk.sketchPath(`M ${cx - 55} ${cy - 60} C ${cx - 60} ${cy - 130} ${cx + 60} ${cy - 130} ${cx + 55} ${cy - 60} C ${cx + 62} ${cy - 10} ${cx + 30} ${cy + 30} ${cx} ${cy + 32} C ${cx - 30} ${cy + 30} ${cx - 62} ${cy - 10} ${cx - 55} ${cy - 60} Z`, { color: INK, tool: "ink" }, { roughness: 0.7 }),
-      ...sk.sketchPath(`M ${cx - 58} ${cy - 70} C ${cx - 40} ${cy - 150} ${cx + 50} ${cy - 150} ${cx + 58} ${cy - 66} C ${cx + 30} ${cy - 95} ${cx - 20} ${cy - 100} ${cx - 58} ${cy - 70} Z`, { color: INK, tool: "ink" }, { roughness: 0.9, fill: "#000", hachureGap: 5 }),
-    ], { speed: 1100 });
-    d.draw([
-      ...sk.ellipse(cx - 24, cy - 42, 38, 28, { color: INK, tool: "ink", width: 1.4 }),
-      ...sk.ellipse(cx + 24, cy - 42, 38, 28, { color: INK, tool: "ink", width: 1.4 }),
-      ...sk.line(cx - 5, cy - 42, cx + 5, cy - 42, { color: INK, tool: "ink" }),
-      ...sk.sketchPath(`M ${cx - 6} ${cy - 30} L ${cx - 10} ${cy - 8} L ${cx + 2} ${cy - 6}`, { color: INK, tool: "ink", width: 1.2 }),
-      ...sk.sketchPath(`M ${cx - 16} ${cy + 8} Q ${cx} ${cy + 18} ${cx + 16} ${cy + 8}`, { color: INK, tool: "ink", width: 1.2 }),
-    ], { speed: 900 });
-    d.draw([
-      ...sk.sketchPath(`M ${cx - 120} ${cy + 170} C ${cx - 120} ${cy + 80} ${cx - 60} ${cy + 60} ${cx - 30} ${cy + 50} L ${cx} ${cy + 80} L ${cx + 30} ${cy + 50} C ${cx + 60} ${cy + 60} ${cx + 120} ${cy + 80} ${cx + 120} ${cy + 170}`, { color: INK, tool: "ink" }, { roughness: 0.9 }),
-      ...sk.sketchPath(`M ${cx - 30} ${cy + 50} L ${cx - 14} ${cy + 72} L ${cx} ${cy + 60} L ${cx + 14} ${cy + 72} L ${cx + 30} ${cy + 50}`, { color: INK, tool: "ink", width: 1.2 }),
-    ], { speed: 1200 });
+    // left column (x 80..440): a real photo, sketched then revealed, or a clean monogram medallion
+    const cx = 260, cy = 370;
+    if (about.photo) {
+      const r = sk.image(about.photo, cx - 140, cy - 180, 280, 340, { color: GRAPHITE });
+      d.draw(r.frame, { speed: 1600 }).draw(r.hatch, { speed: 6000, noPencil: true }).revealImage(r);
+    } else {
+      d.draw(sk.circle(cx, cy, 300, { color: INK, tool: "ink", width: 2 }, { roughness: 1.1 }), { speed: 1500 });
+      d.draw(sk.circle(cx, cy, 276, { color: GRAPHITE, width: 1 }, { roughness: 0.6 }), { speed: 2600, noPencil: true });
+      // compass ticks around the ring
+      const ticks: ReturnType<typeof sk.line> = [];
+      for (let i = 0; i < 36; i++) {
+        const a = (i / 36) * Math.PI * 2, big = i % 9 === 0, r1 = 138, r2 = big ? 124 : 131;
+        ticks.push(...sk.line(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1, cx + Math.cos(a) * r2, cy + Math.sin(a) * r2, { color: big ? INK : GRAPHITE, width: big ? 1.6 : 1 }, { roughness: 0.3 }));
+      }
+      d.draw(ticks, { speed: 3000, noPencil: true });
+      d.write(sk.text("V", cx + 6, cy + 48, 150, { color: INK, width: 4 }, "scriptc", 0, "center").strokes, { speed: 900, gap: 0.03 });
+      d.draw(sk.line(cx - 60, cy + 72, cx + 60, cy + 70, { color: RED, width: 2.2, tool: "marker" }, { roughness: 1.4 }), { speed: 1600 });
+      d.write(sk.label("SOFTWARE DEVELOPER", cx, cy + 100, 10, { color: GRAPHITE }, "center").strokes, { speed: 1000 });
+    }
     d.draw(sk.rect(cx - 120, cy + 190, 240, 40, { color: GRAPHITE }, { roughness: 1.2 }), { speed: 1600 });
     d.write(sk.label(identity.fullName.toUpperCase(), cx, cy + 217, 16, { color: INK }, "center").strokes, { speed: 900 });
 

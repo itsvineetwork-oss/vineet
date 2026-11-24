@@ -40,7 +40,47 @@ export function measure(text: string, size: number, font: FontName = "scriptc", 
   return layoutText(text, 0, 0, size, font, tracking).width;
 }
 
-/** Scale/translate an absolute-coordinate Hershey path ("M x,y L x,y x,y ..."). */
+type Pt = [number, number];
+
+/** Scale/translate an absolute-coordinate Hershey path and turn its polylines into smooth curves. */
 function scalePath(d: string, s: number, dx: number, dy: number) {
-  return d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_m, a, b) => `${(+a * s + dx).toFixed(2)},${(+b * s + dy).toFixed(2)}`);
+  const subpaths: Pt[][] = [];
+  for (const chunk of d.split("M").map((c) => c.trim()).filter(Boolean)) {
+    const nums = chunk.replace(/L/g, " ").match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+    const pts: Pt[] = [];
+    for (let i = 0; i + 1 < nums.length; i += 2) pts.push([nums[i] * s + dx, nums[i + 1] * s + dy]);
+    if (pts.length) subpaths.push(pts);
+  }
+  return subpaths.map(smoothPolyline).join(" ");
+}
+
+/** Catmull-Rom through the points, split at sharp corners so letters like E, L and N keep their angles. */
+function smoothPolyline(pts: Pt[]): string {
+  const f = (n: number) => n.toFixed(2);
+  if (pts.length < 3) return `M${f(pts[0][0])},${f(pts[0][1])}` + pts.slice(1).map((p) => ` L${f(p[0])},${f(p[1])}`).join("");
+  // split into runs at corners sharper than ~65 degrees
+  const runs: Pt[][] = [];
+  let run: Pt[] = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [ax, ay] = pts[i - 1], [bx, by] = pts[i], [cx, cy] = pts[i + 1];
+    const v1x = bx - ax, v1y = by - ay, v2x = cx - bx, v2y = cy - by;
+    const l1 = Math.hypot(v1x, v1y) || 1, l2 = Math.hypot(v2x, v2y) || 1;
+    const cos = (v1x * v2x + v1y * v2y) / (l1 * l2);
+    run.push(pts[i]);
+    if (cos < 0.42) { runs.push(run); run = [pts[i]]; }
+  }
+  run.push(pts[pts.length - 1]);
+  runs.push(run);
+  let out = `M${f(pts[0][0])},${f(pts[0][1])}`;
+  for (const r of runs) {
+    if (r.length < 3) { for (let i = 1; i < r.length; i++) out += ` L${f(r[i][0])},${f(r[i][1])}`; continue; }
+    for (let i = 0; i < r.length - 1; i++) {
+      const p0 = r[Math.max(0, i - 1)], p1 = r[i], p2 = r[i + 1], p3 = r[Math.min(r.length - 1, i + 2)];
+      const k = 1 / 6;
+      const c1x = p1[0] + (p2[0] - p0[0]) * k, c1y = p1[1] + (p2[1] - p0[1]) * k;
+      const c2x = p2[0] - (p3[0] - p1[0]) * k, c2y = p2[1] - (p3[1] - p1[1]) * k;
+      out += ` C${f(c1x)},${f(c1y)} ${f(c2x)},${f(c2y)} ${f(p2[0])},${f(p2[1])}`;
+    }
+  }
+  return out;
 }

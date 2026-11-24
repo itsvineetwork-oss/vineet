@@ -5,6 +5,18 @@ import { layoutText, measure, type FontName } from "./hershey";
 
 const NS = "http://www.w3.org/2000/svg";
 
+/** A faint displacement filter that gives every stroke a graphite edge. One per SVG. */
+function ensureFilters(svg: SVGSVGElement) {
+  if (svg.querySelector("#graphite")) return;
+  const defs = document.createElementNS(NS, "defs");
+  defs.innerHTML = `
+    <filter id="graphite" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>`;
+  svg.insertBefore(defs, svg.firstChild);
+}
+
 export type Stroke = { el: SVGPathElement; len: number };
 
 export type StrokeStyle = {
@@ -36,6 +48,8 @@ export class Sketcher {
     this.svg = svg;
     this.layer = document.createElementNS(NS, "g");
     this.layer.setAttribute("class", "sk-layer");
+    ensureFilters(svg);
+    this.layer.setAttribute("filter", "url(#graphite)");
     svg.appendChild(this.layer);
     this.rough = rough.svg(svg);
   }
@@ -47,7 +61,7 @@ export class Sketcher {
     const tool = st.tool ?? "pencil";
     el.setAttribute("fill", "none");
     el.setAttribute("stroke", st.color ?? (tool === "pencil" ? GRAPHITE : INK));
-    el.setAttribute("stroke-width", String(st.width ?? (tool === "marker" ? 4 : tool === "ink" ? 1.8 : 1.6)));
+    el.setAttribute("stroke-width", String(st.width ?? (tool === "marker" ? 4 : tool === "ink" ? 2 : 1.9)));
     el.setAttribute("stroke-linecap", "round");
     el.setAttribute("stroke-linejoin", "round");
     if (st.opacity !== undefined) el.setAttribute("opacity", String(st.opacity));
@@ -132,13 +146,20 @@ export class Sketcher {
     const x0 = align === "center" ? x - w / 2 : align === "right" ? x - w : x;
     const { paths } = layoutText(str, x0, y, size, font, tracking);
     const strokes: Stroke[] = [];
-    for (const p of paths) strokes.push(this.path(p.d, { tool: "ink", width: Math.max(1.2, size / 16), ...st }));
+    let prevX = -Infinity;
+    for (const p of paths) {
+      const st2 = this.path(p.d, { tool: "ink", width: Math.max(1.5, size / 15), ...st });
+      // a visible gap before this glyph means a new word: the Director pauses there
+      if (prevX !== -Infinity && p.x - prevX > size * 0.9) st2.el.dataset.word = "1";
+      prevX = p.x;
+      strokes.push(st2);
+    }
     return { strokes, width: w };
   }
 
   /** Technical lettering (simplex sans), for labels and annotations. */
   label(str: string, x: number, y: number, size = 14, st: StrokeStyle = {}, align: "left" | "center" | "right" = "left") {
-    return this.text(str, x, y, size, { tool: "pencil", width: Math.max(1, size / 14), ...st }, "futural", 1, align);
+    return this.text(str, x, y, size, { tool: "pencil", width: Math.max(1.3, size / 12), ...st }, "futural", 1, align);
   }
 
   /** Body text in technical lettering, wrapped to `maxWidth`. Returns strokes line by line and the height used. */
@@ -152,7 +173,7 @@ export class Sketcher {
     }
     if (line) lines.push(line);
     const strokes: Stroke[] = [];
-    lines.forEach((l, i) => strokes.push(...this.text(l, x, y + i * size * lineHeight, size, { tool: "pencil", width: Math.max(1, size / 14), ...st }, font, 1).strokes));
+    lines.forEach((l, i) => strokes.push(...this.text(l, x, y + i * size * lineHeight, size, { tool: "pencil", width: Math.max(1.3, size / 12), ...st }, font, 1).strokes));
     return { strokes, lines: lines.length, height: lines.length * size * lineHeight };
   }
 
