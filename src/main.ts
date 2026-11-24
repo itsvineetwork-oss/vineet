@@ -100,7 +100,7 @@ if (motion) {
   const LINE = 0.96; // a page draws while it travels from the bottom edge of the screen up to this line
   scenes.forEach((s, i) => {
     // the first sheet draws itself when the site opens; everything after it is driven by scrolling
-    if (s.id === "home") { s.director.tl.play(0); return; }
+    if (s.id === "home") { s.director.tl.timeScale(1.6).play(0); return; }
     // the Projects heading ends where the first project page begins; every other page ends at its own bottom
     const endEl = s.id === "projects" ? scenes[i + 1].section : s.section;
     const st = ScrollTrigger.create({
@@ -336,6 +336,42 @@ if (analytics.provider && analytics.site) {
   if (s.src) document.head.appendChild(s);
 }
 
+// ---- role-based views: reorder the sheets for who is reading (nothing is hidden)
+type View = "default" | "recruiter" | "founder" | "developer";
+const ORDER: Record<View, string[]> = {
+  default: ["home", "about", "projects", "experience", "skills", "education", "contact"],
+  recruiter: ["home", "experience", "education", "about", "skills", "projects", "contact"],
+  founder: ["home", "projects", "about", "experience", "skills", "education", "contact"],
+  developer: ["home", "projects", "skills", "about", "experience", "education", "contact"],
+};
+let view: View = "default";
+try { const v = localStorage.getItem("view") as View | null; if (v && ORDER[v]) view = v; } catch {}
+const main = document.querySelector("main")!;
+const navEl = document.querySelector(".topbar nav")!;
+function applyView(v: View, scrollTop = false) {
+  view = v;
+  document.body.dataset.view = v;
+  // reorder sections, menu links and progress segments
+  for (const id of ORDER[v]) {
+    const sec = document.getElementById(id); if (sec) main.appendChild(sec);
+    const a = navEl.querySelector(`[data-nav="${id}"]`); if (a) navEl.appendChild(a);
+    const seg = progress.querySelector(`[data-for="${id}"]`); if (seg) progress.appendChild(seg);
+  }
+  sections.length = 0; sections.push(...ORDER[v]);
+  // scene order follows the DOM order so drawing stays strictly sequential
+  scenes.sort((a, b) => (a.section.compareDocumentPosition(b.section) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+  document.querySelectorAll<HTMLButtonElement>(".viewas button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === v)));
+  let note = document.querySelector<HTMLElement>(".view-note");
+  if (!note) { note = document.createElement("p"); note.className = "view-note"; document.getElementById("home")!.appendChild(note); }
+  note.textContent = v === "default" ? "" : C().ui.views[v];
+  try { localStorage.setItem("view", v); } catch {}
+  ScrollTrigger.refresh();
+  if (scrollTop) window.scrollTo({ top: 0 });
+  spy(); paintProgress();
+}
+document.querySelectorAll<HTMLButtonElement>(".viewas button").forEach((b) => b.addEventListener("click", () => applyView(b.dataset.view as View, true)));
+if (view !== "default") applyView(view);
+
 // ---- command palette (Ctrl/Cmd + K)
 type Cmd = { label: string; hint: string; run: () => void; keywords?: string };
 const palette = $("palette"), pInput = $<HTMLInputElement>("palette-input"), pList = $("palette-list");
@@ -352,6 +388,7 @@ function commands(): Cmd[] {
   if (contact.github) list.push({ label: "View GitHub", hint: "Link", run: () => window.open(contact.github, "_blank", "noopener"), keywords: "code repos" });
   if (contact.linkedin) list.push({ label: "View LinkedIn", hint: "Link", run: () => window.open(contact.linkedin, "_blank", "noopener") });
   C().projects.forEach((p) => list.push({ label: `Open case study: ${p.name}`, hint: "Project", run: () => { palette.hidden = true; document.body.style.overflow = ""; openCase(p.id); }, keywords: p.stack.join(" ") }));
+  (["default", "recruiter", "founder", "developer"] as View[]).forEach((v) => list.push({ label: `View as ${v === "default" ? "everyone" : v}`, hint: "View", run: () => applyView(v, true), keywords: "role mode" }));
   return list;
 }
 function renderPalette() {

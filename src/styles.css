@@ -105,6 +105,18 @@ a { color: var(--ink); }
 .topbar nav a:hover, .topbar nav a:focus-visible { color: var(--ink); border-bottom-color: var(--red); outline: none; }
 .topbar nav a.active { color: var(--ink); border-bottom-color: var(--ink); }
 .tools { display: flex; gap: 6px; white-space: nowrap; }
+.viewas { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; font-family: var(--mono); font-size: 10px; letter-spacing: .18em; color: var(--graphite); margin-top: -2px; }
+.viewas span { margin-right: 4px; }
+.viewas button { font: inherit; letter-spacing: .14em; background: transparent; border: 1px solid var(--line); color: var(--graphite); padding: 3px 8px; border-radius: 2px; cursor: pointer; }
+.viewas button[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: var(--paper); }
+/* role views: emphasis without hiding anything */
+body[data-view="recruiter"] #resume-link { box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 35%, transparent); }
+body[data-view="recruiter"] .stampbtn { animation: pulse 1.2s ease-in-out 2; }
+body[data-view="founder"] #projects .filters, body[data-view="developer"] #projects .filters { display: flex; }
+body[data-view="founder"] .project .inspect { background: var(--red); border-color: var(--red); color: var(--paper); }
+body[data-view="developer"] .plinks a { border-bottom-width: 3px; }
+.view-note { display: none; font-family: var(--hand); font-size: 15px; color: var(--red); margin: -6px 0 10px; transform: rotate(-.4deg); }
+body[data-view]:not([data-view="default"]) .view-note { display: block; }
 .tools button { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; background: transparent; border: 1px solid var(--graphite); color: var(--graphite); padding: 5px 9px; cursor: pointer; border-radius: 2px; }
 .tools button:hover { border-color: var(--ink); color: var(--ink); }
 .tools .resume { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border: 1px solid var(--ink); border-radius: 2px; }
@@ -265,7 +277,8 @@ body.inspecting .page, body.inspecting .project { outline: 1px dashed color-mix(
 .plinks { margin: -6px 0 0; }
 .plinks a { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border-bottom: 2px solid var(--red); padding-bottom: 2px; }
 @media (max-width: 1000px) {
-  .topbar { grid-template-columns: auto 1fr; grid-template-rows: auto auto auto; row-gap: 6px; padding: 8px 14px; }
+  .topbar { grid-template-columns: auto 1fr; grid-template-rows: auto auto auto auto; row-gap: 6px; padding: 8px 14px; }
+  .viewas { overflow-x: auto; scrollbar-width: none; }
   .topbar nav { grid-column: 1 / -1; justify-content: flex-start; gap: 14px; }
   .tools { justify-self: end; }
 }

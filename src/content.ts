@@ -150,6 +150,11 @@ export const ui = {
   tradeoffs: "DECISIONS & TRADE-OFFS",
   features: "KEY FEATURES",
   dispatched: "DISPATCHED",
+  views: {
+    recruiter: "Recruiter view: experience and education first, CV at the top.",
+    founder: "Founder view: the ERP case study and outcomes first.",
+    developer: "Developer view: architecture, stack and code first.",
+  },
   strip: { status: "STATUS", statusValue: "OPEN TO ROLES", location: "LOCATION", focus: "FOCUS", focusValue: "FULL-STACK & AUTOMATION" },
   screenshots: "SCREENSHOTS",
   notebook: "ENGINEERING NOTEBOOK  -  SELECTED WORK",
