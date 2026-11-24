@@ -1,139 +1,157 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vineet Sharma</title>
-  <meta name="description" content="Vineet Sharma — software engineer. Full-stack, cloud and ERP/CRM work.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vineet Sharma — Software Developer | Python Programmer</title>
+  <meta name="description" content="Vineet Sharma, software developer and Python programmer. ERP systems, engineering calculators and automation — drawn live in a digital sketchbook." />
+  <meta property="og:title" content="Vineet — The Live Sketch Portfolio" />
+  <meta property="og:description" content="Software developer and Python programmer. Watch the portfolio being drawn." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#f4f1ea" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" />
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="#top">Vineet Sharma</a>
-    <nav class="nav">
+  <a class="skip" href="#home">Skip to content</a>
+
+  <header class="topbar">
+    <a class="logo" href="#home" aria-label="Vineet — home">V.</a>
+    <nav aria-label="Sections">
+      <a href="#home">Home</a>
       <a href="#about">About</a>
-      <a href="#work">Work</a>
+      <a href="#projects">Projects</a>
       <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
       <a href="#contact">Contact</a>
     </nav>
-  </div>
-</header>
+    <div class="tools">
+      <button id="finish" type="button" title="Finish drawing this section">Finish</button>
+      <button id="motion" type="button" aria-pressed="false" title="Turn drawing animations off">Animations: on</button>
+      <button id="sound" type="button" aria-pressed="false" title="Pencil sound">Sound: off</button>
+    </div>
+  </header>
 
-<section class="hero" id="top">
-  <div class="wrap">
-    <span class="eyebrow">Software engineer · Enterprise systems</span>
-    <h1>I build the software that runs the business, <span>end to end.</span></h1>
-    <p class="lede">Full-stack development, cloud infrastructure, and ERP/CRM integration for companies that need their tools to work together.</p>
-    <div class="actions">
-      <a class="btn primary" href="#work">See my work</a>
-      <a class="btn" href="#contact">Contact me</a>
-    </div>
-    <div class="facts">
-      <span><b>Based in</b> India</span>
-      <span><b>Focus</b> Web · Cloud · ERP/CRM</span>
-      <span><b>Status</b> Open to projects</span>
-    </div>
-  </div>
-</section>
+  <main>
+    <section id="home" class="page page-home" aria-labelledby="home-h">
+      <h1 id="home-h" class="sr-only">Vineet — Software Developer | Python Programmer</h1>
+      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <p class="sr-only">Building software, automation systems, and practical engineering solutions.</p>
+      <div class="copy copy-home">
+        <p data-reveal><a class="cta" href="#about">Explore the sketchbook ↓</a></p>
+      </div>
+    </section>
 
-<section class="section" id="about">
-  <div class="wrap">
-    <div class="head"><span class="eyebrow">About</span><h2>What I do</h2></div>
-    <div>
-      <p class="prose">I design and ship software that connects operations, finance, and sales in one system. Most of my work sits between the web layer, the database, and the enterprise tools a business already depends on.</p>
-      <p class="prose">I care about clean data models, reliable deployments, and interfaces that people can use without training.</p>
-    </div>
-    <div class="stack">
-      <div><span class="eyebrow">Frontend</span><ul><li>React, TypeScript</li><li>HTML, CSS, accessibility</li></ul></div>
-      <div><span class="eyebrow">Backend</span><ul><li>Node.js, Python</li><li>REST APIs, PostgreSQL</li></ul></div>
-      <div><span class="eyebrow">Cloud</span><ul><li>AWS, Docker</li><li>CI/CD, GitHub Actions</li></ul></div>
-      <div><span class="eyebrow">Enterprise</span><ul><li>ERP / CRM integration</li><li>Reporting, automation</li></ul></div>
-    </div>
-  </div>
-</section>
+    <section id="about" class="page" aria-labelledby="about-h">
+      <h2 id="about-h" class="sr-only">About</h2>
+      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="copy">
+        <p class="lead" data-reveal>I am a software developer and Python programmer. I build ERP systems, engineering calculators and automation tools that people use every day at work.</p>
+        <h3 data-reveal>How I approach engineering problems</h3>
+        <ul>
+          <li data-reveal>Understand the real workflow before writing code.</li>
+          <li data-reveal>Prefer simple, well-structured systems over clever ones.</li>
+          <li data-reveal>Automate the repetitive, document the rest.</li>
+        </ul>
+      </div>
+    </section>
 
-<section class="section" id="work">
-  <div class="wrap">
-    <div class="head"><span class="eyebrow">Work</span><h2>Selected projects</h2></div>
-    <div class="work">
-      <article>
-        <div class="year">2025</div>
-        <div>
-          <h3>Company website and tools</h3>
-          <p>Public website plus internal tools for a manufacturing business: product catalogue, enquiry handling, and document generation.</p>
-          <ul class="tags"><li>Next.js</li><li>PostgreSQL</li><li>AWS</li></ul>
+    <section id="projects" class="page page-projects" aria-labelledby="projects-h">
+      <h2 id="projects-h" class="sr-only">Projects</h2>
+      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="copy copy-projects">
+        <article class="project" id="p-erp">
+          <svg class="stage" aria-hidden="true" focusable="false"></svg>
+          <h3 data-reveal>PremnathRail ERP</h3>
+          <dl>
+            <dt data-reveal>Problem</dt><dd data-reveal>Day-to-day operations ran across spreadsheets, documents and email, with no single system of record.</dd>
+            <dt data-reveal>My contribution</dt><dd data-reveal>Design and development of the ERP: data model, API, backend services and the web frontend.</dd>
+            <dt data-reveal>Stack</dt><dd data-reveal>Next.js · React · TypeScript · FastAPI · SQLAlchemy · PostgreSQL · Docker</dd>
+            <dt data-reveal>Integrations</dt><dd data-reveal>Microsoft Entra ID · SharePoint</dd>
+            <dt data-reveal>Key features</dt><dd data-reveal>Frontend → API → backend services → PostgreSQL. Role-based access with Microsoft Entra ID sign-in. Document flows connected to SharePoint. Deployed with Docker on a VPS.</dd>
+          </dl>
+        </article>
+        <article class="project" id="p-calculators">
+          <svg class="stage" aria-hidden="true" focusable="false"></svg>
+          <h3 data-reveal>Python Engineering Calculators</h3>
+          <dl>
+            <dt data-reveal>Problem</dt><dd data-reveal>Engineering calculations were repeated by hand, with inconsistent inputs and no record of results.</dd>
+            <dt data-reveal>My contribution</dt><dd data-reveal>Python tools that take validated inputs, run the calculation and produce a clear, repeatable output.</dd>
+            <dt data-reveal>Stack</dt><dd data-reveal>Python</dd>
+            <dt data-reveal>Links</dt><dd data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub</a></dd>
+          </dl>
+        </article>
+        <article class="project" id="p-automation">
+          <svg class="stage" aria-hidden="true" focusable="false"></svg>
+          <h3 data-reveal>Automation Projects</h3>
+          <dl>
+            <dt data-reveal>Problem</dt><dd data-reveal>Recurring tasks such as reports, data transfers and document generation took hours each week.</dd>
+            <dt data-reveal>My contribution</dt><dd data-reveal>Scripts and small services that run these tasks on a schedule or on demand.</dd>
+            <dt data-reveal>Stack</dt><dd data-reveal>Python · REST APIs · PostgreSQL</dd>
+            <dt data-reveal>Links</dt><dd data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub</a></dd>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <section id="experience" class="page" aria-labelledby="experience-h">
+      <h2 id="experience-h" class="sr-only">Experience</h2>
+      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="copy">
+        <div class="job">
+          <h3 data-reveal>Software Developer · Premnath Rail</h3>
+          <p class="meta" data-reveal>Present</p>
+          <ul>
+            <li data-reveal>Built and maintain the PremnathRail ERP.</li>
+            <li data-reveal>Python engineering calculators for the engineering team.</li>
+            <li data-reveal>Automation of reporting and document workflows.</li>
+          </ul>
         </div>
-        <div class="links"><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub</a></div>
-      </article>
-      <article>
-        <div class="year">2025</div>
-        <div>
-          <h3>Security dashboard</h3>
-          <p>A single view of security posture for a small IT team: asset inventory, control status, and audit-ready reports.</p>
-          <ul class="tags"><li>React</li><li>Node.js</li><li>Docker</li></ul>
-        </div>
-        <div class="links"><a href="https://github.com/itsvineetwork-oss/ciso" target="_blank" rel="noopener">GitHub</a></div>
-      </article>
-      <article>
-        <div class="year">2024</div>
-        <div>
-          <h3>Python automation suite</h3>
-          <p>Scripts and services that replace manual data entry: spreadsheet imports, report scheduling, and email workflows.</p>
-          <ul class="tags"><li>Python</li><li>Pandas</li><li>Cron</li></ul>
-        </div>
-        <div class="links"><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub</a></div>
-      </article>
-    </div>
-  </div>
-</section>
+      </div>
+    </section>
 
-<section class="section" id="experience">
-  <div class="wrap">
-    <div class="head"><span class="eyebrow">Experience</span><h2>Where I have worked</h2></div>
-    <ol class="ledger">
-      <li>
-        <div class="period">2023 — Present</div>
-        <div>
-          <h3>Software Engineer <span class="org">· Premnath Rail</span></h3>
-          <p>Own the web presence and internal tooling. Built integrations between the ERP, CRM, and reporting systems.</p>
-        </div>
-      </li>
-      <li>
-        <div class="period">2021 — 2023</div>
-        <div>
-          <h3>Developer <span class="org">· Freelance</span></h3>
-          <p>Delivered websites, dashboards, and automation for small businesses across India.</p>
-        </div>
-      </li>
-    </ol>
-  </div>
-</section>
+    <section id="skills" class="page" aria-labelledby="skills-h">
+      <h2 id="skills-h" class="sr-only">Skills</h2>
+      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="copy copy-skills">
+        <div class="skill"><h3 data-reveal>Programming</h3><p data-reveal>Python, JavaScript, TypeScript, C</p></div>
+        <div class="skill"><h3 data-reveal>Backend</h3><p data-reveal>FastAPI, REST APIs, SQLAlchemy</p></div>
+        <div class="skill"><h3 data-reveal>Frontend</h3><p data-reveal>HTML, CSS, JavaScript, Next.js, React</p></div>
+        <div class="skill"><h3 data-reveal>Database</h3><p data-reveal>PostgreSQL, SQL</p></div>
+        <div class="skill"><h3 data-reveal>Infrastructure</h3><p data-reveal>Docker, VPS deployment, Git</p></div>
+        <div class="skill"><h3 data-reveal>Integrations</h3><p data-reveal>Microsoft Entra ID, SharePoint</p></div>
+      </div>
+    </section>
 
-<section class="section" id="contact">
-  <div class="wrap">
-    <div class="head"><span class="eyebrow">Contact</span><h2>Get in touch</h2></div>
-    <div class="contact">
-      <div class="row"><span class="k">GitHub</span><span class="v">github.com/itsvineetwork-oss</span><a class="btn" href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">Open</a></div>
-      <div class="row"><span class="k">LinkedIn</span><span class="v">linkedin.com/in/vineet-sharma</span><a class="btn" href="https://www.linkedin.com/in/vineet-sharma" target="_blank" rel="noopener">Open</a></div>
-      <div class="row"><span class="k">Email</span><span class="v" id="email">hello@vineetsharma.dev</span><button class="copy" id="copy-email" type="button">Copy</button></div>
-    </div>
-  </div>
-</section>
+    <section id="education" class="page" aria-labelledby="education-h">
+      <h2 id="education-h" class="sr-only">Education</h2>
+      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="copy">
+        <h3 data-reveal>BCA — Bachelor of Computer Applications</h3>
+        <ul>
+          <li data-reveal>Programming fundamentals, data structures, databases.</li>
+          <li data-reveal>Web development and software engineering.</li>
+        </ul>
+      </div>
+    </section>
 
-<footer><div class="wrap"><span>© <span id="year"></span> Vineet Sharma</span><span>Built by hand. No frameworks.</span></div></footer>
+    <section id="contact" class="page" aria-labelledby="contact-h">
+      <h2 id="contact-h" class="sr-only">Contact</h2>
+      <svg class="stage" aria-hidden="true" focusable="false"></svg>
+      <div class="copy copy-contact">
+        <p class="lead" data-reveal>Open to software and automation work. The fastest way to reach me is email.</p>
+        <ul class="links" id="contact-links"></ul>
+      </div>
+    </section>
+  </main>
 
-<script>
-document.getElementById('year').textContent = new Date().getFullYear();
-var btn = document.getElementById('copy-email');
-btn.addEventListener('click', function(){
-  var el = document.getElementById('email'), t = el.textContent;
-  var done = function(){ btn.textContent = 'Copied'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1500); };
-  var fallback = function(){ var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, fallback); else fallback();
-});
-</script>
+  <footer class="foot">
+    <span>© <span id="year"></span> Vineet Sharma</span>
+    <span>Drawn live with SVG strokes · no video</span>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

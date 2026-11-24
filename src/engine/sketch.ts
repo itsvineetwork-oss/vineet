@@ -1,0 +1,172 @@
+import rough from "roughjs";
+import type { RoughSVG } from "roughjs/bin/svg";
+import type { Options } from "roughjs/bin/core";
+import { layoutText, type FontName } from "./hershey";
+
+const NS = "http://www.w3.org/2000/svg";
+
+export type Stroke = { el: SVGPathElement; len: number };
+
+export type StrokeStyle = {
+  color?: string;
+  width?: number;
+  opacity?: number;
+  /** "pencil" adds a soft graphite look, "ink" is crisp. */
+  tool?: "pencil" | "ink" | "marker";
+  dashed?: boolean;
+  className?: string;
+};
+
+export const INK = "var(--ink)";
+export const GRAPHITE = "var(--graphite)";
+export const RED = "var(--red)";
+export const BLUE = "var(--blue)";
+
+/**
+ * Sketcher: turns shapes, text and images into SVG strokes that can be drawn progressively.
+ * Everything is a <path> with stroke-dasharray so a Director can animate it.
+ */
+export class Sketcher {
+  readonly svg: SVGSVGElement;
+  readonly layer: SVGGElement;
+  readonly rough: RoughSVG;
+  private seed = 1;
+
+  constructor(svg: SVGSVGElement) {
+    this.svg = svg;
+    this.layer = document.createElementNS(NS, "g");
+    this.layer.setAttribute("class", "sk-layer");
+    svg.appendChild(this.layer);
+    this.rough = rough.svg(svg);
+  }
+
+  /** Deterministic rough seeds so re-draws look identical. */
+  private nextSeed() { return (this.seed = (this.seed * 9301 + 49297) % 233280); }
+
+  private styleEl(el: SVGPathElement, st: StrokeStyle = {}) {
+    const tool = st.tool ?? "pencil";
+    el.setAttribute("fill", "none");
+    el.setAttribute("stroke", st.color ?? (tool === "pencil" ? GRAPHITE : INK));
+    el.setAttribute("stroke-width", String(st.width ?? (tool === "marker" ? 4 : tool === "ink" ? 1.8 : 1.6)));
+    el.setAttribute("stroke-linecap", "round");
+    el.setAttribute("stroke-linejoin", "round");
+    if (st.opacity !== undefined) el.setAttribute("opacity", String(st.opacity));
+    if (st.dashed) el.setAttribute("data-dashed", "6 6");
+    el.classList.add("sk", `sk-${tool}`);
+    if (st.className) el.classList.add(st.className);
+  }
+
+  private toStroke(el: SVGPathElement): Stroke {
+    const len = el.getTotalLength();
+    el.style.strokeDasharray = `${len}`;
+    el.style.strokeDashoffset = `${len}`;
+    el.style.visibility = "hidden"; // round caps would otherwise show a dot before the stroke starts
+    el.dataset.len = String(len);
+    return { el, len };
+  }
+
+  /** A raw path. */
+  path(d: string, st: StrokeStyle = {}, parent: SVGElement = this.layer): Stroke {
+    const el = document.createElementNS(NS, "path");
+    el.setAttribute("d", d);
+    this.styleEl(el, st);
+    parent.appendChild(el);
+    return this.toStroke(el);
+  }
+
+  /** Adopt every <path> from a rough.js <g> into the layer. Rough emits the hachure fill path first, then the outline. */
+  private adopt(g: SVGGElement, st: StrokeStyle, parent: SVGElement = this.layer, hasFill = false): Stroke[] {
+    const out: Stroke[] = [];
+    const paths = Array.from(g.querySelectorAll("path"));
+    paths.forEach((p, i) => {
+      const el = document.createElementNS(NS, "path");
+      el.setAttribute("d", p.getAttribute("d") || "");
+      const isFill = hasFill && i === 0 && paths.length > 1;
+      this.styleEl(el, isFill ? { ...st, width: (st.width ?? 1.4) * 0.7, opacity: 0.55 } : st);
+      parent.appendChild(el);
+      out.push(this.toStroke(el));
+    });
+    return out;
+  }
+
+  private ropts(st: StrokeStyle, extra: Options = {}): Options {
+    void st;
+    return { roughness: 1.1, bowing: 0.8, stroke: "#000", seed: this.nextSeed(), strokeWidth: 1, ...extra, ...(extra.fill ? { fillStyle: extra.fillStyle ?? "hachure", hachureGap: extra.hachureGap ?? 7, hachureAngle: extra.hachureAngle ?? -41, fillWeight: 0.8 } : {}) };
+  }
+
+  line(x1: number, y1: number, x2: number, y2: number, st: StrokeStyle = {}, o: Options = {}) {
+    return this.adopt(this.rough.line(x1, y1, x2, y2, this.ropts(st, o)), st);
+  }
+  rect(x: number, y: number, w: number, h: number, st: StrokeStyle = {}, o: Options = {}) {
+    return this.adopt(this.rough.rectangle(x, y, w, h, this.ropts(st, o)), st, this.layer, !!o.fill);
+  }
+  ellipse(cx: number, cy: number, w: number, h: number, st: StrokeStyle = {}, o: Options = {}) {
+    return this.adopt(this.rough.ellipse(cx, cy, w, h, this.ropts(st, o)), st, this.layer, !!o.fill);
+  }
+  circle(cx: number, cy: number, d: number, st: StrokeStyle = {}, o: Options = {}) {
+    return this.adopt(this.rough.circle(cx, cy, d, this.ropts(st, o)), st, this.layer, !!o.fill);
+  }
+  polygon(pts: [number, number][], st: StrokeStyle = {}, o: Options = {}) {
+    return this.adopt(this.rough.polygon(pts, this.ropts(st, o)), st, this.layer, !!o.fill);
+  }
+  curve(pts: [number, number][], st: StrokeStyle = {}, o: Options = {}) {
+    return this.adopt(this.rough.curve(pts, this.ropts(st, o)), st);
+  }
+  /** Sketchy path (rough re-draws an SVG path). */
+  sketchPath(d: string, st: StrokeStyle = {}, o: Options = {}) {
+    return this.adopt(this.rough.path(d, this.ropts(st, { roughness: 0.8, ...o })), st, this.layer, !!o.fill);
+  }
+
+  /** Arrow from (x1,y1) to (x2,y2) with an open head. */
+  arrow(x1: number, y1: number, x2: number, y2: number, st: StrokeStyle = {}, head = 10) {
+    const a = Math.atan2(y2 - y1, x2 - x1);
+    const strokes = this.line(x1, y1, x2, y2, st);
+    const hx = (t: number) => x2 - head * Math.cos(a + t), hy = (t: number) => y2 - head * Math.sin(a + t);
+    strokes.push(this.path(`M${hx(0.5)},${hy(0.5)} L${x2},${y2} L${hx(-0.5)},${hy(-0.5)}`, st));
+    return strokes;
+  }
+
+  /** Handwritten text, one stroke group per character. */
+  text(str: string, x: number, y: number, size: number, st: StrokeStyle = {}, font: FontName = "scriptc", tracking = 0, align: "left" | "center" | "right" = "left") {
+    const w = layoutText(str, 0, 0, size, font, tracking).width;
+    const x0 = align === "center" ? x - w / 2 : align === "right" ? x - w : x;
+    const { paths } = layoutText(str, x0, y, size, font, tracking);
+    const strokes: Stroke[] = [];
+    for (const p of paths) strokes.push(this.path(p.d, { tool: "ink", width: Math.max(1.2, size / 16), ...st }));
+    return { strokes, width: w };
+  }
+
+  /** Technical lettering (simplex sans), for labels and annotations. */
+  label(str: string, x: number, y: number, size = 14, st: StrokeStyle = {}, align: "left" | "center" | "right" = "left") {
+    return this.text(str, x, y, size, { tool: "pencil", width: Math.max(1, size / 14), ...st }, "futural", 1, align);
+  }
+
+  /** Dimension line with ticks, like an architectural drawing. */
+  dimension(x1: number, y: number, x2: number, text: string, st: StrokeStyle = { color: GRAPHITE, width: 1 }) {
+    const s = [...this.line(x1, y, x2, y, st), ...this.line(x1, y - 6, x1, y + 6, st), ...this.line(x2, y - 6, x2, y + 6, st)];
+    s.push(...this.label(text, (x1 + x2) / 2, y - 8, 11, st, "center").strokes);
+    return s;
+  }
+
+  /** Image that is "sketched" first: hatching strokes draw over the frame, then the photo fades in and the hatching lifts. */
+  image(href: string, x: number, y: number, w: number, h: number, st: StrokeStyle = {}) {
+    const g = document.createElementNS(NS, "g");
+    this.layer.appendChild(g);
+    const img = document.createElementNS(NS, "image");
+    img.setAttribute("href", href);
+    img.setAttribute("x", String(x)); img.setAttribute("y", String(y));
+    img.setAttribute("width", String(w)); img.setAttribute("height", String(h));
+    img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    img.style.opacity = "0";
+    g.appendChild(img);
+    const hatch = this.adopt(this.rough.rectangle(x, y, w, h, this.ropts(st, { fill: "#000", hachureGap: 9, roughness: 0.6, stroke: "none" })), { ...st, opacity: 0.35 }, g);
+    const frame = this.adopt(this.rough.rectangle(x - 4, y - 4, w + 8, h + 8, this.ropts(st, { roughness: 1.4 })), { tool: "ink", ...st }, g);
+    return { img, hatch, frame };
+  }
+
+  /** Every stroke currently on the page. */
+  strokes(): SVGPathElement[] { return Array.from(this.layer.querySelectorAll("path.sk")); }
+
+  /** Drop everything drawn so far. */
+  clear() { this.layer.innerHTML = ""; this.seed = 1; }
+}
