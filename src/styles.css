@@ -285,7 +285,7 @@ body.inspecting .page, body.inspecting .project { outline: 1px dashed color-mix(
   .topbar { grid-template-columns: auto 1fr; grid-template-rows: auto auto auto auto; row-gap: 6px; padding: 8px 14px; }
   .topbar .logo { grid-column: 1; }
   .tools { grid-column: 2; }
-  .topbar nav { grid-row: 2; grid-column: 1 / -1; }
+  .topbar nav { grid-row: 2; grid-column: 1 / -1; flex-wrap: wrap; white-space: normal; justify-content: flex-start; row-gap: 2px; }
   .viewas { grid-row: 3; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
   .viewas span { white-space: nowrap; }
   .topbar .progress { grid-row: 4; }

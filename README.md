@@ -50,7 +50,7 @@ src/sections/  one scene per section: lays out strokes and the timeline
 src/main.ts    scroll triggers, navigation, toolbar (Finish / Animations / Sound)
 ```
 
-The first sheet draws itself when the site opens. After that, drawing is tied to scrolling: each page's timeline follows the scroll position through that page, so scrolling fast draws fast, scrolling slowly draws slowly, and scrolling back up un-draws. Menu items scroll there cinematically and the pages in between draw on the way.
+The first sheet draws itself when the site opens. After that, drawing is tied to scrolling: a page starts drawing when its top enters at the bottom of the screen and is complete by the time its top reaches the header (or earlier, when the next page appears), so pages never draw at the same time and a page is complete when you land on it from the menu. Scrolling fast draws fast; scrolling back up un-draws.
 
 ## Accessibility and performance
 

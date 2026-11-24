@@ -97,37 +97,41 @@ if (!motion) scenes.forEach((s) => s.finish());
 //      Scroll fast and it draws fast; scroll back up and it un-draws.
 const triggers = new Map<Scene, ScrollTrigger>();
 if (motion) {
-  const LINE = 0.96; // a page draws while it travels from the bottom edge of the screen up to this line
-  scenes.forEach((s, i) => {
-    // the first sheet draws itself when the site opens; everything after it is driven by scrolling
-    if (s.id === "home") { s.director.tl.timeScale(1.6).play(0); return; }
-    // the Projects heading ends where the first project page begins; every other page ends at its own bottom
-    const endEl = s.id === "projects" ? scenes[i + 1].section : s.section;
+  const LINE = 0.96; // a page starts drawing when its top crosses this line (near the bottom of the screen)
+  const bar = document.querySelector<HTMLElement>(".topbar")!;
+  const nextOf = (s: Scene) => scenes[scenes.indexOf(s) + 1];
+  const topOf = (el: Element) => el.getBoundingClientRect().top + scrollY;
+  scenes.forEach((s) => {
+    // the first sheet draws itself when the site opens; if the visitor scrolls past it early it simply completes
+    if (s.id === "home") {
+      s.director.tl.timeScale(2.2).play(0);
+      const finishHome = () => { if (!s.done && s.section.getBoundingClientRect().bottom < bar.offsetHeight) { s.finish(); window.removeEventListener("scroll", finishHome); } };
+      window.addEventListener("scroll", finishHome, { passive: true });
+      return;
+    }
     const st = ScrollTrigger.create({
       trigger: s.section,
-      // a page is complete before the next page crosses the same line, so pages never draw at the same time;
-      // near the end of the document the range is clamped so the last page can still finish
-      start: () => {
-        const top = s.section.getBoundingClientRect().top + scrollY - innerHeight * LINE;
-        const end = endEnd();
-        return Math.max(0, Math.min(top, end - 200));
+      // start: the page's top enters at the bottom of the screen
+      // end:   the page's top reaches the header (so it is complete when you land on it), or earlier,
+      //        the moment the next page's top enters at the bottom, so two pages never draw at once
+      start: () => Math.max(0, topOf(s.section) - innerHeight * LINE),
+      end: () => {
+        const nxt = nextOf(s);
+        const own = topOf(s.section) - bar.offsetHeight;
+        const next = nxt ? topOf(nxt.section) - innerHeight * LINE : Infinity;
+        const end = Math.min(own, next, ScrollTrigger.maxScroll(window));
+        return Math.max(end, topOf(s.section) - innerHeight * LINE + 160);
       },
-      end: () => endEnd(),
       scrub: 0.25,
       animation: s.director.tl,
       onUpdate: (self) => { const d = self.progress >= 0.999; s.done = d; s.section.classList.toggle("is-drawn", d); },
     });
     triggers.set(s, st);
-    function endEnd() {
-      const r = endEl.getBoundingClientRect();
-      const px = (s.id === "projects" ? r.top : r.bottom) + scrollY - innerHeight * LINE;
-      return Math.min(px, ScrollTrigger.maxScroll(window));
-    }
   });
 }
+
 // ---- scroll spy: the menu section that contains the middle of the screen is the active one
-const bar = document.querySelector<HTMLElement>(".topbar")!;
-const barHeight = () => bar.offsetHeight;
+const barHeight = () => document.querySelector<HTMLElement>(".topbar")!.offsetHeight;
 document.documentElement.style.setProperty("--bar", `${barHeight()}px`);
 let activeId = "";
 function spy() {
