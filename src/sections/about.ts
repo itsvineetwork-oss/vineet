@@ -1,6 +1,7 @@
 import { makeScene } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
 import { about, identity } from "../content";
+import { exists, url } from "../engine/assets";
 
 export const aboutScene = () =>
   makeScene("about", [1200, 640], (sk, d) => {
@@ -10,8 +11,8 @@ export const aboutScene = () =>
 
     // left column (x 80..440): a real photo, sketched then revealed, or a clean monogram medallion
     const cx = 260, cy = 370;
-    if (about.photo) {
-      const r = sk.image(about.photo, cx - 140, cy - 180, 280, 340, { color: GRAPHITE });
+    if (exists(about.photo)) {
+      const r = sk.image(url(about.photo), cx - 140, cy - 180, 280, 340, { color: GRAPHITE });
       d.draw(r.frame, { speed: 1600 }).draw(r.hatch, { speed: 6000, noPencil: true }).revealImage(r);
     } else {
       d.draw(sk.circle(cx, cy, 300, { color: INK, tool: "ink", width: 2 }, { roughness: 1.1 }), { speed: 1500 });

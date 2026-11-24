@@ -30,8 +30,10 @@ npm run preview
 
 - `src/content.ts` — identity, about, projects, experience, skills, education, contact. Fields marked `TODO` are not verified yet; blank fields are not rendered.
 - `index.html` — the accessible HTML text of every section (what search engines and screen readers read). Keep it in sync with `content.ts`.
-- Screenshots: put images in `public/shots/` and list them in a project's `images` array. They are revealed with a sketch-to-image effect.
-- Resume: put `resume.pdf` in `public/` and set `contact.resume = "/resume.pdf"`.
+- Photo: put `portrait.jpg` in `public/` (3:4). It is sketched, then revealed. Without the file a monogram medallion is drawn.
+- Screenshots: put the files listed in each project's `images` array under `public/shots/`. Missing files are skipped.
+- Resume: put `resume.pdf` in `public/`. The header button and contact link appear only when the file exists.
+- Toolbar: Replay draws the current page again, Finish skips ahead; the line under the menu shows which pages are drawn.
 
 ## How the drawing engine works
 

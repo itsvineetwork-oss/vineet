@@ -213,6 +213,7 @@ export class Sketcher {
     img.style.opacity = "0";
     g.appendChild(img);
     const hatch = this.adopt(this.rough.rectangle(x, y, w, h, this.ropts(st, { fill: "#000", hachureGap: 9, roughness: 0.6, stroke: "none" })), { ...st, opacity: 0.35 }, g);
+    hatch.forEach((h) => (h.el.dataset.hatch = "1"));
     const frame = this.adopt(this.rough.rectangle(x - 4, y - 4, w + 8, h + 8, this.ropts(st, { roughness: 1.4 })), { tool: "ink", ...st }, g);
     return { img, hatch, frame };
   }

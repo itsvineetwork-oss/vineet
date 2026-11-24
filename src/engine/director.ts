@@ -114,7 +114,12 @@ export class Director {
   play() { this.tl.play(0); }
   finish(strokes: SVGPathElement[] = []) {
     this.tl.progress(1);
-    for (const el of strokes) { el.style.visibility = "visible"; el.style.strokeDashoffset = "0"; if (el.dataset.dashed) el.style.strokeDasharray = el.dataset.dashed; el.style.opacity = el.getAttribute("opacity") || "1"; }
+    for (const el of strokes) {
+      el.style.visibility = "visible"; el.style.strokeDashoffset = "0";
+      if (el.dataset.dashed) el.style.strokeDasharray = el.dataset.dashed;
+      // hatching over a revealed image stays lifted; everything else returns to its drawn opacity
+      el.style.opacity = el.dataset.hatch ? "0" : el.getAttribute("opacity") || "1";
+    }
     this.pencil.show(false); scratch.drawing(0);
   }
   restart() { this.tl.restart(); }

@@ -1,6 +1,7 @@
 import { makeScene, revealables } from "./scene";
 import { INK, GRAPHITE, RED, BLUE } from "../engine/sketch";
 import { contact } from "../content";
+import { exists } from "../engine/assets";
 
 export const contactScene = () =>
   makeScene("contact", [1200, 560], (sk, d, section) => {
@@ -30,6 +31,18 @@ export const contactScene = () =>
       d.draw(sk.line(cx + 110, cy + 94 + i * 40, cx + 430, cy + 94 + i * 40, { color: GRAPHITE, width: 0.8 }, { roughness: 0.6 }), { speed: 2000, noPencil: true });
       if (v) d.write(sk.label(v, cx + 118, cy + 90 + i * 40, 12, { color: INK }).strokes, { speed: 1200 });
     });
+    if (exists(contact.resume)) {
+      // a small document with folded corner, labelled RESUME
+      const rx = 1000, ry = 236;
+      d.draw([
+        ...sk.sketchPath(`M ${rx} ${ry} L ${rx + 64} ${ry} L ${rx + 90} ${ry + 26} L ${rx + 90} ${ry + 118} L ${rx} ${ry + 118} Z`, { color: INK, tool: "ink", width: 1.6 }, { roughness: 0.9 }),
+        ...sk.sketchPath(`M ${rx + 64} ${ry} L ${rx + 64} ${ry + 26} L ${rx + 90} ${ry + 26}`, { color: INK, tool: "ink", width: 1.4 }),
+        ...sk.line(rx + 14, ry + 50, rx + 76, ry + 50, { color: GRAPHITE }),
+        ...sk.line(rx + 14, ry + 68, rx + 76, ry + 68, { color: GRAPHITE }),
+        ...sk.line(rx + 14, ry + 86, rx + 56, ry + 86, { color: GRAPHITE }),
+      ], { speed: 1400 });
+      d.write(sk.label("RESUME (PDF)", rx + 45, ry + 140, 10, { color: GRAPHITE }, "center").strokes, { speed: 1000 });
+    }
     d.write(sk.paragraph("Open to software and automation work. The fastest way to reach me is email.", cx, cy + 236, 15, 460, { color: INK }).strokes, { speed: 1700, gap: 0.003 });
     d.reveal(revealables(section), "-=0.4");
     // a final signature

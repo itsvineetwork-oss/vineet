@@ -9,11 +9,15 @@ import { experienceScene } from "./sections/experience";
 import { skillsScene } from "./sections/skills";
 import { educationScene } from "./sections/education";
 import { contactScene } from "./sections/contact";
-import { contact } from "./content";
+import { about, contact, projects } from "./content";
+import { probe, url } from "./engine/assets";
 import { scratch } from "./engine/sound";
 import type { Scene } from "./sections/scene";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+// ---- optional files: find out which exist before the scenes are laid out
+await Promise.all([about.photo, contact.resume, ...projects.flatMap((p) => p.images || [])].map((f) => probe(f)));
 
 // ---- contact links (only the ones that are filled in)
 const links = document.getElementById("contact-links")!;
@@ -26,7 +30,12 @@ const add = (label: string, href: string, value?: string) => {
 if (contact.email) add("Email", `mailto:${contact.email}`, contact.email);
 if (contact.linkedin) add("LinkedIn", contact.linkedin);
 if (contact.github) add("GitHub", contact.github, contact.github.replace("https://", ""));
-if (contact.resume) add("Resume (PDF)", contact.resume);
+if (contact.resume && (await probe(contact.resume))) {
+  add("Resume (PDF)", url(contact.resume));
+  const a = document.getElementById("resume-link") as HTMLAnchorElement;
+  a.href = url(contact.resume);
+  a.hidden = false;
+}
 document.getElementById("year")!.textContent = String(new Date().getFullYear());
 
 // ---- motion preference (OS setting, or the toolbar toggle, remembered per browser)
@@ -135,6 +144,33 @@ document.querySelectorAll<HTMLAnchorElement>('.topbar nav a, a.cta, a.logo').for
       gsap.to(window, { scrollTo: { y: s.section, offsetY: 56, autoKill: false }, duration: 0.9, delay: wait * 0.6, ease: "power2.inOut", onComplete: go });
     } else { s.section.scrollIntoView(); go(); }
   });
+});
+
+// ---- progress line: one segment per menu section, filled when that page (and its sub-pages) is drawn
+const sections = ["home", "about", "projects", "experience", "skills", "education", "contact"];
+const progress = document.getElementById("progress")!;
+sections.forEach((id) => { const seg = document.createElement("span"); seg.dataset.for = id; seg.title = id; progress.appendChild(seg); });
+const belongsTo = (s: Scene) => (s.id.startsWith("p-") ? "projects" : s.id);
+function paintProgress() {
+  for (const id of sections) {
+    const group = scenes.filter((s) => belongsTo(s) === id);
+    const seg = progress.querySelector<HTMLElement>(`[data-for="${id}"]`)!;
+    seg.classList.toggle("done", group.every((s) => s.done));
+    seg.classList.toggle("live", group.some((s) => played.has(s.id) && !s.done && !s.erased));
+  }
+}
+scenes.forEach((s) => { const prev = s.onDone; s.onDone = () => { prev?.(); paintProgress(); }; });
+paintProgress();
+setInterval(paintProgress, 500);
+
+// ---- replay: draw the current page again from a blank sheet
+document.getElementById("replay")!.addEventListener("click", () => {
+  if (!motion) return;
+  const s = gate() ?? current;
+  gsap.to(window, { scrollTo: { y: s.section, offsetY: 56, autoKill: false }, duration: 0.5 });
+  s.rebuild();
+  played.add(s.id);
+  s.director.play();
 });
 
 // ---- toolbar

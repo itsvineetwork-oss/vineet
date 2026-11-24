@@ -12,8 +12,8 @@ export const identity = {
 };
 
 export const about = {
-  /** Optional photo under /public, e.g. "/portrait.jpg" (square or 3:4). Sketched first, then revealed. */
-  photo: "",
+  /** Photo under /public (3:4 or square). Sketched first, then revealed. If the file is missing, a monogram is drawn instead. */
+  photo: "/portrait.jpg",
   intro:
     "I am a software developer and Python programmer. I build ERP systems, engineering calculators and automation tools that people use every day at work.",
   approach: [
@@ -47,7 +47,7 @@ export const projects: Project[] = [
     stack: ["Next.js", "React", "TypeScript", "FastAPI", "SQLAlchemy", "PostgreSQL", "Docker"],
     integrations: ["Microsoft Entra ID", "SharePoint"], // TODO verify which integrations are live
     features: ["Frontend → API → backend services → PostgreSQL", "Role-based access with Microsoft Entra ID sign-in", "Document flows connected to SharePoint", "Deployed with Docker on a VPS"],
-    images: [], // TODO add screenshots
+    images: ["/shots/erp-1.png", "/shots/erp-2.png"], // add the files under public/shots; missing files are skipped
     links: [],  // TODO add live / GitHub links if public
     diagram: "erp",
   },
@@ -58,6 +58,7 @@ export const projects: Project[] = [
     contribution: "Python tools that take validated inputs, run the calculation and produce a clear, repeatable output.",
     stack: ["Python"],
     features: ["Validated inputs", "Repeatable, documented results", "Command-line and script friendly"],
+    images: ["/shots/calculators-1.png"],
     links: [{ label: "GitHub", href: "https://github.com/itsvineetwork-oss" }],
     diagram: "calculator",
   },
@@ -68,6 +69,7 @@ export const projects: Project[] = [
     contribution: "Scripts and small services that run these tasks on a schedule or on demand.",
     stack: ["Python", "REST APIs", "PostgreSQL"],
     features: ["Scheduled jobs", "API and database integrations", "Fewer manual steps, fewer errors"],
+    images: ["/shots/automation-1.png"],
     links: [{ label: "GitHub", href: "https://github.com/itsvineetwork-oss" }],
     diagram: "automation",
   },
@@ -104,5 +106,5 @@ export const contact = {
   email: "",      // TODO e.g. "you@example.com" (rendered only when filled)
   linkedin: "",   // TODO e.g. "https://www.linkedin.com/in/your-handle"
   github: "https://github.com/itsvineetwork-oss",
-  resume: "",     // TODO e.g. "/resume.pdf" after adding the file to /public
+  resume: "/resume.pdf", // put resume.pdf in /public; the link only appears when the file exists
 };

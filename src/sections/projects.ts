@@ -2,6 +2,7 @@ import { makeScene, revealables } from "./scene";
 import { Sketcher, INK, GRAPHITE, RED, BLUE, type Stroke } from "../engine/sketch";
 import { Director } from "../engine/director";
 import { projects } from "../content";
+import { exists, url } from "../engine/assets";
 
 /** A node box with a title, used by the diagrams. */
 function node(sk: Sketcher, x: number, y: number, w: number, h: number, text: string, color = INK) {
@@ -97,7 +98,7 @@ export const projectsScene = () =>
 export const projectScenes = () =>
   projects.map((p, i) => {
     const el = document.getElementById(`p-${p.id}`) as HTMLElement;
-    return makeScene(`p-${p.id}`, [1200, 500], (sk, d, section) => {
+    return makeScene(`p-${p.id}`, [1200, 520], (sk, d, section) => {
       d.draw(sk.line(70, 20, 1130, 20, { color: GRAPHITE, width: 0.8 }, { roughness: 0.5 }), { speed: 3000, noPencil: true });
       d.write(sk.label(`0${i + 1}`, 72, 64, 22, { color: RED, width: 1.6 }).strokes, { speed: 900 });
       d.write(sk.text(p.name, 130, 66, 36, { color: INK, width: 1.8 }, "scriptc", 2).strokes, { speed: 900, gap: 0.015 });
@@ -118,10 +119,12 @@ export const projectScenes = () =>
       d.write(sk.label("STACK", 72, 424, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
       d.write(sk.paragraph([...p.stack, ...(p.integrations || [])].join(", "), 72, 446, 14, 740, { color: INK }).strokes, { speed: 1800, gap: 0.002 });
 
-      (p.images || []).slice(0, 2).forEach((src, j) => {
-        const r = sk.image(src, 560 + j * 20, 300 + j * 20, 200, 120, { color: GRAPHITE });
-        d.draw(r.frame, { speed: 1600 }).draw(r.hatch, { speed: 5000, noPencil: true }).revealImage(r);
+      const shots = (p.images || []).filter(exists).slice(0, 2);
+      shots.forEach((src, j) => {
+        const r = sk.image(url(src), tx + j * 24, y + 10 + j * 20, 200, 125, { color: GRAPHITE });
+        d.draw(r.frame, { speed: 1600 }).draw(r.hatch, { speed: 6000, noPencil: true }).revealImage(r);
       });
+      if (shots.length) d.write(sk.label("SCREENSHOTS", tx, y + 10 + shots.length * 20 + 150, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
       d.reveal(revealables(section), "-=0.3", 0.05);
     }, el);
   });

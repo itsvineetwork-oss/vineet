@@ -51,6 +51,13 @@ a { color: var(--ink); }
 .tools { display: flex; gap: 6px; white-space: nowrap; }
 .tools button { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; background: transparent; border: 1px solid var(--graphite); color: var(--graphite); padding: 5px 9px; cursor: pointer; border-radius: 2px; }
 .tools button:hover { border-color: var(--ink); color: var(--ink); }
+.tools .resume { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; background: var(--ink); color: var(--paper); padding: 5px 9px; border: 1px solid var(--ink); border-radius: 2px; }
+.progress { grid-column: 1 / -1; display: flex; gap: 4px; height: 3px; margin: 6px 0 -4px; }
+.progress span { flex: 1; background: var(--line); border-radius: 2px; transition: background .4s; }
+.progress span.done { background: var(--ink); }
+.progress span.live { background: var(--red); animation: pulse 1s ease-in-out infinite alternate; }
+@keyframes pulse { from { opacity: .45; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .progress span.live { animation: none; } }
 .tools button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
 /* pages */
@@ -97,7 +104,7 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 .plinks { margin: -6px 0 0; }
 .plinks a { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border-bottom: 2px solid var(--red); padding-bottom: 2px; }
 @media (max-width: 1000px) {
-  .topbar { grid-template-columns: auto 1fr; grid-template-rows: auto auto; row-gap: 6px; padding: 8px 14px; }
+  .topbar { grid-template-columns: auto 1fr; grid-template-rows: auto auto auto; row-gap: 6px; padding: 8px 14px; }
   .topbar nav { grid-column: 1 / -1; justify-content: flex-start; gap: 14px; }
   .tools { justify-self: end; }
 }
