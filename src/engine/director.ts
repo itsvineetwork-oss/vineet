@@ -144,6 +144,7 @@ export class Director {
       if (el.dataset.dashed) el.style.strokeDasharray = el.dataset.dashed;
       // hatching over a revealed image stays lifted; everything else returns to its drawn opacity
       el.style.opacity = el.dataset.hatch ? "0" : el.getAttribute("opacity") || "1";
+      if (el.classList.contains("sk-tape")) el.style.strokeDasharray = "none";
     }
     this.pencil.show(false); scratch.drawing(0);
   }

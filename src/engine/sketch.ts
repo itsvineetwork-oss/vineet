@@ -45,6 +45,8 @@ export const INK = "var(--ink)";
 export const GRAPHITE = "var(--graphite)";
 export const RED = "var(--red)";
 export const BLUE = "var(--blue)";
+export const PENCIL = "var(--pencil)";
+export const HIGHLIGHT = "var(--highlight)";
 
 /**
  * Sketcher: turns shapes, text and images into SVG strokes that can be drawn progressively.
@@ -226,7 +228,8 @@ export class Sketcher {
     const strokes: Stroke[] = [];
     let cy = y;
     for (const it of items) {
-      strokes.push(...this.line(x, cy - size * 0.35, x + size * 0.8, cy - size * 0.35, { color: RED, width: 1.4 }));
+      // a small hand-drawn tick instead of a dash
+      strokes.push(...this.sketchPath(`M${x},${cy - size * 0.35} L${x + size * 0.3},${cy - size * 0.05} L${x + size * 0.85},${cy - size * 0.75}`, { color: RED, width: 1.5, tool: "ink" }, { roughness: 0.5 }));
       const p = this.paragraph(it, x + size * 1.4, cy, size, maxWidth - size * 1.4, st);
       strokes.push(...p.strokes);
       cy += p.height + size * 0.3;
@@ -267,6 +270,52 @@ export class Sketcher {
 
   /** Every stroke currently on the page. */
   strokes(): (SVGPathElement | SVGTextElement)[] { return Array.from(this.layer.querySelectorAll<SVGPathElement | SVGTextElement>("path.sk, text.sk")); }
+
+  /** Faint graphite construction lines: the guide the artist drew before inking. Drawn fast, no pencil. */
+  construction(x: number, y: number, w: number, h: number) {
+    const st = { color: PENCIL, width: 0.8, opacity: 0.55, className: "sk-construction" };
+    return [
+      ...this.line(x - 14, y, x + w + 14, y, st, { roughness: 0.2 }),
+      ...this.line(x - 14, y + h, x + w + 14, y + h, st, { roughness: 0.2 }),
+      ...this.line(x, y - 14, x, y + h + 14, st, { roughness: 0.2 }),
+      ...this.line(x + w, y - 14, x + w, y + h + 14, st, { roughness: 0.2 }),
+    ];
+  }
+
+  /** CAD registration marks (+) at the four corners of a card. */
+  registration(x: number, y: number, w: number, h: number, size = 6) {
+    const st = { color: GRAPHITE, width: 0.9 };
+    const marks: Stroke[] = [];
+    for (const [cx, cy] of [[x, y], [x + w, y], [x, y + h], [x + w, y + h]] as [number, number][]) {
+      marks.push(...this.line(cx - size, cy, cx + size, cy, st, { roughness: 0.15 }), ...this.line(cx, cy - size, cx, cy + size, st, { roughness: 0.15 }));
+    }
+    return marks;
+  }
+
+  /** A highlighter swipe behind text: one wide translucent marker stroke, slightly wobbly. */
+  highlight(x: number, y: number, w: number, size: number, color = HIGHLIGHT) {
+    const h = size * 1.15;
+    const d = `M${x - 4},${y - h * 0.45} C${x + w * 0.3},${y - h * 0.55} ${x + w * 0.7},${y - h * 0.3} ${x + w + 6},${y - h * 0.42}`;
+    const el = this.path(d, { color, width: h, opacity: 0.55, tool: "marker", className: "sk-highlight" });
+    el.el.setAttribute("stroke-linecap", "butt");
+    return el;
+  }
+
+  /** Marker scribble that colours the inside of a box, clipped to it: zig-zag strokes like a colour pencil. */
+  scribble(x: number, y: number, w: number, h: number, color: string, pitch = 9) {
+    const id = `scrib-${Math.random().toString(36).slice(2, 9)}`;
+    const clip = document.createElementNS(NS, "clipPath"); clip.setAttribute("id", id);
+    const r = document.createElementNS(NS, "rect");
+    r.setAttribute("x", String(x + 2)); r.setAttribute("y", String(y + 2)); r.setAttribute("width", String(w - 4)); r.setAttribute("height", String(h - 4));
+    clip.appendChild(r); this.layer.appendChild(clip);
+    const g = document.createElementNS(NS, "g"); g.setAttribute("clip-path", `url(#${id})`); this.layer.appendChild(g);
+    // one continuous zig-zag across the box
+    let d = `M${x - 6},${y + 4}`;
+    let up = false;
+    for (let px = x - 6; px <= x + w + 6; px += pitch) { up = !up; d += ` L${px + pitch / 2},${up ? y + h + 6 : y - 6}`; }
+    const el = this.path(d, { color, width: pitch * 1.7, opacity: 0.3, tool: "marker", className: "sk-scribble" }, g);
+    return el;
+  }
 
   /** An invisible hit area over a diagram node, carrying a note for the hover spec card. */
   hotspot(x: number, y: number, w: number, h: number, title: string, note: string) {

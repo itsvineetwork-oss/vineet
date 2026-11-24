@@ -66,6 +66,13 @@ The first sheet draws itself when the site opens. After that, drawing is tied to
 - Diagram nodes show a spec card on hover (`nodes` in each project); "Inspect case study" opens a slide-over sheet (features, `tradeoffs`, `outcome`, screenshots, links).
 - Pen easing on every stroke; a soft paper tick on hover when Sound is on; red stamps (COPIED, DISPATCHED) bounce in.
 
+## Paper and ink details
+
+- Inks: primary ink, graphite construction guides under diagrams (drawn first, faintly), red annotations, blue integrations, a yellow highlighter behind key phrases, marker scribble fills inside diagram nodes (outline first, then colour), kraft tape on the portrait.
+- Registration marks on the sheet, portrait frame and skill panels; scissor cutting lines between sheets; punched binding holes and stacked page edges on wide screens.
+- Body text in IBM Plex Sans; labels in tracked IBM Plex Mono; cursive only for headings and project titles. Hand-drawn tick bullets.
+- Buttons fill with cross-hatch on hover, then go solid. Thin ruler-style scrollbar.
+
 ## Keyboard
 
 - `Ctrl`/`Cmd` + `K`: command palette (go to a section, theme, sound, copy email, resume, GitHub, case studies).

@@ -1,5 +1,5 @@
 import { makeScene } from "./scene";
-import { INK, GRAPHITE, RED } from "../engine/sketch";
+import { INK, GRAPHITE, RED, HIGHLIGHT } from "../engine/sketch";
 import { C } from "../i18n";
 import { exists, url } from "../engine/assets";
 import { smoothPolyline } from "../engine/hershey";
@@ -17,7 +17,9 @@ export const aboutScene = () =>
     if (portrait.contours.length) {
       // the portrait is drawn from traced pencil lines: contours first, then two passes of hatching for tone
       const ox = cx - portrait.w / 2, oy = cy - 180;
+      d.draw(sk.construction(ox - 10, oy - 10, portrait.w + 20, portrait.h + 20), { speed: 9000, gap: 0, noPencil: true });
       d.draw(sk.rect(ox - 10, oy - 10, portrait.w + 20, portrait.h + 20, { color: GRAPHITE, width: 1 }, { roughness: 1.2 }), { speed: 2000 });
+      d.draw(sk.registration(ox - 10, oy - 10, portrait.w + 20, portrait.h + 20), { speed: 4000, gap: 0, noPencil: true });
       const lines = portrait.contours.map((c) => sk.path(smoothPolyline(c.map(([x, y]) => [x + ox, y + oy] as [number, number])), { tool: "ink", color: INK, width: 1.4 }));
       d.draw(lines, { speed: 2200, gap: 0.002 });
       const hatchPath = (groups: number[][][], st: { width: number; opacity: number }) =>
@@ -41,6 +43,16 @@ export const aboutScene = () =>
       d.draw(sk.line(cx - 60, cy + 72, cx + 60, cy + 70, { color: RED, width: 2.2, tool: "marker" }, { roughness: 1.4 }), { speed: 1600 });
       d.write(sk.label("SOFTWARE DEVELOPER", cx, cy + 100, 10, { color: GRAPHITE }, "center").strokes, { speed: 1000 });
     }
+    // kraft-paper tape strips over two corners of the frame
+    const tape = (tx: number, ty: number, rot: number) => {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("transform", `rotate(${rot} ${tx} ${ty})`);
+      sk.layer.appendChild(g);
+      const s = sk.path(`M${tx - 34},${ty - 9} L${tx + 34},${ty - 9} L${tx + 34},${ty + 9} L${tx - 34},${ty + 9} Z`, { color: "var(--tape)", width: 1, opacity: 0.85, className: "sk-tape" }, g);
+      s.el.setAttribute("fill", "var(--tape)");
+      return [s];
+    };
+    d.draw([...tape(cx - 140 + 8, cy - 180 + 4, -28), ...tape(cx + 140 - 8, cy + 160 - 4, -26)], { speed: 2200, noPencil: true });
     d.draw(sk.rect(cx - 120, cy + 190, 240, 40, { color: GRAPHITE }, { roughness: 1.2 }), { speed: 1600 });
     d.write(sk.label(identity.fullName.toUpperCase(), cx, cy + 217, 16, { color: INK }, "center").strokes, { speed: 900 });
 
@@ -48,6 +60,8 @@ export const aboutScene = () =>
     const tx = 520, tw = 620;
     d.write(sk.label(ui.whoIAm, tx, 190, 11, { color: GRAPHITE }).strokes, { speed: 1000 });
     const intro = sk.paragraph(about.intro, tx, 222, 18, tw, { color: INK });
+    // highlighter under the first line (the thesis)
+    d.draw([sk.highlight(tx, 222, Math.min(tw, intro.strokes.length ? tw * 0.92 : tw), 18, HIGHLIGHT)], { speed: 2600, noPencil: true });
     d.write(intro.strokes, { speed: 1700, gap: 0.003 });
     let y = 222 + intro.height + 36;
     d.write(sk.label(ui.approach, tx, y, 11, { color: GRAPHITE }).strokes, { speed: 1000 });

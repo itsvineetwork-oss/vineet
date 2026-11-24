@@ -48,6 +48,7 @@ export const skillsScene = () =>
       const [ex, ey] = edge(x, iy + rh / 2 - 50, rx, ry, rw, rh);
       d.draw(sk.line(cx + (x - cx) * 0.22, cy + (y - cy) * 0.22, ex, ey, { color: GRAPHITE, width: 1, dashed: true }), { speed: 1600 });
       d.draw(sk.rect(rx, ry, rw, rh, { color: GRAPHITE, width: 1 }, { roughness: 1.4 }), { speed: 1800 });
+      d.draw(sk.registration(rx, ry, rw, rh, 5), { speed: 4000, gap: 0, noPencil: true });
       d.draw(icons[s.icon](sk, ix, iy), { speed: 1100 });
       d.write(sk.label(s.category.toUpperCase(), x, iy + 52, 13, { color: INK, width: 1.2 }, "center").strokes, { speed: 900 });
       s.items.forEach((item, k) => {

@@ -8,6 +8,7 @@ export const home = () =>
     // drawing sheet: double border and a title block in the corner
     d.draw(sk.rect(50, 40, 1100, 520, { color: GRAPHITE, width: 1.2 }, { roughness: 1.4 }), { speed: 1800 });
     d.draw(sk.rect(62, 52, 1076, 496, { color: GRAPHITE, width: 0.8 }, { roughness: 0.5 }), { speed: 3000, noPencil: true });
+    d.draw(sk.registration(50, 40, 1100, 520, 7), { speed: 4000, gap: 0, noPencil: true });
     d.write(sk.label("SHEET 01 / 07  -  PORTFOLIO", 84, 84, 11, { color: GRAPHITE }).strokes, { speed: 1000 });
 
     // name, written stroke by stroke, then underlined in red
@@ -16,7 +17,9 @@ export const home = () =>
     d.draw(sk.line(92, 250, 92 + name.width, 246, { color: RED, width: 2.2, tool: "marker" }, { roughness: 1.6 }), { speed: 1800 });
 
     // title and tagline, wrapped inside the left column so nothing crosses the laptop
-    d.write(sk.label(identity.title.toUpperCase(), 94, 296, 18, { color: INK, width: 1.4 }).strokes, { speed: 1100 });
+    const role = sk.label(identity.title.toUpperCase(), 94, 296, 18, { color: INK, width: 1.4 });
+    d.draw([sk.highlight(94, 296, role.width, 18)], { speed: 2200, noPencil: true });
+    d.write(role.strokes, { speed: 1100 });
     d.write(sk.paragraph(identity.tagline, 94, 340, 19, 560, { color: INK }).strokes, { speed: 1500, gap: 0.004 });
     d.reveal(revealables(section), "-=0.2");
     d.reveal(section.querySelectorAll(".strip"), "<");
@@ -45,15 +48,15 @@ export const home = () =>
       return pts;
     };
     // three stacked blocks: data, services, interface
-    d.draw(cube(880, 352, 104, 40), { speed: 1600 });
-    d.draw(cube(880, 290, 80, 34, INK), { speed: 1600 });
-    d.draw(cube(880, 238, 56, 26, INK), { speed: 1600 });
+    d.draw(cube(880, 332, 104, 40), { speed: 1600 });
+    d.draw(cube(880, 270, 80, 34, INK), { speed: 1600 });
+    d.draw(cube(880, 218, 56, 26, INK), { speed: 1600 });
     const tag = (x: number, y: number, text: string) => { const t = sk.label(text, x, y, 10, { color: GRAPHITE }); t.strokes.forEach((p) => g.appendChild(p.el)); return t.strokes; };
     const lead = (x1: number, y1: number, x2: number, y2: number) => { const l = sk.line(x1, y1, x2, y2, { color: GRAPHITE, width: 0.9 }, { roughness: 0.3 }); l.forEach((p) => g.appendChild(p.el)); return l; };
-    d.draw([...lead(972, 372, 1010, 372), ...tag(1016, 376, "DATA - POSTGRESQL")], { speed: 1800 });
-    d.draw([...lead(950, 307, 1010, 307), ...tag(1016, 311, "API - FASTAPI")], { speed: 1800 });
-    d.draw([...lead(930, 251, 1010, 251), ...tag(1016, 255, "UI - NEXT.JS")], { speed: 1800 });
-    const dim = sk.dimension(790, 456, 970, "180", { color: GRAPHITE, width: 1 });
+    d.draw([...lead(972, 352, 1010, 352), ...tag(1016, 356, "DATA - POSTGRESQL")], { speed: 1800 });
+    d.draw([...lead(950, 287, 1010, 287), ...tag(1016, 291, "API - FASTAPI")], { speed: 1800 });
+    d.draw([...lead(930, 231, 1010, 231), ...tag(1016, 235, "UI - NEXT.JS")], { speed: 1800 });
+    const dim = sk.dimension(790, 446, 970, "180", { color: GRAPHITE, width: 1 });
     dim.forEach((p) => g.appendChild(p.el));
     d.draw(dim, { speed: 1800 });
 

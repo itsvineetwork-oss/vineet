@@ -1,5 +1,5 @@
 import { makeScene, revealables } from "./scene";
-import { Sketcher, INK, GRAPHITE, RED, BLUE, type Stroke } from "../engine/sketch";
+import { Sketcher, INK, GRAPHITE, RED, BLUE, HIGHLIGHT, type Stroke } from "../engine/sketch";
 import { Director } from "../engine/director";
 import { C } from "../i18n";
 import { exists, url } from "../engine/assets";
@@ -8,10 +8,12 @@ let currentNotes: Record<string, string> = {};
 
 /** A node box with a title, used by the diagrams. Nodes with a note get a hover spec card. */
 function node(sk: Sketcher, x: number, y: number, w: number, h: number, text: string, color = INK) {
+  // two stages: ink outline first, then a marker scribble colours the inside
   const s = sk.rect(x, y, w, h, { color, tool: "ink", width: 1.5 }, { roughness: 1.1 });
+  const fill = sk.scribble(x, y, w, h, color === BLUE ? BLUE : HIGHLIGHT, 6);
   const t = sk.label(text, x + w / 2, y + h / 2 + 5, 13, { color }, "center");
   if (currentNotes[text]) sk.hotspot(x, y, w, h, text, currentNotes[text]);
-  return [...s, ...t.strokes];
+  return [...s, fill, ...t.strokes];
 }
 
 /** Database cylinder. */
@@ -27,6 +29,7 @@ function db(sk: Sketcher, cx: number, y: number, w: number, h: number, color = I
 
 function erpDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   const y = oy + 40;
+  d.draw(sk.construction(ox, y - 24, 740, 230), { speed: 9000, gap: 0, noPencil: true });
   d.draw(node(sk, ox, y, 150, 56, "FRONTEND"), { speed: 1200 });
   d.write(sk.label("Next.js · React", ox + 75, y + 76, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
   d.draw(sk.arrow(ox + 150, y + 28, ox + 200, y + 28, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
@@ -47,7 +50,9 @@ function erpDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   d.draw(node(sk, ox + 480, y + 134, 160, 40, "SHAREPOINT", BLUE), { speed: 1300 });
   // a red annotation under the database
   d.draw(sk.arrow(ox + 680, y + 186, ox + 702, y + 66, { color: RED, width: 1.1 }, 7), { speed: 1400 });
-  d.write(sk.text("single system of record", ox + 530, y + 204, 16, { color: RED, width: 1.1 }, "scripts", 1, "center").strokes, { speed: 1000 });
+  const note = sk.text("single system of record", ox + 530, y + 204, 16, { color: RED, width: 1.1 }, "scripts", 1, "center");
+  d.draw([sk.highlight(ox + 530 - note.width / 2, y + 204, note.width, 16)], { speed: 1400, noPencil: true });
+  d.write(note.strokes, { speed: 1000 });
   // deployment bracket
   d.draw(sk.sketchPath(`M ${ox - 10} ${y + 222} L ${ox - 10} ${y + 234} L ${ox + 700} ${y + 234} L ${ox + 700} ${y + 222}`, { color: GRAPHITE, width: 1 }), { speed: 2000 });
   d.write(sk.label("DOCKER ON A VPS", ox + 345, y + 254, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
@@ -55,6 +60,7 @@ function erpDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
 
 function calculatorDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   const y = oy + 40;
+  d.draw(sk.construction(ox, y - 24, 650, 200), { speed: 9000, gap: 0, noPencil: true });
   d.draw(node(sk, ox, y, 110, 50, "INPUTS"), { speed: 1200 });
   d.draw(sk.arrow(ox + 110, y + 25, ox + 150, y + 25, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
   d.draw(node(sk, ox + 150, y - 10, 150, 70, "VALIDATE"), { speed: 1200 });
@@ -72,6 +78,7 @@ function calculatorDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
 
 function automationDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   const y = oy + 50;
+  d.draw(sk.construction(ox, y - 70, 720, 240), { speed: 9000, gap: 0, noPencil: true });
   // clock → script → three targets
   d.draw([...sk.circle(ox + 50, y + 30, 70, { color: INK, tool: "ink", width: 1.5 }), ...sk.line(ox + 50, y + 30, ox + 50, y + 6, { color: INK, tool: "ink" }), ...sk.line(ox + 50, y + 30, ox + 68, y + 38, { color: INK, tool: "ink" })], { speed: 1200 });
   d.write(sk.label("SCHEDULE", ox + 50, y + 90, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
@@ -85,7 +92,9 @@ function automationDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   });
   d.draw(db(sk, ox + 670, y - 20, 80, 70), { speed: 1200 });
   d.draw(sk.arrow(ox + 580, y + 24, ox + 626, y + 24, { color: GRAPHITE, dashed: true }), { speed: 1400 });
-  d.write(sk.text("hours -> minutes", ox + 440, y + 186, 20, { color: RED, width: 1.1 }, "scripts").strokes, { speed: 1000 });
+  const hm = sk.text("hours -> minutes", ox + 440, y + 186, 20, { color: RED, width: 1.1 }, "scripts");
+  d.draw([sk.highlight(ox + 440, y + 186, hm.width, 20)], { speed: 1400, noPencil: true });
+  d.write(hm.strokes, { speed: 1000 });
 }
 
 const diagrams = { erp: erpDiagram, calculator: calculatorDiagram, automation: automationDiagram };
