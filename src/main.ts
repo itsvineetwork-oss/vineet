@@ -100,6 +100,30 @@ if (motion) {
   const LINE = 0.96; // a page starts drawing when its top crosses this line (near the bottom of the screen)
   const bar = document.querySelector<HTMLElement>(".topbar")!;
   const nextOf = (s: Scene) => scenes[scenes.indexOf(s) + 1];
+  const targets = new Map<Scene, number>();
+  const CATCH_UP = 0.35; // seconds for the pen to close most of the gap to the scroll target
+  const setDone = (s: Scene, d: boolean) => { if (d !== s.done) { s.done = d; s.section.classList.toggle("is-drawn", d); } };
+  /** One frame of catch-up for every page: strokes move toward the scroll target at a pen-like pace, in order. */
+  const step = (_t: number, dtMs: number) => {
+    const k = 1 - Math.exp(-(dtMs / 1000) / CATCH_UP);
+    const barH = bar.offsetHeight;
+    for (let i = 0; i < scenes.length; i++) {
+      const s = scenes[i];
+      if (s.id === "home") continue;
+      const prev = scenes[i - 1];
+      const want = prev && !prev.done ? 0 : (targets.get(s) ?? 0);
+      const tl = s.director.tl;
+      const cur = tl.progress();
+      if (Math.abs(want - cur) < 0.0005) { setDone(s, cur >= 0.999); continue; }
+      const r = s.section.getBoundingClientRect();
+      const offAbove = r.bottom < barH, offBelow = r.top > innerHeight;
+      // a page nobody can see does not animate: it is simply complete (above) or blank (below)
+      const next = (want >= 0.999 && offAbove) || (want <= 0.001 && offBelow) ? want : cur + (want - cur) * k;
+      tl.progress(Math.abs(want - next) < 0.001 ? want : next);
+      setDone(s, tl.progress() >= 0.999);
+    }
+  };
+  gsap.ticker.add(step);
   const topOf = (el: Element) => el.getBoundingClientRect().top + scrollY;
   scenes.forEach((s) => {
     // the first sheet draws itself when the site opens; if the visitor scrolls past it early it simply completes
@@ -107,8 +131,11 @@ if (motion) {
       s.director.tl.timeScale(2.2).play(0);
       const finishHome = () => { if (!s.done && s.section.getBoundingClientRect().bottom < bar.offsetHeight) { s.finish(); window.removeEventListener("scroll", finishHome); } };
       window.addEventListener("scroll", finishHome, { passive: true });
+      s.onDone = () => paintProgress();
       return;
     }
+    // Scrolling sets a target; the page's strokes catch up to it at a pen-like pace in either direction,
+    // so a wheel tick is watched as drawing rather than seen as a jump. The next page waits for this one.
     const st = ScrollTrigger.create({
       trigger: s.section,
       // start: the page's top enters at the bottom of the screen
@@ -122,12 +149,19 @@ if (motion) {
         const end = Math.min(own, next, ScrollTrigger.maxScroll(window));
         return Math.max(end, topOf(s.section) - innerHeight * LINE + 160);
       },
-      scrub: 0.25,
-      animation: s.director.tl,
-      onUpdate: (self) => { const d = self.progress >= 0.999; s.done = d; s.section.classList.toggle("is-drawn", d); },
     });
     triggers.set(s, st);
   });
+  // every scroll frame: read each page's trigger progress (always current, even after a long jump) and drive it
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+    triggers.forEach((st, s) => targets.set(s, st.progress));
+  };
+  const schedule = () => { if (!raf) raf = requestAnimationFrame(update); };
+  window.addEventListener("scroll", schedule, { passive: true });
+  ScrollTrigger.addEventListener("refresh", () => { targets.clear(); schedule(); });
+  schedule();
 }
 
 // ---- scroll spy: the menu section that contains the middle of the screen is the active one
