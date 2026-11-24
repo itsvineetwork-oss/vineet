@@ -19,23 +19,43 @@ export const home = () =>
     d.write(sk.label(identity.title.toUpperCase(), 94, 296, 18, { color: INK, width: 1.4 }).strokes, { speed: 1100 });
     d.write(sk.paragraph(identity.tagline, 94, 340, 19, 560, { color: INK }).strokes, { speed: 1500, gap: 0.004 });
     d.reveal(revealables(section), "-=0.2");
+    d.reveal(section.querySelectorAll(".strip"), "<");
 
-    // laptop in the right column
-    const lx = 790, ly = 250;
-    d.draw([
-      ...sk.rect(lx, ly, 260, 160, { color: INK, tool: "ink", width: 1.6 }),
-      ...sk.rect(lx + 12, ly + 12, 236, 136, { color: GRAPHITE, width: 1 }),
-      ...sk.polygon([[lx - 30, ly + 160], [lx + 290, ly + 160], [lx + 310, ly + 190], [lx - 50, ly + 190]], { color: INK, tool: "ink", width: 1.6 }),
-      ...sk.line(lx + 95, ly + 175, lx + 165, ly + 175, { color: GRAPHITE }),
-    ], { speed: 1400 });
-    d.draw([
-      ...sk.line(lx + 32, ly + 42, lx + 120, ly + 42, { color: GRAPHITE }),
-      ...sk.line(lx + 50, ly + 62, lx + 190, ly + 62, { color: GRAPHITE }),
-      ...sk.line(lx + 50, ly + 82, lx + 150, ly + 82, { color: GRAPHITE }),
-      ...sk.line(lx + 32, ly + 102, lx + 100, ly + 102, { color: GRAPHITE }),
-      ...sk.line(lx + 50, ly + 122, lx + 210, ly + 122, { color: RED, width: 1.2 }),
-    ], { speed: 2000 });
-    d.draw(sk.dimension(lx - 50, ly + 215, lx + 310, "360", { color: GRAPHITE, width: 1 }), { speed: 1800 });
+    // right column: an isometric wireframe assembly inside a group that tilts with the mouse
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("class", "iso");
+    g.setAttribute("transform-origin", "880 330");
+    sk.layer.appendChild(g);
+    const cube = (cx: number, cy: number, sz: number, hgt: number, color = INK) => {
+      const ax = sz * 0.866, ay = sz * 0.5; // 30 degree isometric
+      const top: [number, number][] = [[cx, cy - ay], [cx + ax, cy], [cx, cy + ay], [cx - ax, cy]];
+      const pts = [
+        ...sk.polygon(top, { color, tool: "ink", width: 1.5 }, { roughness: 0.7 }),
+        ...sk.line(cx - ax, cy, cx - ax, cy + hgt, { color, tool: "ink", width: 1.5 }, { roughness: 0.5 }),
+        ...sk.line(cx, cy + ay, cx, cy + ay + hgt, { color, tool: "ink", width: 1.5 }, { roughness: 0.5 }),
+        ...sk.line(cx + ax, cy, cx + ax, cy + hgt, { color, tool: "ink", width: 1.5 }, { roughness: 0.5 }),
+        ...sk.line(cx - ax, cy + hgt, cx, cy + ay + hgt, { color, tool: "ink", width: 1.5 }, { roughness: 0.5 }),
+        ...sk.line(cx, cy + ay + hgt, cx + ax, cy + hgt, { color, tool: "ink", width: 1.5 }, { roughness: 0.5 }),
+        // hidden edges, dashed
+        ...sk.line(cx - ax, cy + hgt, cx, cy - ay + hgt, { color: GRAPHITE, width: 0.9, dashed: true }, { roughness: 0.3 }),
+        ...sk.line(cx, cy - ay + hgt, cx + ax, cy + hgt, { color: GRAPHITE, width: 0.9, dashed: true }, { roughness: 0.3 }),
+        ...sk.line(cx, cy - ay, cx, cy - ay + hgt, { color: GRAPHITE, width: 0.9, dashed: true }, { roughness: 0.3 }),
+      ];
+      pts.forEach((p) => g.appendChild(p.el));
+      return pts;
+    };
+    // three stacked blocks: data, services, interface
+    d.draw(cube(880, 352, 104, 40), { speed: 1600 });
+    d.draw(cube(880, 290, 80, 34, INK), { speed: 1600 });
+    d.draw(cube(880, 238, 56, 26, INK), { speed: 1600 });
+    const tag = (x: number, y: number, text: string) => { const t = sk.label(text, x, y, 10, { color: GRAPHITE }); t.strokes.forEach((p) => g.appendChild(p.el)); return t.strokes; };
+    const lead = (x1: number, y1: number, x2: number, y2: number) => { const l = sk.line(x1, y1, x2, y2, { color: GRAPHITE, width: 0.9 }, { roughness: 0.3 }); l.forEach((p) => g.appendChild(p.el)); return l; };
+    d.draw([...lead(972, 372, 1010, 372), ...tag(1016, 376, "DATA - POSTGRESQL")], { speed: 1800 });
+    d.draw([...lead(950, 307, 1010, 307), ...tag(1016, 311, "API - FASTAPI")], { speed: 1800 });
+    d.draw([...lead(930, 251, 1010, 251), ...tag(1016, 255, "UI - NEXT.JS")], { speed: 1800 });
+    const dim = sk.dimension(790, 456, 970, "180", { color: GRAPHITE, width: 1 });
+    dim.forEach((p) => g.appendChild(p.el));
+    d.draw(dim, { speed: 1800 });
 
     // title block, bottom right, like a real sheet
     const bx = 720, by = 470, bw = 418, c2 = 180;

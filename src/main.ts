@@ -11,7 +11,7 @@ import { educationScene } from "./sections/education";
 import { contactScene } from "./sections/contact";
 import { analytics } from "./content";
 import { C } from "./i18n";
-import { probe, url } from "./engine/assets";
+import { probe, url, exists } from "./engine/assets";
 import { scratch } from "./engine/sound";
 import type { Scene } from "./sections/scene";
 
@@ -63,6 +63,9 @@ function renderCopy() {
   for (const [k, v] of Object.entries(ui.headings)) { const h = document.querySelector<HTMLElement>(`[data-ui="h-${k}"]`); if (h) h.textContent = v; }
   const set = (key: string, text: string) => { const el = document.querySelector<HTMLElement>(`[data-ui="${key}"]`); if (el) el.textContent = text; };
   set("explore", ui.explore); set("openTo", ui.openTo); set("footer", ui.footer);
+  set("s-status", ui.strip.status); set("s-statusValue", ui.strip.statusValue); set("s-location", ui.strip.location); set("s-focus", ui.strip.focus); set("s-focusValue", ui.strip.focusValue);
+  document.querySelector<HTMLElement>('[data-copy="location"]')!.textContent = identity.location.toUpperCase();
+  document.querySelectorAll<HTMLElement>(".inspect").forEach((b) => (b.textContent = ui.inspect));
   set("f-name", ui.form.name); set("f-email", ui.form.email); set("f-message", ui.form.message); set("f-send", ui.form.send);
   document.title = `${identity.fullName} — ${identity.title}`;
 }
@@ -177,8 +180,71 @@ document.querySelector(".card-links")?.addEventListener("click", (e) => {
 // ---- hero: a stamp-style CV button when the file exists
 {
   const cv = $<HTMLAnchorElement>("cv-stamp");
-  if (hasResume) { cv.href = url(C().contact.resume); cv.hidden = false; }
+  const cvs = $<HTMLAnchorElement>("cv-strip");
+  if (hasResume) { cv.href = url(C().contact.resume); cv.hidden = false; cvs.href = cv.href; cvs.hidden = false; }
 }
+
+// ---- hover spec cards on diagram nodes
+const tip = $("tip");
+document.addEventListener("pointerover", (e) => {
+  const h = (e.target as Element).closest<SVGRectElement>(".hotspot");
+  if (!h) return;
+  tip.querySelector("b")!.textContent = h.dataset.title || "";
+  tip.querySelector("span")!.textContent = h.dataset.note || "";
+  tip.hidden = false;
+  scratch.tick();
+});
+document.addEventListener("pointermove", (e) => {
+  if (tip.hidden) return;
+  const w = tip.offsetWidth, hgt = tip.offsetHeight;
+  tip.style.left = `${Math.min(innerWidth - w - 12, e.clientX + 16)}px`;
+  tip.style.top = `${e.clientY + 18 + hgt > innerHeight ? e.clientY - hgt - 12 : e.clientY + 18}px`;
+});
+document.addEventListener("pointerout", (e) => { if ((e.target as Element).closest?.(".hotspot")) tip.hidden = true; });
+
+// ---- case-study sheet
+const drawer = $("drawer");
+function openCase(id: string) {
+  const { projects, ui } = C();
+  const p = projects.find((x) => x.id === id);
+  if (!p) return;
+  drawer.querySelector("h3")!.textContent = p.name;
+  const shots = (p.images || []).filter((f) => exists(f));
+  const body = drawer.querySelector(".sheet-body")!;
+  body.innerHTML = `
+    <h4>${esc(ui.problem)}</h4><p>${esc(p.problem)}</p>
+    <h4>${esc(ui.contribution)}</h4><p>${esc(p.contribution)}</p>
+    ${p.outcome ? `<h4>${esc(ui.outcome)}</h4><p>${esc(p.outcome)}</p>` : ""}
+    <h4>${esc(ui.features)}</h4><ul>${p.features.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>
+    ${p.tradeoffs?.length ? `<h4>${esc(ui.tradeoffs)}</h4><ul>${p.tradeoffs.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>` : ""}
+    <h4>${esc(ui.stack)}</h4><div class="tags">${[...p.stack, ...(p.integrations || [])].map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+    ${shots.length ? `<h4>${esc(ui.screenshots)}</h4><div class="shots">${shots.map((f) => `<img src="${esc(url(f))}" alt="${esc(p.name)} screenshot" loading="lazy">`).join("")}</div>` : ""}
+    ${p.links?.length ? `<h4>LINKS</h4><p>${p.links.map((l) => `<a href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join(" · ")}</p>` : ""}`;
+  drawer.hidden = false;
+  document.body.style.overflow = "hidden";
+  (drawer.querySelector(".close") as HTMLElement).focus();
+}
+function closeCase() { drawer.hidden = true; document.body.style.overflow = ""; }
+document.querySelectorAll<HTMLButtonElement>(".inspect").forEach((b) => b.addEventListener("click", () => openCase(b.dataset.project!)));
+drawer.addEventListener("click", (e) => { if ((e.target as HTMLElement).closest("[data-close]")) closeCase(); });
+window.addEventListener("keydown", (e) => { if (e.key === "Escape" && !drawer.hidden) closeCase(); });
+
+// ---- hero wireframe tilts with the mouse (desktop only)
+if (matchMedia("(pointer: fine)").matches) {
+  const iso = document.querySelector<SVGGElement>("#home .iso");
+  const sheet = document.querySelector<HTMLElement>("#home svg.stage");
+  if (iso && sheet) {
+    sheet.addEventListener("pointermove", (e) => {
+      const r = sheet.getBoundingClientRect();
+      const dx = (e.clientX - r.left) / r.width - 0.5, dy = (e.clientY - r.top) / r.height - 0.5;
+      gsap.to(iso, { x: dx * 14, y: dy * 10, skewX: dx * 3, skewY: dy * 2, duration: 0.6, ease: "power2.out" });
+    });
+    sheet.addEventListener("pointerleave", () => gsap.to(iso, { x: 0, y: 0, skewX: 0, skewY: 0, duration: 0.8, ease: "power2.out" }));
+  }
+}
+
+// ---- soft paper tick on hovering interactive things (only when sound is on)
+document.addEventListener("pointerover", (e) => { if ((e.target as Element).closest?.("a, button, .filters button")) scratch.tick(); });
 
 // ---- project filters by stack: hidden projects are skipped by the page order
 const filters = $("filters");
@@ -243,6 +309,7 @@ form.addEventListener("submit", async (e) => {
       const r = await fetch(contact.formEndpoint, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ name, email, message: msg }) });
       if (!r.ok) throw new Error(String(r.status));
       form.reset(); setStatus(ui.form.sent, "ok");
+      const st = $("dispatched-stamp"); st.textContent = ui.dispatched; st.classList.add("show"); setTimeout(() => st.classList.remove("show"), 1600);
     } catch { setStatus(ui.form.failed, "err"); }
     btn.disabled = false;
   } else if (contact.email) {

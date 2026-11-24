@@ -1,5 +1,10 @@
 import gsap from "gsap";
+import { CustomEase } from "gsap/CustomEase";
 import type { Stroke } from "./sketch";
+
+gsap.registerPlugin(CustomEase);
+/** A pen stroke: quick to start, settles softly at the end. */
+const PEN = CustomEase.create("pen", "0.22, 1, 0.36, 1");
 import { Pencil } from "./pencil";
 import { scratch } from "./sound";
 
@@ -76,7 +81,7 @@ export class Director {
       }
       const dur = Math.max(0.03, s.len / speed);
       // short strokes (letters) accelerate and settle like a hand; long lines run evenly
-      const ease = o.ease ?? (s.len < 140 ? "power1.inOut" : "none");
+      const ease = o.ease ?? (s.len < 600 ? PEN : "none");
       const state = { off: s.len };
       sub.to(state, {
         off: 0, duration: dur, ease,

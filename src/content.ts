@@ -34,6 +34,10 @@ export type Project = {
   features: string[];
   /** Measurable result, e.g. "Replaced 15 spreadsheets with one system". Shown only when filled. */
   outcome?: string;
+  /** Engineering decisions and trade-offs for the case-study sheet. Shown only when filled. */
+  tradeoffs?: string[];
+  /** What each diagram node did, shown as a floating spec card on hover. Keys are the node labels. */
+  nodes?: Record<string, string>;
   /** Optional screenshots under /public, e.g. "/shots/erp-1.png". Revealed with a sketch-to-image effect. */
   images?: string[];
   links?: { label: string; href: string }[];
@@ -50,6 +54,15 @@ export const projects: Project[] = [
     integrations: ["Microsoft Entra ID", "SharePoint"], // TODO verify which integrations are live
     features: ["Frontend → API → backend services → PostgreSQL", "Role-based access with Microsoft Entra ID sign-in", "Document flows connected to SharePoint", "Deployed with Docker on a VPS"],
     outcome: "", // TODO e.g. "Replaced N spreadsheets; quotations now take minutes instead of days"
+    tradeoffs: [], // TODO e.g. "FastAPI + SQLAlchemy over Django: thinner API layer, explicit schemas"
+    nodes: {
+      "FRONTEND": "Next.js / React app: forms, tables and dashboards for daily operations.",
+      "API": "FastAPI layer with typed request and response schemas.",
+      "BACKEND SERVICES": "Business rules, SQLAlchemy models and scheduled jobs.",
+      "PostgreSQL": "System of record: one schema for operations, documents and users.",
+      "ENTRA ID": "Sign-in with Microsoft Entra ID; roles mapped to ERP permissions.",
+      "SHAREPOINT": "Documents read from and written back to SharePoint libraries.",
+    },
     images: ["/shots/erp-1.png", "/shots/erp-2.png"], // add the files under public/shots; missing files are skipped
     links: [],  // TODO add live / GitHub links if public
     diagram: "erp",
@@ -61,6 +74,7 @@ export const projects: Project[] = [
     contribution: "Python tools that take validated inputs, run the calculation and produce a clear, repeatable output.",
     stack: ["Python"],
     features: ["Validated inputs", "Repeatable, documented results", "Command-line and script friendly"],
+    nodes: { "INPUTS": "Engineering inputs with units.", "VALIDATE": "Range and unit checks before any calculation.", "CALCULATE": "The calculation itself, kept pure and testable.", "REPORT": "A clear, repeatable output that can be filed." },
     images: ["/shots/calculators-1.png"],
     links: [{ label: "GitHub", href: "https://github.com/itsvineetwork-oss" }],
     diagram: "calculator",
@@ -72,6 +86,7 @@ export const projects: Project[] = [
     contribution: "Scripts and small services that run these tasks on a schedule or on demand.",
     stack: ["Python", "REST APIs", "PostgreSQL"],
     features: ["Scheduled jobs", "API and database integrations", "Fewer manual steps, fewer errors"],
+    nodes: { "PYTHON JOB": "A scheduled Python service: fetch, transform, deliver.", "REPORTS": "Recurring reports built and sent automatically.", "DATA SYNC": "Data moved between systems through their APIs.", "DOCUMENTS": "Documents generated from templates." },
     images: ["/shots/automation-1.png"],
     links: [{ label: "GitHub", href: "https://github.com/itsvineetwork-oss" }],
     diagram: "automation",
@@ -130,6 +145,12 @@ export const ui = {
   outcome: "OUTCOME",
   copied: "COPIED",
   downloadCv: "Download CV ↓",
+  inspect: "Inspect case study →",
+  caseStudy: "CASE STUDY",
+  tradeoffs: "DECISIONS & TRADE-OFFS",
+  features: "KEY FEATURES",
+  dispatched: "DISPATCHED",
+  strip: { status: "STATUS", statusValue: "OPEN TO ROLES", location: "LOCATION", focus: "FOCUS", focusValue: "FULL-STACK & AUTOMATION" },
   screenshots: "SCREENSHOTS",
   notebook: "ENGINEERING NOTEBOOK  -  SELECTED WORK",
   blueprint: "TECHNICAL BLUEPRINT  -  SCALE 1:1",

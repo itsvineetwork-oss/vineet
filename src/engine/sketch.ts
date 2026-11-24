@@ -268,6 +268,16 @@ export class Sketcher {
   /** Every stroke currently on the page. */
   strokes(): (SVGPathElement | SVGTextElement)[] { return Array.from(this.layer.querySelectorAll<SVGPathElement | SVGTextElement>("path.sk, text.sk")); }
 
+  /** An invisible hit area over a diagram node, carrying a note for the hover spec card. */
+  hotspot(x: number, y: number, w: number, h: number, title: string, note: string) {
+    const r = document.createElementNS(NS, "rect");
+    r.setAttribute("x", String(x)); r.setAttribute("y", String(y)); r.setAttribute("width", String(w)); r.setAttribute("height", String(h));
+    r.setAttribute("fill", "transparent"); r.setAttribute("class", "hotspot");
+    r.dataset.title = title; r.dataset.note = note;
+    this.svg.appendChild(r);
+    return r;
+  }
+
   /** Drop everything drawn so far. */
-  clear() { this.layer.innerHTML = ""; this.seed = 1; }
+  clear() { this.layer.innerHTML = ""; this.seed = 1; this.svg.querySelectorAll(".hotspot").forEach((h) => h.remove()); }
 }

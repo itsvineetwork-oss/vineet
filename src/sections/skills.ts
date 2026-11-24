@@ -51,7 +51,7 @@ export const skillsScene = () =>
       d.draw(icons[s.icon](sk, ix, iy), { speed: 1100 });
       d.write(sk.label(s.category.toUpperCase(), x, iy + 52, 13, { color: INK, width: 1.2 }, "center").strokes, { speed: 900 });
       s.items.forEach((item, k) => {
-        d.write(sk.text(item, x, iy + 82 + k * 22, 16, { color: INK, width: 1 }, "scripts", 1, "center").strokes, { speed: 1300, gap: 0.004 });
+        d.write(sk.text(item, x, iy + 82 + k * 22, 13, { color: INK, width: 1.2 }, "futural", 1, "center").strokes, { speed: 1300, gap: 0.004 });
       });
       const el = cols[i];
       if (el) d.reveal(el.querySelectorAll("[data-reveal]"), "-=0.2");

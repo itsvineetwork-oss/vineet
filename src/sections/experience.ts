@@ -30,7 +30,7 @@ export const experienceScene = () =>
       job.points.forEach((pt, k) => {
         const ty = y + 130 + k * 34;
         d.draw(sk.line(x - 150, ty - 6, x - 136, ty - 6, { color: RED, width: 1.4 }), { speed: 1200 });
-        d.write(sk.text(pt, x - 128, ty, 19, { color: INK, width: 1.1 }, "scripts", 1).strokes, { speed: 1300, gap: 0.004 });
+        d.write(sk.text(pt, x - 128, ty, 15, { color: INK, width: 1.2 }, "futural", 1).strokes, { speed: 1300, gap: 0.004 });
       });
       const el = items[i];
       if (el) d.reveal(el.querySelectorAll("[data-reveal]"), "-=0.2");

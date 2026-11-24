@@ -27,6 +27,21 @@ class Scratch {
     this.apply();
     return this.enabled;
   }
+  /** A very soft paper tick, for hovering interactive things. */
+  tick() {
+    if (!this.enabled || !this.ctx) return;
+    const ctx = this.ctx;
+    const len = Math.floor(ctx.sampleRate * 0.03);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 3;
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 1800;
+    const g = ctx.createGain(); g.gain.value = 0.12;
+    src.connect(hp).connect(g).connect(ctx.destination);
+    src.start();
+  }
+
   /** Called by the Director while strokes are being drawn (1) or not (0). */
   drawing(v: number) { this.target = v; this.apply(); }
   private apply() {

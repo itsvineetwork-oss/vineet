@@ -4,10 +4,13 @@ import { Director } from "../engine/director";
 import { C } from "../i18n";
 import { exists, url } from "../engine/assets";
 
-/** A node box with a title, used by the diagrams. */
+let currentNotes: Record<string, string> = {};
+
+/** A node box with a title, used by the diagrams. Nodes with a note get a hover spec card. */
 function node(sk: Sketcher, x: number, y: number, w: number, h: number, text: string, color = INK) {
   const s = sk.rect(x, y, w, h, { color, tool: "ink", width: 1.5 }, { roughness: 1.1 });
   const t = sk.label(text, x + w / 2, y + h / 2 + 5, 13, { color }, "center");
+  if (currentNotes[text]) sk.hotspot(x, y, w, h, text, currentNotes[text]);
   return [...s, ...t.strokes];
 }
 
@@ -35,6 +38,7 @@ function erpDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   d.draw(sk.arrow(ox + 560, y + 28, ox + 600, y + 28, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
   d.draw(db(sk, ox + 650, y - 4, 90, 70), { speed: 1200 });
   d.write(sk.label("PostgreSQL", ox + 650, y + 96, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
+  if (currentNotes["PostgreSQL"]) sk.hotspot(ox + 600, y - 24, 100, 125, "PostgreSQL", currentNotes["PostgreSQL"]);
   // integrations hanging off the backend
   d.draw(sk.line(ox + 460, y + 66, ox + 460, y + 104, { color: BLUE, dashed: true }), { speed: 1400 });
   d.draw(sk.line(ox + 460, y + 104, ox + 360, y + 134, { color: BLUE, width: 1 }), { speed: 1400 });
@@ -102,6 +106,7 @@ export const projectScenes = () =>
     return makeScene(`p-${p0.id}`, [1200, 520], (sk, d, section) => {
       const { ui } = C();
       const p = C().projects.find((x) => x.id === p0.id) ?? p0;
+      currentNotes = p.nodes || {};
       d.draw(sk.line(70, 20, 1130, 20, { color: GRAPHITE, width: 0.8 }, { roughness: 0.5 }), { speed: 3000, noPencil: true });
       d.write(sk.label(`0${i + 1}`, 72, 64, 22, { color: RED, width: 1.6 }).strokes, { speed: 900 });
       d.write(sk.text(p.name, 130, 66, 36, { color: INK, width: 1.8 }, "scriptc", 2).strokes, { speed: 900, gap: 0.015 });
@@ -130,5 +135,8 @@ export const projectScenes = () =>
       });
       if (shots.length) d.write(sk.label(ui.screenshots, tx, y + 10 + shots.length * 20 + 150, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
       d.reveal(revealables(section), "-=0.3", 0.05);
+      // inspect button (HTML) under the sheet
+      const btn = section.querySelector<HTMLElement>(".inspect");
+      if (btn) btn.textContent = ui.inspect;
     }, el);
   });

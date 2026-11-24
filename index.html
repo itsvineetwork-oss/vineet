@@ -45,6 +45,12 @@
       <h1 id="home-h" class="sr-only">Vineet — Software Developer | Python Programmer</h1>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
       <p class="sr-only" data-copy="tagline">Building software, automation systems, and practical engineering solutions.</p>
+      <div class="strip" id="strip" aria-label="Summary">
+        <span><b data-ui="s-status">STATUS</b> <span data-ui="s-statusValue">OPEN TO ROLES</span></span>
+        <span><b data-ui="s-location">LOCATION</b> <span data-copy="location">INDIA</span></span>
+        <span><b data-ui="s-focus">FOCUS</b> <span data-ui="s-focusValue">FULL-STACK &amp; AUTOMATION</span></span>
+        <a id="cv-strip" href="#" hidden target="_blank" rel="noopener">[ DOWNLOAD CV.PDF ↓ ]</a>
+      </div>
       <div class="copy copy-home">
         <p data-reveal><a class="cta" href="#about" data-ui="explore">Explore the sketchbook ↓</a> <a class="cta stampbtn" id="cv-stamp" href="#" hidden target="_blank" rel="noopener" data-ui="downloadCv">Download CV ↓</a></p>
       </div>
@@ -61,9 +67,9 @@
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
       <div class="filters" id="filters" role="group" aria-label="Filter by stack"></div>
       <div class="copy copy-projects">
-        <article class="project" id="p-erp"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div></article>
-        <article class="project" id="p-calculators"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div></article>
-        <article class="project" id="p-automation"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div></article>
+        <article class="project" id="p-erp"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="erp">Inspect case study →</button></p></article>
+        <article class="project" id="p-calculators"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="calculators">Inspect case study →</button></p></article>
+        <article class="project" id="p-automation"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="automation">Inspect case study →</button></p></article>
       </div>
     </section>
 
@@ -106,6 +112,16 @@
   </main>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="tip" class="tip" role="tooltip" hidden><b></b><span></span></div>
+  <div id="drawer" class="drawer" hidden>
+    <div class="drawer-veil" data-close></div>
+    <aside class="sheet" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <div class="sheet-top"><span class="eyebrow" data-ui="caseStudy">CASE STUDY</span><button type="button" class="close" data-close aria-label="Close">×</button></div>
+      <h3 id="drawer-title"></h3>
+      <div class="sheet-body"></div>
+    </aside>
+  </div>
+  <div class="stamp global" id="dispatched-stamp" aria-hidden="true">DISPATCHED</div>
 
   <footer class="foot">
     <span>© <span id="year"></span> Vineet Sharma</span>

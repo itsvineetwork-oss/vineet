@@ -15,8 +15,8 @@
 
 /* Blueprint: white ink on blue paper */
 :root[data-theme="blueprint"] {
-  --paper: #1f3f7a;
-  --paper-2: #1a366a;
+  --paper: #0b2545;
+  --paper-2: #0a1f3a;
   --ink: #f3f6fb;
   --graphite: #c7d3e8;
   --red: #ffb15c;
@@ -35,6 +35,7 @@
 :root[data-theme="blueprint"] .topbar { background: color-mix(in srgb, var(--paper) 88%, transparent); }
 :root[data-theme="blueprint"] .tools .resume { background: var(--ink); color: var(--paper); }
 :root[data-theme="blueprint"] .cta:hover { background: var(--ink); color: var(--paper); }
+.cta[hidden], .strip a[hidden], .resume[hidden] { display: none; }
 :root[data-theme="blueprint"] /* contact form */
 .cform { opacity: 0; margin-top: 14px; max-width: 560px; display: grid; gap: 12px; font-family: var(--hand); }
 .cform label { display: grid; gap: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--graphite); }
@@ -52,6 +53,21 @@
 
 .toast { background: var(--ink); color: var(--paper); }
 :root[data-theme="blueprint"] .tools button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* paper grain + vignette over everything (very faint) */
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 40; opacity: .045; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 39; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.08) 100%); }
+:root[data-theme="blueprint"] body::before { mix-blend-mode: screen; opacity: .07; }
+:root[data-theme="blueprint"] body::after { background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.28) 100%); }
+body, .topbar, .tools button, .cta, .filters button, .cform input, .cform textarea { transition: background-color .5s ease, color .5s ease, border-color .5s ease; }
+
+/* drafting cursor on desktop: hairline crosshair, red ring over interactive things */
+@media (pointer: fine) {
+  body { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 2v8M12 14v8M2 12h8M14 12h8' stroke='%231d1d1b' stroke-width='1'/%3E%3C/svg%3E") 12 12, crosshair; }
+  a, button, .hotspot, .card-links .row, label, input, textarea, .filters button { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='7' fill='none' stroke='%23b8392b' stroke-width='1.6'/%3E%3Cpath d='M13 2v5M13 19v5M2 13h5M19 13h5' stroke='%23b8392b' stroke-width='1'/%3E%3C/svg%3E") 13 13, pointer; }
+  :root[data-theme="blueprint"] body { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 2v8M12 14v8M2 12h8M14 12h8' stroke='%23f3f6fb' stroke-width='1'/%3E%3C/svg%3E") 12 12, crosshair; }
+}
 
 * { box-sizing: border-box; }
 html { scroll-padding-top: var(--bar, 64px); }
@@ -119,6 +135,7 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 .copy-home { margin-top: -10px; }
 .cta { display: inline-block; font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; text-decoration: none; border: 1.5px solid var(--ink); padding: 10px 18px; border-radius: 3px; transform: rotate(-0.6deg); }
 .cta:hover { background: var(--ink); color: var(--paper); }
+.cta[hidden], .strip a[hidden], .resume[hidden] { display: none; }
 
 .copy-projects { max-width: none; display: grid; gap: 18px; margin-top: 0; }
 .project { padding-top: 6px; }
@@ -165,7 +182,42 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 .card-links .row { position: absolute; display: block; cursor: pointer; border-radius: 3px; }
 .card-links .row:hover, .card-links .row:focus-visible { background: color-mix(in srgb, var(--red) 10%, transparent); outline: none; }
 .stamp { position: absolute; left: 70%; top: 56%; transform: rotate(-12deg) scale(0.6); font-family: var(--mono); font-size: 18px; letter-spacing: .3em; color: var(--red); border: 3px double var(--red); padding: 6px 12px; border-radius: 4px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
-.stamp.show { opacity: .95; transform: rotate(-12deg) scale(1); }
+.stamp.show { opacity: .95; animation: stampIn .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes stampIn { from { transform: rotate(-12deg) scale(1.6); opacity: 0; } 60% { transform: rotate(-12deg) scale(.95); opacity: 1; } to { transform: rotate(-12deg) scale(1); opacity: .95; } }
+.stamp.global { position: fixed; left: 50%; top: 50%; margin: -24px 0 0 -90px; font-size: 24px; z-index: 35; }
+
+/* spec strip under the hero sheet */
+.strip { opacity: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: center; margin: 4px 0 14px; padding: 10px 14px; border: 1px solid var(--line); font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+.strip b { color: var(--graphite); font-weight: 500; margin-right: 6px; }
+.strip a { color: var(--red); text-decoration: none; margin-left: auto; border-bottom: 1px solid transparent; }
+.strip a:hover { border-bottom-color: var(--red); }
+.is-drawn .strip, .no-motion .strip { opacity: 1; }
+
+/* hover spec card for diagram nodes */
+.hotspot { pointer-events: all; }
+.tip { position: fixed; z-index: 36; max-width: 280px; background: var(--paper); border: 1.5px solid var(--ink); padding: 10px 12px; font-family: var(--hand); font-size: 15px; line-height: 1.45; box-shadow: 4px 4px 0 var(--line); pointer-events: none; transform: rotate(-.6deg); }
+.tip b { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: var(--red); margin-bottom: 4px; }
+
+/* case-study sheet */
+.inspect { font: 12px var(--mono); letter-spacing: .16em; text-transform: uppercase; background: transparent; border: 1.5px solid var(--ink); color: var(--ink); padding: 8px 14px; border-radius: 3px; cursor: pointer; transform: rotate(-.4deg); }
+.inspect:hover { background: var(--ink); color: var(--paper); }
+.drawer { position: fixed; inset: 0; z-index: 45; display: grid; grid-template-columns: 1fr min(620px, 100%); }
+.drawer[hidden] { display: none; }
+.drawer-veil { background: rgba(0,0,0,.25); }
+.sheet { background: var(--paper); border-left: 2px solid var(--ink); padding: 28px 32px; overflow-y: auto; font-family: var(--hand); font-size: 17px; line-height: 1.5; animation: sheetIn .5s cubic-bezier(.22, 1, .36, 1); }
+@keyframes sheetIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.sheet-top { display: flex; justify-content: space-between; align-items: center; }
+.sheet .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .28em; color: var(--graphite); }
+.sheet .close { border: 1.5px solid var(--ink); background: transparent; color: var(--ink); width: 36px; height: 36px; cursor: pointer; font-size: 18px; }
+.sheet h3 { font-family: var(--hand); font-size: 30px; margin: 14px 0 10px; font-weight: 400; }
+.sheet h4 { font-family: var(--mono); font-size: 11px; letter-spacing: .25em; text-transform: uppercase; color: var(--graphite); margin: 18px 0 6px; font-weight: 500; }
+.sheet p { margin: 0; }
+.sheet ul { margin: 0; padding-left: 1.2em; }
+.sheet .shots { display: grid; gap: 10px; margin-top: 8px; }
+.sheet .shots img { width: 100%; border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--line); }
+.sheet .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.sheet .tags span { font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); padding: 3px 8px; }
+@media (max-width: 700px) { .drawer { grid-template-columns: 1fr; } .drawer-veil { display: none; } }
 .stampbtn { border: 2px double var(--red); color: var(--red); transform: rotate(1.2deg); margin-left: 10px; }
 .stampbtn:hover { background: var(--red); color: var(--paper); }
 .plinks { margin: -6px 0 0; }

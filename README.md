@@ -59,6 +59,13 @@ The first sheet draws itself when the site opens. After that, drawing is tied to
 - Keyboard: skip link, focusable navigation and buttons.
 - No WebGL, no large assets. The whole site is ~76 kB gzipped.
 
+## Polish features
+
+- Paper grain and vignette overlay; Blueprint mode is a cyanotype blue with an engineering grid; hairline crosshair cursor on desktop.
+- Hero: isometric wireframe that tilts with the mouse, spec strip (status, location, focus, CV link).
+- Diagram nodes show a spec card on hover (`nodes` in each project); "Inspect case study" opens a slide-over sheet (features, `tradeoffs`, `outcome`, screenshots, links).
+- Pen easing on every stroke; a soft paper tick on hover when Sound is on; red stamps (COPIED, DISPATCHED) bounce in.
+
 ## Filters, analytics, domain
 
 - **Project filters**: chips above the projects are built from each project's `stack` and `integrations`. Filtered-out projects are skipped by the one-page-at-a-time order.
