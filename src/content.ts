@@ -12,8 +12,8 @@ export const identity = {
 };
 
 export const about = {
-  /** Photo under /public (3:4 or square). Sketched first, then revealed. If the file is missing, a monogram is drawn instead. */
-  photo: "/portrait.jpg",
+  /** Optional photo under /public (3:4). Used only when no traced portrait exists in src/data/portrait.json; otherwise a monogram. */
+  photo: "",
   intro:
     "I am a software developer and Python programmer. I build ERP systems, engineering calculators and automation tools that people use every day at work.",
   approach: [

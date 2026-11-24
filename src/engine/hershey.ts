@@ -56,7 +56,7 @@ function scalePath(d: string, s: number, dx: number, dy: number) {
 }
 
 /** Catmull-Rom through the points, split at sharp corners so letters like E, L and N keep their angles. */
-function smoothPolyline(pts: Pt[]): string {
+export function smoothPolyline(pts: Pt[]): string {
   const f = (n: number) => n.toFixed(2);
   if (pts.length < 3) return `M${f(pts[0][0])},${f(pts[0][1])}` + pts.slice(1).map((p) => ` L${f(p[0])},${f(p[1])}`).join("");
   // split into runs at corners sharper than ~65 degrees

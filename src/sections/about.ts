@@ -2,6 +2,8 @@ import { makeScene } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
 import { C } from "../i18n";
 import { exists, url } from "../engine/assets";
+import { smoothPolyline } from "../engine/hershey";
+import portrait from "../data/portrait.json";
 
 export const aboutScene = () =>
   makeScene("about", [1200, 640], (sk, d) => {
@@ -12,7 +14,17 @@ export const aboutScene = () =>
 
     // left column (x 80..440): a real photo, sketched then revealed, or a clean monogram medallion
     const cx = 260, cy = 370;
-    if (exists(about.photo)) {
+    if (portrait.contours.length) {
+      // the portrait is drawn from traced pencil lines: contours first, then two passes of hatching for tone
+      const ox = cx - portrait.w / 2, oy = cy - 180;
+      d.draw(sk.rect(ox - 10, oy - 10, portrait.w + 20, portrait.h + 20, { color: GRAPHITE, width: 1 }, { roughness: 1.2 }), { speed: 2000 });
+      const lines = portrait.contours.map((c) => sk.path(smoothPolyline(c.map(([x, y]) => [x + ox, y + oy] as [number, number])), { tool: "ink", color: INK, width: 1.4 }));
+      d.draw(lines, { speed: 2200, gap: 0.002 });
+      const hatchPath = (groups: number[][][], st: { width: number; opacity: number }) =>
+        groups.map((segs) => sk.path(segs.map(([x1, y1, x2, y2]) => `M${(x1 + ox).toFixed(1)},${(y1 + oy).toFixed(1)} L${(x2 + ox).toFixed(1)},${(y2 + oy).toFixed(1)}`).join(" "), { tool: "pencil", color: GRAPHITE, ...st }));
+      d.draw(hatchPath(portrait.hatch, { width: 0.9, opacity: 0.7 }), { speed: 7000, gap: 0, noPencil: true });
+      d.draw(hatchPath(portrait.cross, { width: 0.9, opacity: 0.8 }), { speed: 7000, gap: 0, noPencil: true });
+    } else if (exists(about.photo)) {
       const r = sk.image(url(about.photo), cx - 140, cy - 180, 280, 340, { color: GRAPHITE });
       d.draw(r.frame, { speed: 1600 }).draw(r.hatch, { speed: 6000, noPencil: true }).revealImage(r);
     } else {
