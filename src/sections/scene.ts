@@ -13,6 +13,10 @@ export type Scene = {
   /** Jump to the fully drawn state. */
   finish: () => void;
   erased: boolean;
+  /** True once the drawing has completed (or was finished / skipped). */
+  done: boolean;
+  /** Called whenever the drawing completes. */
+  onDone?: () => void;
 };
 
 export type Builder = (sk: Sketcher, d: Director, section: HTMLElement) => void;
@@ -27,14 +31,16 @@ export function makeScene(id: string, viewBox: [number, number], build: Builder,
   svg.setAttribute("viewBox", `0 0 ${viewBox[0]} ${viewBox[1]}`);
   const sk = new Sketcher(svg);
   const pencil = new Pencil(svg);
-  let director = new Director(pencil, () => section.classList.add("is-drawn"));
+  const complete = () => { section.classList.add("is-drawn"); scene.done = true; scene.onDone?.(); };
+  let director = new Director(pencil, complete);
 
   const run = () => {
     scene.erased = false;
+    scene.done = false;
     section.classList.remove("is-drawn");
     sk.clear();
     director.tl.kill();
-    director = new Director(pencil, () => section.classList.add("is-drawn"));
+    director = new Director(pencil, complete);
     section.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => { el.style.setProperty("--wipe", "0%"); el.style.opacity = "0"; });
     build(sk, director, section);
     scene.director = director;
@@ -48,8 +54,8 @@ export function makeScene(id: string, viewBox: [number, number], build: Builder,
     gsap.to(section.querySelectorAll("[data-reveal]"), { opacity: 0, duration: 0.3 });
     return 0.5;
   };
-  const finish = () => { scene.director.finish(sk.strokes()); section.classList.add("is-drawn"); section.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => { el.style.opacity = "1"; }); };
-  const scene: Scene = { id, section, director, rebuild: run, erase, finish, erased: false };
+  const finish = () => { scene.director.finish(sk.strokes()); section.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => { el.style.opacity = "1"; }); if (!scene.done) complete(); };
+  const scene: Scene = { id, section, director, rebuild: run, erase, finish, erased: false, done: false };
   run();
   return scene;
 }

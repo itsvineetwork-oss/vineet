@@ -29,37 +29,37 @@ function erpDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   d.draw(node(sk, ox + 200, y, 110, 56, "API"), { speed: 1200 });
   d.write(sk.label("FastAPI", ox + 255, y + 76, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
   d.draw(sk.arrow(ox + 310, y + 28, ox + 360, y + 28, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
-  d.draw(node(sk, ox + 360, y - 10, 170, 76, "BACKEND SERVICES"), { speed: 1200 });
-  d.write(sk.label("SQLAlchemy · jobs", ox + 445, y + 86, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
-  d.draw(sk.arrow(ox + 530, y + 28, ox + 580, y + 28, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
-  d.draw(db(sk, ox + 630, y - 4, 90, 70), { speed: 1200 });
-  d.write(sk.label("PostgreSQL", ox + 630, y + 96, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
+  d.draw(node(sk, ox + 360, y - 10, 200, 76, "BACKEND SERVICES"), { speed: 1200 });
+  d.write(sk.label("SQLAlchemy - jobs", ox + 460, y + 86, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
+  d.draw(sk.arrow(ox + 560, y + 28, ox + 600, y + 28, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
+  d.draw(db(sk, ox + 650, y - 4, 90, 70), { speed: 1200 });
+  d.write(sk.label("PostgreSQL", ox + 650, y + 96, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
   // integrations hanging off the backend
-  d.draw(sk.line(ox + 445, y + 66, ox + 445, y + 130, { color: BLUE, dashed: true }), { speed: 1400 });
-  d.draw(node(sk, ox + 330, y + 130, 110, 40, "ENTRA ID", BLUE), { speed: 1300 });
-  d.draw(node(sk, ox + 452, y + 130, 120, 40, "SHAREPOINT", BLUE), { speed: 1300 });
-  d.draw(sk.line(ox + 385, y + 130, ox + 445, y + 100, { color: BLUE, width: 1 }), { speed: 1400 });
-  d.draw(sk.line(ox + 512, y + 130, ox + 445, y + 100, { color: BLUE, width: 1 }), { speed: 1400 });
+  d.draw(sk.line(ox + 460, y + 66, ox + 460, y + 104, { color: BLUE, dashed: true }), { speed: 1400 });
+  d.draw(sk.line(ox + 460, y + 104, ox + 360, y + 134, { color: BLUE, width: 1 }), { speed: 1400 });
+  d.draw(sk.line(ox + 460, y + 104, ox + 560, y + 134, { color: BLUE, width: 1 }), { speed: 1400 });
+  d.draw(node(sk, ox + 290, y + 134, 130, 40, "ENTRA ID", BLUE), { speed: 1300 });
+  d.draw(node(sk, ox + 480, y + 134, 160, 40, "SHAREPOINT", BLUE), { speed: 1300 });
+  // a red annotation under the database
+  d.draw(sk.arrow(ox + 708, y + 178, ox + 692, y + 62, { color: RED, width: 1.1 }, 7), { speed: 1400 });
+  d.write(sk.text("single system of record", ox + 660, y + 202, 16, { color: RED, width: 1.1 }, "scripts", 1, "center").strokes, { speed: 1000 });
   // deployment bracket
-  d.draw(sk.sketchPath(`M ${ox - 10} ${y + 200} L ${ox - 10} ${y + 212} L ${ox + 690} ${y + 212} L ${ox + 690} ${y + 200}`, { color: GRAPHITE, width: 1 }), { speed: 2000 });
-  d.write(sk.label("DOCKER ON A VPS", ox + 340, y + 232, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
-  // a red annotation
-  d.draw(sk.arrow(ox + 700, y + 150, ox + 660, y + 70, { color: RED, width: 1.1 }, 7), { speed: 1400 });
-  d.write(sk.text("single system of record", ox + 560, y + 178, 17, { color: RED, width: 1.1 }, "scripts").strokes, { speed: 1000 });
+  d.draw(sk.sketchPath(`M ${ox - 10} ${y + 222} L ${ox - 10} ${y + 234} L ${ox + 700} ${y + 234} L ${ox + 700} ${y + 222}`, { color: GRAPHITE, width: 1 }), { speed: 2000 });
+  d.write(sk.label("DOCKER ON A VPS", ox + 345, y + 254, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
 }
 
 function calculatorDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   const y = oy + 40;
-  d.draw(node(sk, ox, y, 130, 50, "INPUTS"), { speed: 1200 });
-  d.draw(sk.arrow(ox + 130, y + 25, ox + 190, y + 25, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
-  d.draw(node(sk, ox + 190, y - 10, 170, 70, "VALIDATE"), { speed: 1200 });
-  d.draw(sk.arrow(ox + 360, y + 25, ox + 420, y + 25, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
-  d.draw(node(sk, ox + 420, y - 10, 170, 70, "CALCULATE"), { speed: 1200 });
-  d.draw(sk.arrow(ox + 590, y + 25, ox + 650, y + 25, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
-  d.draw(node(sk, ox + 650, y, 130, 50, "REPORT"), { speed: 1200 });
+  d.draw(node(sk, ox, y, 110, 50, "INPUTS"), { speed: 1200 });
+  d.draw(sk.arrow(ox + 110, y + 25, ox + 150, y + 25, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
+  d.draw(node(sk, ox + 150, y - 10, 150, 70, "VALIDATE"), { speed: 1200 });
+  d.draw(sk.arrow(ox + 300, y + 25, ox + 340, y + 25, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
+  d.draw(node(sk, ox + 340, y - 10, 150, 70, "CALCULATE"), { speed: 1200 });
+  d.draw(sk.arrow(ox + 490, y + 25, ox + 530, y + 25, { color: GRAPHITE, width: 1.3 }), { speed: 1400 });
+  d.draw(node(sk, ox + 530, y, 110, 50, "REPORT"), { speed: 1200 });
   // a formula and a small graph underneath
-  d.write(sk.text("stress = F / A", ox + 200, y + 140, 28, { color: INK, width: 1.5 }, "timesi").strokes, { speed: 900 });
-  const gx = ox + 470, gy = y + 90;
+  d.write(sk.text("stress = F / A", ox + 120, y + 150, 28, { color: INK, width: 1.5 }, "timesi").strokes, { speed: 900 });
+  const gx = ox + 400, gy = y + 90;
   d.draw([...sk.arrow(gx, gy + 90, gx + 200, gy + 90, { color: GRAPHITE }), ...sk.arrow(gx, gy + 90, gx, gy, { color: GRAPHITE })], { speed: 1500 });
   d.draw(sk.curve([[gx + 10, gy + 80], [gx + 60, gy + 60], [gx + 120, gy + 55], [gx + 180, gy + 15]], { color: RED, width: 1.6 }), { speed: 1200 });
   d.write(sk.label("python", gx + 100, gy + 110, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
@@ -80,7 +80,7 @@ function automationDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   });
   d.draw(db(sk, ox + 670, y - 20, 80, 70), { speed: 1200 });
   d.draw(sk.arrow(ox + 580, y + 24, ox + 626, y + 24, { color: GRAPHITE, dashed: true }), { speed: 1400 });
-  d.write(sk.text("hours -> minutes", ox + 440, y + 190, 20, { color: RED, width: 1.1 }, "scripts").strokes, { speed: 1000 });
+  d.write(sk.text("hours -> minutes", ox + 440, y + 186, 20, { color: RED, width: 1.1 }, "scripts").strokes, { speed: 1000 });
 }
 
 const diagrams = { erp: erpDiagram, calculator: calculatorDiagram, automation: automationDiagram };
@@ -97,14 +97,14 @@ export const projectsScene = () =>
 export const projectScenes = () =>
   projects.map((p, i) => {
     const el = document.getElementById(`p-${p.id}`) as HTMLElement;
-    return makeScene(`p-${p.id}`, [1200, 440], (sk, d, section) => {
+    return makeScene(`p-${p.id}`, [1200, 500], (sk, d, section) => {
       d.draw(sk.line(70, 20, 1130, 20, { color: GRAPHITE, width: 0.8 }, { roughness: 0.5 }), { speed: 3000, noPencil: true });
       d.write(sk.label(`0${i + 1}`, 72, 64, 22, { color: RED, width: 1.6 }).strokes, { speed: 900 });
       d.write(sk.text(p.name, 130, 66, 36, { color: INK, width: 1.8 }, "scriptc", 2).strokes, { speed: 900, gap: 0.015 });
       if (p.diagram) diagrams[p.diagram](sk, d, 60, 90);
 
       // notes column
-      const tx = 850, tw = 290;
+      const tx = 830, tw = 300;
       let y = 110;
       const block = (label: string, text: string) => {
         d.write(sk.label(label, tx, y, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
@@ -114,7 +114,9 @@ export const projectScenes = () =>
       };
       block("PROBLEM", p.problem);
       block("MY CONTRIBUTION", p.contribution);
-      block("STACK", [...p.stack, ...(p.integrations || [])].join(", "));
+      // stack runs under the diagram, where there is room for the long list
+      d.write(sk.label("STACK", 72, 424, 10, { color: GRAPHITE }).strokes, { speed: 1000 });
+      d.write(sk.paragraph([...p.stack, ...(p.integrations || [])].join(", "), 72, 446, 14, 740, { color: INK }).strokes, { speed: 1800, gap: 0.002 });
 
       (p.images || []).slice(0, 2).forEach((src, j) => {
         const r = sk.image(src, 560 + j * 20, 300 + j * 20, 200, 120, { color: GRAPHITE });

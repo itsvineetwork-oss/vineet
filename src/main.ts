@@ -48,13 +48,58 @@ function applyMotion() {
 }
 applyMotion();
 
-// ---- scroll-linked playback: a section draws itself when it enters the viewport
+// ---- one page at a time: a section may only draw once every section before it is drawn,
+//      and the visitor cannot scroll past a page that is still being drawn (Finish skips ahead).
+const index = (s: Scene) => scenes.indexOf(s);
+const previousDone = (s: Scene) => scenes.slice(0, index(s)).every((x) => x.done);
+const pending = new Set<Scene>();
+const inView = (s: Scene) => { const r = s.section.getBoundingClientRect(); return r.top < innerHeight * 0.72 && r.bottom > 0; };
+const toast = document.getElementById("toast")!;
+let toastTimer = 0;
+const say = (msg: string) => { toast.textContent = msg; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1800); };
+
+function start(s: Scene) {
+  if (!motion) return;
+  if (!previousDone(s)) { pending.add(s); return; }
+  pending.delete(s);
+  if (s.erased) s.rebuild();
+  played.add(s.id);
+  s.director.play();
+}
+scenes.forEach((s) => {
+  s.onDone = () => { for (const p of [...pending]) if (previousDone(p) && inView(p)) start(p); };
+});
+
+/** The page the visitor is held on: the first section that has started but not finished. */
+const gate = () => scenes.find((s) => played.has(s.id) && !s.done && !s.erased);
+let clamping = false;
+const clampScroll = () => {
+  if (!motion || clamping) return;
+  const g = gate();
+  if (!g) return;
+  const r = g.section.getBoundingClientRect();
+  const bottom = r.bottom + scrollY;
+  const top = r.top + scrollY;
+  const limit = Math.max(top - 56, bottom - innerHeight + 8);
+  if (scrollY > limit) { clamping = true; window.scrollTo(0, limit); clamping = false; }
+};
+window.addEventListener("scroll", clampScroll, { passive: true });
+window.addEventListener("wheel", (e) => {
+  if (!motion || e.deltaY <= 0) return;
+  const g = gate();
+  if (!g) return;
+  const r = g.section.getBoundingClientRect();
+  const limit = Math.max(r.top + scrollY - 56, r.bottom + scrollY - innerHeight + 8);
+  if (scrollY >= limit - 1) { e.preventDefault(); say("This page is still being drawn. Wait, or press Finish."); }
+}, { passive: false });
+
+// ---- scroll-linked playback: a section draws itself when it enters the viewport (in order)
 scenes.forEach((s) => {
   ScrollTrigger.create({
     trigger: s.section,
     start: "top 72%",
-    onEnter: () => { current = s; if (motion && (!played.has(s.id) || s.erased)) { if (s.erased) s.rebuild(); played.add(s.id); s.director.play(); } },
-    onEnterBack: () => { current = s; if (motion && s.erased) { s.rebuild(); s.director.play(); } },
+    onEnter: () => { current = s; if (motion && (!played.has(s.id) || s.erased)) start(s); },
+    onEnterBack: () => { current = s; if (motion && s.erased) start(s); },
   });
   ScrollTrigger.create({
     trigger: s.section, start: "top 50%", end: "bottom 50%",
@@ -69,6 +114,13 @@ document.querySelectorAll<HTMLAnchorElement>('.topbar nav a, a.cta, a.logo').for
     const s = byId.get(id);
     if (!s) return;
     e.preventDefault();
+    // moving forward is only allowed once every page before the target is drawn
+    const g = gate();
+    if (motion && g && index(s) > index(g)) { say("Finish this page first (or press Finish)."); return; }
+    if (motion && index(s) > 0 && !previousDone(s)) {
+      // mark the skipped pages as complete so the order stays consistent
+      scenes.slice(0, index(s)).forEach((x) => { if (!x.done) { x.finish(); played.add(x.id); } });
+    }
     history.replaceState(null, "", `#${id}`);
     const go = () => {
       current = s;
@@ -85,7 +137,7 @@ document.querySelectorAll<HTMLAnchorElement>('.topbar nav a, a.cta, a.logo').for
 });
 
 // ---- toolbar
-document.getElementById("finish")!.addEventListener("click", () => { played.add(current.id); current.finish(); });
+document.getElementById("finish")!.addEventListener("click", () => { const s = gate() ?? current; played.add(s.id); s.finish(); });
 motionBtn.addEventListener("click", () => {
   motion = !motion;
   try { localStorage.setItem("motion", motion ? "on" : "off"); } catch {}
@@ -98,6 +150,8 @@ soundBtn.addEventListener("click", () => { const on = scratch.toggle(); soundBtn
 // ---- deep link on load
 if (location.hash && byId.has(location.hash.slice(1))) {
   const s = byId.get(location.hash.slice(1))!;
+  // pages before a deep-linked one count as drawn, so the gate lets the visitor land there
+  scenes.slice(0, index(s)).forEach((x) => { x.finish(); played.add(x.id); });
   requestAnimationFrame(() => { s.section.scrollIntoView(); current = s; });
 }
 window.addEventListener("resize", () => ScrollTrigger.refresh());
