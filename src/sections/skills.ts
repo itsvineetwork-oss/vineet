@@ -45,5 +45,4 @@ export const skillsScene = () =>
       const el = cols[i];
       if (el) d.reveal(el.querySelectorAll("[data-reveal]"), "-=0.2");
     });
-    d.reveal(revealables(section).length ? [] : [], "+=0");
-  });
+      });

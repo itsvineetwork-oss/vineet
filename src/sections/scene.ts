@@ -54,7 +54,15 @@ export function makeScene(id: string, viewBox: [number, number], build: Builder,
     gsap.to(section.querySelectorAll("[data-reveal]"), { opacity: 0, duration: 0.3 });
     return 0.5;
   };
-  const finish = () => { scene.director.finish(sk.strokes()); section.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => { el.style.opacity = "1"; }); if (!scene.done) complete(); };
+  const finish = () => {
+    const paths = sk.strokes();
+    gsap.killTweensOf(paths);
+    gsap.killTweensOf(section.querySelectorAll("[data-reveal]"));
+    scene.erased = false;
+    scene.director.finish(paths);
+    section.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => { el.style.opacity = "1"; el.style.setProperty("--wipe", "100%"); });
+    if (!scene.done) complete();
+  };
   const scene: Scene = { id, section, director, rebuild: run, erase, finish, erased: false, done: false };
   run();
   return scene;

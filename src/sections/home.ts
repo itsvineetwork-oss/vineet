@@ -26,7 +26,7 @@ export const home = () =>
       ...sk.rect(lx + 12, ly + 12, 236, 136, { color: GRAPHITE, width: 1 }),
       ...sk.polygon([[lx - 30, ly + 160], [lx + 290, ly + 160], [lx + 310, ly + 190], [lx - 50, ly + 190]], { color: INK, tool: "ink", width: 1.6 }),
       ...sk.line(lx + 95, ly + 175, lx + 165, ly + 175, { color: GRAPHITE }),
-    ], { speed: 1400, at: "-=0.8" });
+    ], { speed: 1400 });
     d.draw([
       ...sk.line(lx + 32, ly + 42, lx + 120, ly + 42, { color: GRAPHITE }),
       ...sk.line(lx + 50, ly + 62, lx + 190, ly + 62, { color: GRAPHITE }),

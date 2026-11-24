@@ -101,6 +101,13 @@ main { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
   .topbar nav { grid-column: 1 / -1; justify-content: flex-start; gap: 14px; }
   .tools { justify-self: end; }
 }
+@media (max-width: 700px) {
+  /* the drawn text is too small on a phone, so the real copy is shown under each drawing */
+  .copy.sr-only, .project dl.sr-only, .project h3.sr-only { position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; }
+  .copy.sr-only { margin-top: 8px; }
+  .project h3.sr-only { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--graphite); margin: 6px 0; }
+  [data-reveal] { opacity: 1 !important; clip-path: none !important; }
+}
 @media (max-width: 760px) {
   .topbar nav { gap: 10px; }
   .topbar nav a { font-size: 10px; letter-spacing: .1em; }

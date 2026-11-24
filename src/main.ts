@@ -142,7 +142,13 @@ motionBtn.addEventListener("click", () => {
   motion = !motion;
   try { localStorage.setItem("motion", motion ? "on" : "off"); } catch {}
   applyMotion();
-  if (motion) { scenes.forEach((s) => { s.rebuild(); }); played.clear(); ScrollTrigger.refresh(); current.rebuild(); played.add(current.id); current.director.play(); }
+  if (motion) {
+    played.clear();
+    pending.clear();
+    scenes.forEach((s) => { s.rebuild(); if (index(s) < index(current)) { s.finish(); played.add(s.id); } });
+    ScrollTrigger.refresh();
+    start(current);
+  }
 });
 const soundBtn = document.getElementById("sound") as HTMLButtonElement;
 soundBtn.addEventListener("click", () => { const on = scratch.toggle(); soundBtn.textContent = `Sound: ${on ? "on" : "off"}`; soundBtn.setAttribute("aria-pressed", String(on)); });
