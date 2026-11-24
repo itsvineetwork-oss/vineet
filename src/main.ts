@@ -86,16 +86,30 @@ if (!motion) scenes.forEach((s) => s.finish());
 //      Scroll fast and it draws fast; scroll back up and it un-draws.
 const triggers = new Map<Scene, ScrollTrigger>();
 if (motion) {
-  scenes.forEach((s) => {
+  const LINE = 0.84; // a page draws while it travels from the bottom of the screen up to this line
+  scenes.forEach((s, i) => {
+    // the Projects heading ends where the first project page begins; every other page ends at its own bottom
+    const endEl = s.id === "projects" ? scenes[i + 1].section : s.section;
     const st = ScrollTrigger.create({
       trigger: s.section,
-      start: "top 82%",
-      end: "bottom 45%",
-      scrub: 0.5,
+      // a page is complete before the next page crosses the same line, so pages never draw at the same time;
+      // near the end of the document the range is clamped so the last page can still finish
+      start: () => {
+        const top = s.section.getBoundingClientRect().top + scrollY - innerHeight * LINE;
+        const end = endEnd();
+        return Math.max(0, Math.min(top, end - 200));
+      },
+      end: () => endEnd(),
+      scrub: 0.4,
       animation: s.director.tl,
       onUpdate: (self) => { const d = self.progress >= 0.999; s.done = d; s.section.classList.toggle("is-drawn", d); },
     });
     triggers.set(s, st);
+    function endEnd() {
+      const r = endEl.getBoundingClientRect();
+      const px = (s.id === "projects" ? r.top : r.bottom) + scrollY - innerHeight * LINE;
+      return Math.min(px, ScrollTrigger.maxScroll(window));
+    }
   });
 }
 scenes.forEach((s) => {
