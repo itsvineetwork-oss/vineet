@@ -2,6 +2,58 @@ import { Sketcher, INK, GRAPHITE, RED, BLUE, type Stroke } from "../engine/sketc
 
 /** Small hand-drawn illustrations used to fill the margins of the sheets. Every one returns strokes to draw. */
 
+/** A waving hand: palm, four fingers, thumb, and motion lines. */
+export function wavingHand(sk: Sketcher, x: number, y: number, s = 1, color = INK): Stroke[] {
+  const P = (px: number, py: number) => `${(x + px * s).toFixed(1)},${(y + py * s).toFixed(1)}`;
+  return [
+    // wrist + palm outline
+    ...sk.sketchPath(`M${P(14, 70)} C${P(2, 60)} ${P(0, 40)} ${P(6, 26)} L${P(18, 0)} C${P(21, -6)} ${P(29, -5)} ${P(28, 2)} L${P(23, 26)}`, { color, tool: "ink", width: 1.6 }, { roughness: 0.6 }),
+    ...sk.sketchPath(`M${P(23, 26)} L${P(31, -6)} C${P(33, -12)} ${P(41, -11)} ${P(40, -4)} L${P(35, 24)}`, { color, tool: "ink", width: 1.6 }, { roughness: 0.6 }),
+    ...sk.sketchPath(`M${P(35, 24)} L${P(42, -2)} C${P(44, -8)} ${P(52, -7)} ${P(50, 0)} L${P(45, 26)}`, { color, tool: "ink", width: 1.6 }, { roughness: 0.6 }),
+    ...sk.sketchPath(`M${P(45, 26)} L${P(50, 8)} C${P(52, 2)} ${P(60, 3)} ${P(58, 10)} L${P(54, 40)} C${P(52, 56)} ${P(44, 70)} ${P(30, 72)} L${P(14, 70)}`, { color, tool: "ink", width: 1.6 }, { roughness: 0.6 }),
+    // thumb
+    ...sk.sketchPath(`M${P(8, 30)} C${P(-6, 36)} ${P(-4, 48)} ${P(6, 52)}`, { color, tool: "ink", width: 1.5 }, { roughness: 0.6 }),
+    // palm crease
+    ...sk.sketchPath(`M${P(16, 44)} C${P(26, 40)} ${P(38, 42)} ${P(48, 46)}`, { color: GRAPHITE, width: 1 }, { roughness: 0.5 }),
+    // motion lines
+    ...sk.sketchPath(`M${P(66, -2)} L${P(74, -8)} M${P(68, 10)} L${P(78, 8)} M${P(-8, 6)} L${P(-16, 0)} M${P(-10, 18)} L${P(-20, 16)}`, { color: RED, width: 1.3 }, { roughness: 0.4 }),
+  ];
+}
+
+/** A laptop seen from the front, with code lines on the screen. */
+export function laptop(sk: Sketcher, x: number, y: number, w = 220, color = INK): Stroke[] {
+  const h = w * 0.62;
+  return [
+    ...sk.rect(x, y, w, h, { color, tool: "ink", width: 1.5 }, { roughness: 0.8 }),
+    ...sk.rect(x + 10, y + 10, w - 20, h - 20, { color: GRAPHITE, width: 0.9 }, { roughness: 0.4 }),
+    ...sk.polygon([[x - 26, y + h], [x + w + 26, y + h], [x + w + 40, y + h + 22], [x - 40, y + h + 22]], { color, tool: "ink", width: 1.5 }, { roughness: 0.8 }),
+    ...sk.line(x + w / 2 - 28, y + h + 11, x + w / 2 + 28, y + h + 11, { color: GRAPHITE, width: 1 }),
+    ...sk.line(x + 26, y + 32, x + 96, y + 32, { color: GRAPHITE, width: 1.1 }),
+    ...sk.line(x + 40, y + 48, x + 150, y + 48, { color: GRAPHITE, width: 1.1 }),
+    ...sk.line(x + 40, y + 64, x + 120, y + 64, { color: BLUE, width: 1.1 }),
+    ...sk.line(x + 40, y + 80, x + 170, y + 80, { color: GRAPHITE, width: 1.1 }),
+    ...sk.line(x + 26, y + 96, x + 80, y + 96, { color: GRAPHITE, width: 1.1 }),
+    ...sk.line(x + 40, y + 112, x + 140, y + 112, { color: RED, width: 1.1 }),
+  ];
+}
+
+/** A pencil lying at an angle. */
+export function pencilDoodle(sk: Sketcher, x: number, y: number, len = 120, angle = -0.35): Stroke[] {
+  const c = Math.cos(angle), s = Math.sin(angle);
+  const P = (t: number, o: number): [number, number] => [x + t * c - o * s, y + t * s + o * c];
+  const body: [number, number][] = [P(0, -6), P(len, -6), P(len, 6), P(0, 6)];
+  return [
+    ...sk.polygon(body, { color: INK, tool: "ink", width: 1.3 }, { roughness: 0.6 }),
+    ...sk.line(...P(len, -6), ...P(len + 18, 0), { color: INK, tool: "ink", width: 1.3 }),
+    ...sk.line(...P(len, 6), ...P(len + 18, 0), { color: INK, tool: "ink", width: 1.3 }),
+    ...sk.line(...P(len + 12, -2), ...P(len + 18, 0), { color: INK, tool: "ink", width: 2 }),
+    ...sk.line(...P(len + 12, 2), ...P(len + 18, 0), { color: INK, tool: "ink", width: 2 }),
+    ...sk.line(...P(0, -6), ...P(0, 6), { color: INK, tool: "ink", width: 1.2 }),
+    ...sk.line(...P(10, -6), ...P(10, 6), { color: GRAPHITE, width: 1 }),
+    ...sk.line(...P(14, 0), ...P(len - 6, 0), { color: GRAPHITE, width: 0.8 }),
+  ];
+}
+
 export function gear(sk: Sketcher, cx: number, cy: number, r: number, teeth = 8, color = INK): Stroke[] {
   const out: Stroke[] = [...sk.circle(cx, cy, r * 2, { color, tool: "ink", width: 1.4 }, { roughness: 1 }), ...sk.circle(cx, cy, r * 0.7, { color, tool: "ink", width: 1.2 })];
   for (let i = 0; i < teeth; i++) {
