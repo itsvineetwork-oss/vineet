@@ -98,6 +98,7 @@ function automationDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
 }
 
 const diagrams = { erp: erpDiagram, calculator: calculatorDiagram, automation: automationDiagram };
+const heights = { erp: 500, calculator: 450, automation: 520 };
 
 export const projectsScene = () =>
   makeScene("projects", [1200, 190], (sk, d) => {
@@ -112,7 +113,7 @@ export const projectsScene = () =>
 export const projectScenes = () =>
   C().projects.map((p0, i) => {
     const el = document.getElementById(`p-${p0.id}`) as HTMLElement;
-    return makeScene(`p-${p0.id}`, [1200, 520], (sk, d, section) => {
+    return makeScene(`p-${p0.id}`, [1200, p0.diagram ? heights[p0.diagram] : 460], (sk, d, section) => {
       const { ui } = C();
       const p = C().projects.find((x) => x.id === p0.id) ?? p0;
       currentNotes = p.nodes || {};

@@ -73,6 +73,12 @@ The first sheet draws itself when the site opens. After that, drawing is tied to
 - Body text in IBM Plex Sans; labels in tracked IBM Plex Mono; cursive only for headings and project titles. Hand-drawn tick bullets.
 - Buttons fill with cross-hatch on hover, then go solid. Thin ruler-style scrollbar.
 
+## Recruiter conveniences
+
+- Preloader: the monogram inks itself with a progress counter (skipped under reduced motion).
+- 30-sec TL;DR card in the hero, built from `tldr` in `src/content.ts`.
+- Per-project `demo` and `source` links become LIVE DEMO and SOURCE CODE buttons; `credentials` become stamps under Education; `contact.whatsapp` and `contact.schedule` add rows to the contact card. All appear only when filled.
+
 ## Keyboard
 
 - `Ctrl`/`Cmd` + `K`: command palette (go to a section, theme, sound, copy email, resume, GitHub, case studies).

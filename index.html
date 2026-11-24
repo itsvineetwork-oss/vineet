@@ -19,6 +19,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
 </head>
 <body>
+  <div id="loader" class="loader" aria-hidden="true">
+    <svg viewBox="0 0 120 120" width="120" height="120">
+      <rect x="6" y="6" width="108" height="108" fill="none" stroke="currentColor" stroke-width="1.5" class="ld-frame"/>
+      <path d="M30 32 L60 92 L90 32" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" class="ld-v"/>
+      <circle cx="96" cy="92" r="4" fill="currentColor" class="ld-dot"/>
+    </svg>
+    <div class="ld-text"><span id="ld-pct">0%</span><span class="ld-msg">SKETCHING SHEET 01…</span></div>
+  </div>
   <a class="skip" href="#home" data-ui="skip">Skip to content</a>
 
   <header class="topbar">
@@ -61,7 +69,8 @@
         <a id="cv-strip" href="#" hidden target="_blank" rel="noopener">[ DOWNLOAD CV.PDF ↓ ]</a>
       </div>
       <div class="copy copy-home">
-        <p data-reveal><a class="cta" href="#about" data-ui="explore">Explore the sketchbook ↓</a> <a class="cta stampbtn" id="cv-stamp" href="#" hidden target="_blank" rel="noopener" data-ui="downloadCv">Download CV ↓</a></p>
+        <p data-reveal><a class="cta" href="#about" data-ui="explore">Explore the sketchbook ↓</a> <button type="button" class="cta" id="tldr-btn" aria-expanded="false" data-ui="tldrOpen">30-sec TL;DR</button> <a class="cta stampbtn" id="cv-stamp" href="#" hidden target="_blank" rel="noopener" data-ui="downloadCv">Download CV ↓</a></p>
+        <div id="tldr" class="tldr" hidden></div>
       </div>
     </section>
 
@@ -76,9 +85,9 @@
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
       <div class="filters" id="filters" role="group" aria-label="Filter by stack"></div>
       <div class="copy copy-projects">
-        <article class="project" id="p-erp"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="erp">Inspect case study →</button></p></article>
-        <article class="project" id="p-calculators"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="calculators">Inspect case study →</button></p></article>
-        <article class="project" id="p-automation"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="automation">Inspect case study →</button></p></article>
+        <article class="project" id="p-erp"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="erp">Inspect case study →</button><span class="pbtns" data-pbtns="erp"></span></p></article>
+        <article class="project" id="p-calculators"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="calculators">Inspect case study →</button><span class="pbtns" data-pbtns="calculators"></span></p></article>
+        <article class="project" id="p-automation"><svg class="stage" aria-hidden="true" focusable="false"></svg><div data-copy="project"></div><p class="plinks"><button type="button" class="inspect" data-project="automation">Inspect case study →</button><span class="pbtns" data-pbtns="automation"></span></p></article>
       </div>
     </section>
 
@@ -98,6 +107,7 @@
       <h2 id="education-h" class="sr-only" data-ui="h-education">Education</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
       <div class="copy sr-only" data-copy="education"></div>
+      <div class="creds" id="creds" hidden></div>
     </section>
 
     <section id="contact" class="page" aria-labelledby="contact-h">

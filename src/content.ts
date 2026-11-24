@@ -38,6 +38,10 @@ export type Project = {
   tradeoffs?: string[];
   /** What each diagram node did, shown as a floating spec card on hover. Keys are the node labels. */
   nodes?: Record<string, string>;
+  /** Public demo or walkthrough; shown as a LIVE DEMO button when filled. */
+  demo?: string;
+  /** Source repository; shown as a SOURCE CODE button when filled. */
+  source?: string;
   /** Optional screenshots under /public, e.g. "/shots/erp-1.png". Revealed with a sketch-to-image effect. */
   images?: string[];
   links?: { label: string; href: string }[];
@@ -63,6 +67,8 @@ export const projects: Project[] = [
       "ENTRA ID": "Sign-in with Microsoft Entra ID; roles mapped to ERP permissions.",
       "SHAREPOINT": "Documents read from and written back to SharePoint libraries.",
     },
+    demo: "",   // TODO public demo or video walkthrough URL, if any (the ERP is internal)
+    source: "", // TODO repository URL if public
     images: ["/shots/erp-1.png", "/shots/erp-2.png"], // add the files under public/shots; missing files are skipped
     links: [],  // TODO add live / GitHub links if public
     diagram: "erp",
@@ -75,6 +81,7 @@ export const projects: Project[] = [
     stack: ["Python"],
     features: ["Validated inputs", "Repeatable, documented results", "Command-line and script friendly"],
     nodes: { "INPUTS": "Engineering inputs with units.", "VALIDATE": "Range and unit checks before any calculation.", "CALCULATE": "The calculation itself, kept pure and testable.", "REPORT": "A clear, repeatable output that can be filed." },
+    source: "https://github.com/itsvineetwork-oss",
     images: ["/shots/calculators-1.png"],
     links: [{ label: "GitHub", href: "https://github.com/itsvineetwork-oss" }],
     diagram: "calculator",
@@ -87,6 +94,7 @@ export const projects: Project[] = [
     stack: ["Python", "REST APIs", "PostgreSQL"],
     features: ["Scheduled jobs", "API and database integrations", "Fewer manual steps, fewer errors"],
     nodes: { "PYTHON JOB": "A scheduled Python service: fetch, transform, deliver.", "REPORTS": "Recurring reports built and sent automatically.", "DATA SYNC": "Data moved between systems through their APIs.", "DOCUMENTS": "Documents generated from templates." },
+    source: "https://github.com/itsvineetwork-oss",
     images: ["/shots/automation-1.png"],
     links: [{ label: "GitHub", href: "https://github.com/itsvineetwork-oss" }],
     diagram: "automation",
@@ -120,11 +128,29 @@ export const education = [
   },
 ];
 
+/** Credentials and coding profiles, drawn as stamps under Education. Empty list: nothing is shown. */
+export const credentials: { label: string; issuer?: string; href?: string }[] = [
+  // TODO e.g. { label: "AWS Cloud Practitioner", issuer: "Amazon", href: "https://..." }
+];
+
+/** A short quote from someone you built for. Shown only when filled. */
+export const testimonial = { quote: "", author: "", role: "" };
+
+/** 30-second summary card in the hero. */
+export const tldr = {
+  target: "Full-stack / backend software developer",
+  stack: ["Python", "FastAPI", "Next.js", "TypeScript", "PostgreSQL", "Docker"],
+  experience: "End-to-end ERP and automation builder at Premnath Rail",
+  availability: "Open to roles", // TODO e.g. "Immediate · remote or relocation"
+};
+
 export const contactInfo = {
   email: "",      // TODO e.g. "you@example.com" (rendered only when filled)
   linkedin: "",   // TODO e.g. "https://www.linkedin.com/in/your-handle"
   github: "https://github.com/itsvineetwork-oss",
   resume: "/resume.pdf", // put resume.pdf in /public; the link only appears when the file exists
+  whatsapp: "",   // TODO international number without spaces, e.g. "919876543210"; shows a WHATSAPP row
+  schedule: "",   // TODO booking link, e.g. "https://cal.com/you/15min"; shows a SCHEDULE CALL row
   /** Formspree (or similar) endpoint, e.g. "https://formspree.io/f/abcdwxyz". Blank: the form opens the visitor's mail app instead (needs `email`). */
   formEndpoint: "",
 };
@@ -146,6 +172,12 @@ export const ui = {
   copied: "COPIED",
   downloadCv: "Download CV ↓",
   inspect: "Inspect case study →",
+  liveDemo: "Live demo ↗",
+  sourceCode: "Source code </>",
+  tldrOpen: "30-sec TL;DR",
+  tldrClose: "Close",
+  tldr: { target: "ROLE TARGET", stack: "CORE STACK", experience: "EXPERIENCE", availability: "AVAILABILITY" },
+  credentials: "CREDENTIALS & PROFILES",
   caseStudy: "CASE STUDY",
   tradeoffs: "DECISIONS & TRADE-OFFS",
   features: "KEY FEATURES",

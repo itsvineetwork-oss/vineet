@@ -9,7 +9,7 @@ import { experienceScene } from "./sections/experience";
 import { skillsScene } from "./sections/skills";
 import { educationScene } from "./sections/education";
 import { contactScene } from "./sections/contact";
-import { analytics } from "./content";
+import { analytics, credentials, testimonial, tldr } from "./content";
 import { C } from "./i18n";
 import { probe, url, exists } from "./engine/assets";
 import { scratch } from "./engine/sound";
@@ -37,8 +37,7 @@ function renderCopy() {
     const art = document.getElementById(`p-${p.id}`);
     const box = art?.querySelector<HTMLElement>('[data-copy="project"]');
     if (!box) return;
-    const links = (p.links || []).map((l) => `<a href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join(" ");
-    box.innerHTML = `<h3 class="sr-only">${esc(p.name)}</h3><dl class="sr-only"><dt>${esc(ui.problem)}</dt><dd>${esc(p.problem)}</dd><dt>${esc(ui.contribution)}</dt><dd>${esc(p.contribution)}</dd><dt>${esc(ui.stack)}</dt><dd>${esc([...p.stack, ...(p.integrations || [])].join(" · "))}</dd><dt>Features</dt><dd>${esc(p.features.join(". "))}</dd></dl>${links ? `<p class="plinks" data-reveal>${links}</p>` : ""}`;
+    box.innerHTML = `<h3 class="sr-only">${esc(p.name)}</h3><dl class="sr-only"><dt>${esc(ui.problem)}</dt><dd>${esc(p.problem)}</dd><dt>${esc(ui.contribution)}</dt><dd>${esc(p.contribution)}</dd><dt>${esc(ui.stack)}</dt><dd>${esc([...p.stack, ...(p.integrations || [])].join(" · "))}</dd><dt>Features</dt><dd>${esc(p.features.join(". "))}</dd></dl>`;
   });
   document.querySelector<HTMLElement>('[data-copy="experience"]')!.innerHTML = experience.map((j) => `<div class="job"><h3>${esc(j.role)} · ${esc(j.company)}</h3><p class="meta">${esc(j.period)}</p><ul>${j.points.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
   document.querySelector<HTMLElement>('[data-copy="skills"]')!.innerHTML = skills.map((s) => `<div class="skill"><h3>${esc(s.category)}</h3><p>${esc(s.items.join(", "))}</p></div>`).join("");
@@ -70,6 +69,44 @@ function renderCopy() {
   document.title = `${identity.fullName} — ${identity.title}`;
 }
 renderCopy();
+// ---- preloader: real progress while fonts and scenes get ready
+const loader = $("loader");
+{
+  const pct = $("ld-pct");
+  let shown = 0;
+  const tick = () => { shown = Math.min(96, shown + 7); pct.textContent = `${shown}%`; if (shown < 96) setTimeout(tick, 45); };
+  tick();
+  const ready = Promise.all([document.fonts?.ready ?? Promise.resolve(), new Promise((r) => setTimeout(r, 900))]);
+  ready.then(() => { pct.textContent = "100%"; setTimeout(() => loader.classList.add("done"), 180); });
+}
+
+// ---- TL;DR card
+{
+  const btn = $<HTMLButtonElement>("tldr-btn"), card = $("tldr");
+  const { ui } = C();
+  card.innerHTML = `<b>${esc(ui.tldr.target)}</b><span>${esc(tldr.target)}</span><b>${esc(ui.tldr.stack)}</b><span class="tags">${tldr.stack.map((t) => `<span>${esc(t)}</span>`).join("")}</span><b>${esc(ui.tldr.experience)}</b><span>${esc(tldr.experience)}</span><b>${esc(ui.tldr.availability)}</b><span>${esc(tldr.availability)}</span>`;
+  btn.addEventListener("click", () => { const open = card.hidden; card.hidden = !open; btn.setAttribute("aria-expanded", String(open)); btn.textContent = open ? ui.tldrClose : ui.tldrOpen; });
+}
+
+// ---- project buttons (only the links that exist) and credentials
+{
+  const { projects, ui } = C();
+  projects.forEach((p) => {
+    const box = document.querySelector<HTMLElement>(`[data-pbtns="${p.id}"]`); if (!box) return;
+    const btns: string[] = [];
+    if (p.demo) btns.push(`<a href="${esc(p.demo)}" target="_blank" rel="noopener">${esc(ui.liveDemo)}</a>`);
+    const src = p.source || p.links?.find((l) => /github/i.test(l.href))?.href;
+    if (src) btns.push(`<a href="${esc(src)}" target="_blank" rel="noopener">${esc(ui.sourceCode)}</a>`);
+    box.innerHTML = btns.join("");
+  });
+  const creds = $("creds");
+  if (credentials.length) {
+    creds.hidden = false;
+    creds.innerHTML = credentials.map((c) => c.href ? `<a href="${esc(c.href)}" target="_blank" rel="noopener">${esc(c.label)}${c.issuer ? `<i>${esc(c.issuer)}</i>` : ""}</a>` : `<span>${esc(c.label)}${c.issuer ? `<i>${esc(c.issuer)}</i>` : ""}</span>`).join("");
+  }
+  void testimonial;
+}
+
 // ---- title block: revision, date, live IST clock
 $("tb-rev").textContent = __REVISION__;
 $("tb-date").textContent = __BUILD_DATE__;

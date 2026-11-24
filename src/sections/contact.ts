@@ -23,11 +23,18 @@ export const contactScene = () =>
 
     // contact card on the right, with lines for the real links underneath (HTML)
     const cx = 640, cy = 230;
-    d.draw(sk.rect(cx, cy, 460, 200, { color: INK, tool: "ink", width: 1.6 }, { roughness: 1.3 }), { speed: 1600 });
+    const strip = (u: string) => u.replace(/^(mailto:|https?:\/\/(www\.)?)/, "").replace(/\/$/, "");
+    const rows = ([
+      ["EMAIL", contact.email, contact.email ? `mailto:${contact.email}` : ""],
+      ["WHATSAPP", contact.whatsapp ? `+${contact.whatsapp.replace(/^\+/, "")}` : "", contact.whatsapp ? `https://wa.me/${contact.whatsapp.replace(/\D/g, "")}` : ""],
+      ["SCHEDULE CALL", strip(contact.schedule), contact.schedule],
+      ["LINKEDIN", strip(contact.linkedin), contact.linkedin],
+      ["GITHUB", strip(contact.github), contact.github],
+    ] as [string, string, string][]).filter((r) => r[1]);
+    const cardH = Math.max(200, 70 + rows.length * 40 + 16);
+    d.draw(sk.rect(cx, cy, 460, cardH, { color: INK, tool: "ink", width: 1.6 }, { roughness: 1.3 }), { speed: 1600 });
     d.draw(sk.line(cx, cy + 50, cx + 460, cy + 50, { color: GRAPHITE }), { speed: 2000 });
     d.write(sk.label(`${identity.fullName.toUpperCase()}  -  ${identity.title.split("|")[0].trim().toUpperCase()}`, cx + 20, cy + 32, 13, { color: INK }).strokes, { speed: 900 });
-    const strip = (u: string) => u.replace(/^(mailto:|https?:\/\/(www\.)?)/, "").replace(/\/$/, "");
-    const rows = ([["EMAIL", contact.email, contact.email ? `mailto:${contact.email}` : ""], ["LINKEDIN", strip(contact.linkedin), contact.linkedin], ["GITHUB", strip(contact.github), contact.github]] as [string, string, string][]).filter((r) => r[1]);
     const overlay = section.querySelector<HTMLElement>(".card-links");
     if (overlay) overlay.innerHTML = "";
     rows.forEach(([k, v, href], i) => {
@@ -59,7 +66,7 @@ export const contactScene = () =>
       ], { speed: 1400 });
       d.write(sk.label(ui.resumePdf, rx + 45, ry + 140, 10, { color: GRAPHITE }, "center").strokes, { speed: 1000 });
     }
-    d.write(sk.paragraph(ui.openTo, cx, cy + 236, 15, 460, { color: INK }).strokes, { speed: 1700, gap: 0.003 });
+    d.write(sk.paragraph(ui.openTo, cx, cy + cardH + 36, 15, 460, { color: INK }).strokes, { speed: 1700, gap: 0.003 });
     d.reveal(revealables(section), "-=0.4");
     d.reveal(section.querySelectorAll(".cform"), "<");
     // a final signature
