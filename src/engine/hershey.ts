@@ -22,15 +22,16 @@ function glyph(font: FontName, ch: string) {
 /** Returns per-character path data for a string, scaled to `size` px cap height, starting at (x, y=baseline). */
 export function layoutText(text: string, x: number, y: number, size: number, font: FontName = "scriptc", tracking = 0) {
   const s = size / UNITS;
-  const out: { d: string; x: number; char: string }[] = [];
+  const out: { d: string; x: number; char: string; word: boolean }[] = [];
   let cx = x;
+  let afterSpace = false;
   const expanded = Array.from(text).map((c) => SUBS[c] ?? c).join("");
   for (const ch of expanded) {
     const g = glyph(font, ch);
-    // Hershey glyphs are centred on their origin; shift so the glyph's left edge starts at the pen.
     const w = (g.o ?? 8) * 2;
-    if (!g.d) { cx += w * s * 0.6 + tracking; continue; }
-    out.push({ d: scalePath(g.d, s, cx, y - BASE * s), x: cx, char: ch });
+    if (!g.d) { cx += w * s * 0.6 + tracking; afterSpace = out.length > 0; continue; }
+    out.push({ d: scalePath(g.d, s, cx, y - BASE * s), x: cx, char: ch, word: afterSpace });
+    afterSpace = false;
     cx += w * s + tracking;
   }
   return { paths: out, width: cx - x };

@@ -12,7 +12,7 @@ const icons: Record<string, (sk: Sketcher, x: number, y: number) => Stroke[]> = 
 };
 
 export const skillsScene = () =>
-  makeScene("skills", [1200, 860], (sk, d, section) => {
+  makeScene("skills", [1200, 880], (sk, d, section) => {
     const h = sk.text("Skills", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
@@ -20,8 +20,8 @@ export const skillsScene = () =>
 
     // blueprint grid, drawn fast without the pencil
     const grid: Stroke[] = [];
-    for (let x = 100; x <= 1100; x += 100) grid.push(...sk.line(x, 190, x, 820, { color: BLUE, width: 0.5, opacity: 0.35 }, { roughness: 0.2 }));
-    for (let y = 190; y <= 820; y += 100) grid.push(...sk.line(100, y, 1100, y, { color: BLUE, width: 0.5, opacity: 0.35 }, { roughness: 0.2 }));
+    for (let x = 100; x <= 1100; x += 100) grid.push(...sk.line(x, 190, x, 860, { color: BLUE, width: 0.5, opacity: 0.35 }, { roughness: 0.2 }));
+    for (let y = 190; y <= 860; y += 100) grid.push(...sk.line(100, y, 1100, y, { color: BLUE, width: 0.5, opacity: 0.35 }, { roughness: 0.2 }));
     d.draw(grid, { speed: 14000, gap: 0, noPencil: true });
 
     // six panels, each: icon, category label, items as handwritten list, connected to a central "SYSTEM" node
@@ -30,13 +30,23 @@ export const skillsScene = () =>
     d.write(sk.label("SYSTEM", cx, cy + 5, 14, { color: INK }, "center").strokes, { speed: 900 });
 
     const cols = section.querySelectorAll<HTMLElement>(".skill");
-    const slots: [number, number][] = [[230, 270], [600, 240], [970, 270], [230, 620], [600, 680], [970, 620]];
+    const slots: [number, number][] = [[230, 262], [600, 236], [970, 262], [230, 626], [600, 672], [970, 626]];
+    /** Where the ray from (cx,cy) towards (px,py) enters the rectangle. */
+    const edge = (px: number, py: number, rx: number, ry: number, rw: number, rh: number): [number, number] => {
+      const dx = px - cx, dy = py - cy;
+      const tx = dx > 0 ? (rx - cx) / dx : dx < 0 ? (rx + rw - cx) / dx : -Infinity;
+      const ty = dy > 0 ? (ry - cy) / dy : dy < 0 ? (ry + rh - cy) / dy : -Infinity;
+      const t = Math.max(tx, ty);
+      return [cx + dx * t, cy + dy * t];
+    };
     skills.forEach((s, i) => {
       const [x, y] = slots[i];
       const above = y < cy;
       const ix = x, iy = above ? y - 40 : y + 50;
-      d.draw(sk.line(cx + (x - cx) * 0.22, cy + (y - cy) * 0.22, x + (cx - x) * 0.18, y + (cy - y) * 0.18, { color: GRAPHITE, width: 1, dashed: true }), { speed: 1600 });
-      d.draw(sk.rect(x - 125, iy - 50, 250, 215, { color: GRAPHITE, width: 1 }, { roughness: 1.4 }), { speed: 1800 });
+      const [rx, ry, rw, rh] = [x - 125, iy - 50, 250, 236];
+      const [ex, ey] = edge(x, iy + rh / 2 - 50, rx, ry, rw, rh);
+      d.draw(sk.line(cx + (x - cx) * 0.22, cy + (y - cy) * 0.22, ex, ey, { color: GRAPHITE, width: 1, dashed: true }), { speed: 1600 });
+      d.draw(sk.rect(rx, ry, rw, rh, { color: GRAPHITE, width: 1 }, { roughness: 1.4 }), { speed: 1800 });
       d.draw(icons[s.icon](sk, ix, iy), { speed: 1100 });
       d.write(sk.label(s.category.toUpperCase(), x, iy + 52, 13, { color: INK, width: 1.2 }, "center").strokes, { speed: 900 });
       s.items.forEach((item, k) => {

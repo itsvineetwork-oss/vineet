@@ -1,7 +1,7 @@
 # Vineet — The Live Sketch Portfolio
 
 A portfolio that is drawn in front of the visitor. Every section reveals itself through animated pencil strokes:
-handwritten headings, technical diagrams, annotations and illustrations, with a pencil cursor that follows the line.
+handwritten headings, technical diagrams, annotations and illustrations. A pencil cursor that follows the line is available (`PENCIL` flag in `src/engine/director.ts`, off by default).
 
 Nothing is a video. Every stroke is an SVG path animated from its real geometry.
 
@@ -46,7 +46,7 @@ src/sections/  one scene per section: lays out strokes and the timeline
 src/main.ts    scroll triggers, navigation, toolbar (Finish / Animations / Sound)
 ```
 
-A section draws itself when it scrolls into view. Clicking a menu item erases the current page, scrolls, and redraws the target from a blank sheet. "Finish" jumps to the completed drawing.
+A section draws itself when it scrolls into view, one page at a time: the visitor cannot scroll or navigate past a page until it is drawn ("Finish" skips ahead). Clicking a menu item erases the current page, scrolls, and draws the target; pages already drawn are simply shown.
 
 ## Accessibility and performance
 

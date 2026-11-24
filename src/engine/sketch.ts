@@ -146,12 +146,9 @@ export class Sketcher {
     const x0 = align === "center" ? x - w / 2 : align === "right" ? x - w : x;
     const { paths } = layoutText(str, x0, y, size, font, tracking);
     const strokes: Stroke[] = [];
-    let prevX = -Infinity;
     for (const p of paths) {
       const st2 = this.path(p.d, { tool: "ink", width: Math.max(1.5, size / 15), ...st });
-      // a visible gap before this glyph means a new word: the Director pauses there
-      if (prevX !== -Infinity && p.x - prevX > size * 0.9) st2.el.dataset.word = "1";
-      prevX = p.x;
+      if (p.word) st2.el.dataset.word = "1"; // first letter of a word: the Director pauses there
       strokes.push(st2);
     }
     return { strokes, width: w };

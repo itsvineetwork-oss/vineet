@@ -125,6 +125,7 @@ document.querySelectorAll<HTMLAnchorElement>('.topbar nav a, a.cta, a.logo').for
     const go = () => {
       current = s;
       if (!motion) return;
+      if (s.done && !s.erased) return; // already drawn: just arrive there
       s.rebuild();
       played.add(s.id);
       s.director.play();
