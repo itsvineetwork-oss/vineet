@@ -72,84 +72,49 @@ $("year").textContent = String(new Date().getFullYear());
 // ---- motion preference: the OS "reduce motion" setting shows finished drawings immediately
 const motion = !matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// ---- build every scene (strokes are laid out now, drawn later)
+// ---- build every scene (strokes are laid out now, drawn by scrolling)
 const scenes: Scene[] = [home(), aboutScene(), projectsScene(), ...projectScenes(), experienceScene(), skillsScene(), educationScene(), contactScene()];
 const byId = new Map(scenes.map((s) => [s.id, s]));
-const played = new Set<string>();
-let current: Scene = scenes[0];
 const index = (s: Scene) => scenes.indexOf(s);
-const settled = (s: Scene) => s.done || s.hidden;
-const previousDone = (s: Scene) => scenes.slice(0, index(s)).every(settled);
-const pending = new Set<Scene>();
-const inView = (s: Scene) => { const r = s.section.getBoundingClientRect(); return r.top < innerHeight * 0.72 && r.bottom > 0; };
 const toast = $("toast");
-let toastTimer = 0;
-const say = (msg: string) => { toast.textContent = msg; toast.classList.add("show"); clearTimeout(toastTimer); toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1800); };
+void toast;
 
 document.body.classList.toggle("no-motion", !motion);
 if (!motion) scenes.forEach((s) => s.finish());
 
-// ---- one page at a time: a section may only draw once every section before it is drawn,
-//      and the visitor cannot scroll past a page that is still being drawn (Finish skips ahead).
-function start(s: Scene) {
-  if (!motion || s.hidden) return;
-  if (!previousDone(s)) { pending.add(s); return; }
-  pending.delete(s);
-  if (s.erased) s.rebuild();
-  played.add(s.id);
-  s.director.play();
-}
-scenes.forEach((s) => { s.onDone = () => { for (const p of [...pending]) if (previousDone(p) && inView(p)) start(p); paintProgress(); }; });
-
-/** The page the visitor is held on: the first section that has started but not finished. */
-const gate = () => scenes.find((s) => played.has(s.id) && !s.done && !s.erased && !s.hidden);
-let clamping = false;
-const limitFor = (g: Scene) => { const r = g.section.getBoundingClientRect(); return Math.max(r.top + scrollY - 56, r.bottom + scrollY - innerHeight + 8); };
-window.addEventListener("scroll", () => {
-  if (!motion || clamping) return;
-  const g = gate(); if (!g) return;
-  const limit = limitFor(g);
-  if (scrollY > limit) { clamping = true; window.scrollTo(0, limit); clamping = false; }
-}, { passive: true });
-window.addEventListener("wheel", (e) => {
-  if (!motion || e.deltaY <= 0) return;
-  const g = gate(); if (!g) return;
-  if (scrollY >= limitFor(g) - 1) { e.preventDefault(); say(C().ui.toasts.stillDrawing); }
-}, { passive: false });
-
-// ---- scroll-linked playback: a section draws itself when it enters the viewport (in order)
-scenes.forEach((s) => {
-  ScrollTrigger.create({
-    trigger: s.section, start: "top 72%",
-    onEnter: () => { current = s; if (motion && (!played.has(s.id) || s.erased)) start(s); },
-    onEnterBack: () => { current = s; if (motion && s.erased) start(s); },
+// ---- scroll-scrubbed drawing: each page's timeline follows the scroll position through that page.
+//      Scroll fast and it draws fast; scroll back up and it un-draws.
+const triggers = new Map<Scene, ScrollTrigger>();
+if (motion) {
+  scenes.forEach((s) => {
+    const st = ScrollTrigger.create({
+      trigger: s.section,
+      start: "top 82%",
+      end: "bottom 45%",
+      scrub: 0.5,
+      animation: s.director.tl,
+      onUpdate: (self) => { const d = self.progress >= 0.999; s.done = d; s.section.classList.toggle("is-drawn", d); },
+    });
+    triggers.set(s, st);
   });
+}
+scenes.forEach((s) => {
   ScrollTrigger.create({
     trigger: s.section, start: "top 50%", end: "bottom 50%",
     onToggle: (st) => { if (st.isActive) document.querySelectorAll(".topbar nav a").forEach((a) => a.classList.toggle("active", a.getAttribute("href") === `#${s.id.startsWith("p-") ? "projects" : s.id}`)); },
   });
 });
 
-// ---- navigation: scroll there, then draw that section (pages already drawn are simply shown)
+// ---- navigation: a cinematic scroll; the pages in between draw on the way
 document.querySelectorAll<HTMLAnchorElement>(".topbar nav a, a.cta, a.logo").forEach((a) => {
   a.addEventListener("click", (e) => {
     const id = a.getAttribute("href")!.slice(1);
     const s = byId.get(id);
     if (!s) return;
     e.preventDefault();
-    const g = gate();
-    if (motion && g && index(s) > index(g)) { say(C().ui.toasts.finishFirst); return; }
-    if (motion && index(s) > 0 && !previousDone(s)) scenes.slice(0, index(s)).forEach((x) => { if (!settled(x)) { x.finish(); played.add(x.id); } });
     history.replaceState(null, "", `#${id}`);
-    const go = () => {
-      current = s;
-      if (!motion || (s.done && !s.erased)) return;
-      s.rebuild(); played.add(s.id); s.director.play();
-    };
-    if (motion) {
-      const wait = current !== s ? current.erase() : 0;
-      gsap.to(window, { scrollTo: { y: s.section, offsetY: 56, autoKill: false }, duration: 0.9, delay: wait * 0.6, ease: "power2.inOut", onComplete: go });
-    } else { s.section.scrollIntoView(); go(); }
+    const dist = Math.abs(s.section.getBoundingClientRect().top);
+    gsap.to(window, { scrollTo: { y: s.section, offsetY: 56, autoKill: true }, duration: Math.min(2.2, 0.6 + dist / 2500), ease: "power2.inOut" });
   });
 });
 
@@ -162,8 +127,8 @@ function paintProgress() {
   for (const id of sections) {
     const group = scenes.filter((s) => belongsTo(s) === id && !s.hidden);
     const seg = progress.querySelector<HTMLElement>(`[data-for="${id}"]`)!;
-    seg.classList.toggle("done", group.every((s) => s.done));
-    seg.classList.toggle("live", group.some((s) => played.has(s.id) && !s.done && !s.erased));
+    seg.classList.toggle("done", group.length > 0 && group.every((s) => s.done));
+    seg.classList.toggle("live", group.some((s) => !s.done && (triggers.get(s)?.progress ?? 0) > 0));
   }
 }
 paintProgress();
@@ -190,8 +155,6 @@ function applyFilter(tag: string) {
   }
   filters.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tag === tag)));
   ScrollTrigger.refresh();
-  // a page that became visible again and never drew gets its turn when scrolled to; drawn pages stay drawn
-  for (const p of [...pending]) if (previousDone(p) && inView(p)) start(p);
   paintProgress();
 }
 filters.addEventListener("click", (e) => { const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-tag]"); if (b) applyFilter(b.dataset.tag!); });
@@ -255,7 +218,7 @@ if (analytics.provider && analytics.site) {
 // ---- deep link on load
 if (location.hash && byId.has(location.hash.slice(1))) {
   const s = byId.get(location.hash.slice(1))!;
-  scenes.slice(0, index(s)).forEach((x) => { x.finish(); played.add(x.id); });
-  requestAnimationFrame(() => { s.section.scrollIntoView(); current = s; });
+  requestAnimationFrame(() => { s.section.scrollIntoView(); ScrollTrigger.refresh(); });
 }
+void index;
 window.addEventListener("resize", () => ScrollTrigger.refresh());

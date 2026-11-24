@@ -51,6 +51,7 @@ export class Director {
           onStart: () => { textEl.style.visibility = "visible"; scratch.drawing(1); },
           onUpdate: () => rect?.setAttribute("width", String(state.w)),
           onComplete: () => rect?.setAttribute("width", String(textEl.dataset.w || s.len)),
+          onReverseComplete: () => { rect?.setAttribute("width", "0"); textEl.style.visibility = "hidden"; },
         });
         if (gap > 0) sub.to(this.pt, { p: 1, duration: gap });
         continue;
@@ -79,12 +80,13 @@ export class Director {
       const state = { off: s.len };
       sub.to(state, {
         off: 0, duration: dur, ease,
-        onStart: () => { s.el.style.visibility = "visible"; if (!o.noPencil) this.pencil.press(1); scratch.drawing(1); s.el.style.strokeDashoffset = String(s.len); },
+        onStart: () => { s.el.style.visibility = "visible"; s.el.style.strokeDasharray = `${s.len}`; if (!o.noPencil) this.pencil.press(1); scratch.drawing(1); s.el.style.strokeDashoffset = String(s.len); },
         onUpdate: () => {
           s.el.style.strokeDashoffset = String(state.off);
           if (!o.noPencil) { const pt = path.getPointAtLength(Math.max(0, s.len - state.off)); this.pencil.moveTo(pt.x, pt.y); }
         },
         onComplete: () => { s.el.style.strokeDashoffset = "0"; const dashed = path.dataset.dashed; if (dashed) s.el.style.strokeDasharray = dashed; },
+        onReverseComplete: () => { s.el.style.visibility = "hidden"; s.el.style.strokeDasharray = `${s.len}`; s.el.style.strokeDashoffset = `${s.len}`; },
       });
       if (gap > 0) sub.to(this.pt, { p: 1, duration: gap, onStart: () => { this.pencil.press(0); scratch.drawing(0); } });
     }

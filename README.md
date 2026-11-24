@@ -50,7 +50,7 @@ src/sections/  one scene per section: lays out strokes and the timeline
 src/main.ts    scroll triggers, navigation, toolbar (Finish / Animations / Sound)
 ```
 
-A section draws itself when it scrolls into view, one page at a time: the visitor cannot scroll or navigate past a page until it is drawn. Clicking a menu item erases the current page, scrolls, and draws the target; pages already drawn are simply shown.
+Drawing is tied to scrolling: each page's timeline follows the scroll position through that page, so scrolling fast draws fast, scrolling slowly draws slowly, and scrolling back up un-draws. Menu items scroll there cinematically and the pages in between draw on the way.
 
 ## Accessibility and performance
 
