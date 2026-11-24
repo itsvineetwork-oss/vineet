@@ -41,8 +41,8 @@ function erpDiagram(sk: Sketcher, d: Director, ox: number, oy: number) {
   d.draw(node(sk, ox + 290, y + 134, 130, 40, "ENTRA ID", BLUE), { speed: 1300 });
   d.draw(node(sk, ox + 480, y + 134, 160, 40, "SHAREPOINT", BLUE), { speed: 1300 });
   // a red annotation under the database
-  d.draw(sk.arrow(ox + 708, y + 178, ox + 692, y + 62, { color: RED, width: 1.1 }, 7), { speed: 1400 });
-  d.write(sk.text("single system of record", ox + 660, y + 202, 16, { color: RED, width: 1.1 }, "scripts", 1, "center").strokes, { speed: 1000 });
+  d.draw(sk.arrow(ox + 680, y + 186, ox + 702, y + 66, { color: RED, width: 1.1 }, 7), { speed: 1400 });
+  d.write(sk.text("single system of record", ox + 530, y + 204, 16, { color: RED, width: 1.1 }, "scripts", 1, "center").strokes, { speed: 1000 });
   // deployment bracket
   d.draw(sk.sketchPath(`M ${ox - 10} ${y + 222} L ${ox - 10} ${y + 234} L ${ox + 700} ${y + 234} L ${ox + 700} ${y + 222}`, { color: GRAPHITE, width: 1 }), { speed: 2000 });
   d.write(sk.label("DOCKER ON A VPS", ox + 345, y + 254, 11, { color: GRAPHITE }, "center").strokes, { speed: 900 });
