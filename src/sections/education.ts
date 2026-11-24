@@ -1,5 +1,6 @@
 import { makeScene, revealables } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
+import { books, lightbulb, coffee } from "./doodles";
 import { C } from "../i18n";
 
 export const educationScene = () =>
@@ -24,6 +25,10 @@ export const educationScene = () =>
     const cx = 760, cy = 260;
     d.draw([...sk.rect(cx, cy, 170, 120, { color: INK, tool: "ink" }, { roughness: 1.3 }), ...sk.rect(cx + 10, cy + 10, 150, 100, { color: GRAPHITE, width: 0.8 }), ...sk.line(cx + 40, cy + 40, cx + 130, cy + 40, { color: GRAPHITE }), ...sk.line(cx + 50, cy + 60, cx + 120, cy + 60, { color: GRAPHITE }), ...sk.circle(cx + 130, cy + 92, 20, { color: RED, width: 1.4 }, { fill: "#000", hachureGap: 4 })], { speed: 1300 });
 
+    // study-desk details on the right
+    d.draw(books(sk, 990, 380, 100), { speed: 1800 });
+    d.draw(lightbulb(sk, 1110, 280, 20), { speed: 1600 });
+    d.draw(coffee(sk, 1000, 240, 0.9), { speed: 1600 });
     // the degree, handwritten
     education.forEach((e, i) => {
       const y = 440 + i * 60;

@@ -2,6 +2,7 @@ import { makeScene, revealables } from "./scene";
 import { INK, GRAPHITE, RED, BLUE } from "../engine/sketch";
 import { C } from "../i18n";
 import { exists } from "../engine/assets";
+import { paperPlane, flightPath } from "./doodles";
 
 export const contactScene = () =>
   makeScene("contact", [1200, 560], (sk, d, section) => {
@@ -20,6 +21,9 @@ export const contactScene = () =>
       ...sk.rect(ex + 80, ey - 70, 46, 46, { color: RED, width: 1.2 }, { fill: "#000", hachureGap: 5 }),
     ], { speed: 1300 });
     d.write(sk.text(ui.sayHello, ex, ey + 150, 30, { color: BLUE, width: 1.5 }, "scripts", 2, "center").strokes, { speed: 900 });
+    // a paper plane leaves the envelope for the card
+    d.draw(flightPath(sk, `M${ex + 150},${ey - 100} C${ex + 230},${ey - 170} ${ex + 330},${ey - 150} ${ex + 350},${ey - 110}`), { speed: 1800, noPencil: true });
+    d.draw(paperPlane(sk, ex + 350, ey - 110, 0.9, BLUE), { speed: 1400 });
 
     // contact card on the right, with lines for the real links underneath (HTML)
     const cx = 640, cy = 230;
@@ -31,7 +35,7 @@ export const contactScene = () =>
       ["LINKEDIN", strip(contact.linkedin), contact.linkedin],
       ["GITHUB", strip(contact.github), contact.github],
     ] as [string, string, string][]).filter((r) => r[1]);
-    const cardH = Math.max(200, 70 + rows.length * 40 + 16);
+    const cardH = Math.max(130, 70 + rows.length * 40 + 16);
     d.draw(sk.rect(cx, cy, 460, cardH, { color: INK, tool: "ink", width: 1.6 }, { roughness: 1.3 }), { speed: 1600 });
     d.draw(sk.line(cx, cy + 50, cx + 460, cy + 50, { color: GRAPHITE }), { speed: 2000 });
     d.write(sk.label(`${identity.fullName.toUpperCase()}  -  ${identity.title.split("|")[0].trim().toUpperCase()}`, cx + 20, cy + 32, 13, { color: INK }).strokes, { speed: 900 });

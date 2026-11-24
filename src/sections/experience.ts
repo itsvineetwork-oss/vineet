@@ -1,5 +1,6 @@
 import { makeScene } from "./scene";
 import { INK, GRAPHITE, RED } from "../engine/sketch";
+import { railTrack, compassRose, gear, monitor, documentStack } from "./doodles";
 import { C } from "../i18n";
 
 export const experienceScene = () =>
@@ -12,6 +13,9 @@ export const experienceScene = () =>
     // the timeline: a long line with a start tick and an arrowhead pointing to the future
     const y = 300;
     d.draw(sk.arrow(90, y, 1120, y, { color: INK, tool: "ink", width: 1.8 }, 14), { speed: 1800 });
+    // the timeline is a rail track: sleepers under the line, a nod to the company
+    d.draw(railTrack(sk, 94, 1100, y), { speed: 6000, gap: 0, noPencil: true });
+    d.draw(compassRose(sk, 1110, 70, 22), { speed: 1800 });
     d.draw(sk.line(90, y - 14, 90, y + 14, { color: INK, tool: "ink", width: 1.8 }), { speed: 1200 });
     d.write(sk.label(ui.now, 1120, y - 20, 11, { color: GRAPHITE }, "right").strokes, { speed: 900 });
 
@@ -32,6 +36,10 @@ export const experienceScene = () =>
         d.draw(sk.line(x - 150, ty - 6, x - 136, ty - 6, { color: RED, width: 1.4 }), { speed: 1200 });
         d.write(sk.text(pt, x - 128, ty, 15, { color: INK, width: 1.2 }, "futural", 1).strokes, { speed: 1300, gap: 0.004 });
       });
+      // what the work looks like: a screen, a gear, a stack of documents, sitting above the line on the right
+      d.draw(monitor(sk, 820, y - 190, 110, 72), { speed: 1800 });
+      d.draw(gear(sk, 985, y - 150, 18, 8), { speed: 1600 });
+      d.draw(documentStack(sk, 1030, y - 182), { speed: 1800 });
       const el = items[i];
       if (el) d.reveal(el.querySelectorAll("[data-reveal]"), "-=0.2");
     });

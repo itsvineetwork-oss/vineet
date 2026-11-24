@@ -11,16 +11,18 @@ export const home = () =>
     d.draw(sk.registration(50, 40, 1100, 520, 7), { speed: 4000, gap: 0, noPencil: true });
     d.write(sk.label("SHEET 01 / 07  -  PORTFOLIO", 84, 84, 11, { color: GRAPHITE }).strokes, { speed: 1000 });
 
-    // name, written stroke by stroke, then underlined in red
-    const name = sk.text(identity.name, 90, 230, 112, { color: INK, width: 3 }, "scriptc", 6);
-    d.write(name.strokes, { speed: 950, gap: 0.03 });
-    d.draw(sk.line(92, 250, 92 + name.width, 246, { color: RED, width: 2.2, tool: "marker" }, { roughness: 1.6 }), { speed: 1800 });
+    // "Welcome" in handwriting, then the name in readable mixed-case cursive, underlined in red
+    const hello = sk.text(identity.welcome + ",", 92, 150, 40, { color: GRAPHITE, width: 1.6 }, "scripts", 2);
+    d.write(hello.strokes, { speed: 900, gap: 0.02 });
+    const name = sk.text(identity.name, 90, 240, 68, { color: INK, width: 2.6 }, "scriptc", 3);
+    d.write(name.strokes, { speed: 950, gap: 0.025 });
+    d.draw(sk.line(92, 258, 92 + name.width, 254, { color: RED, width: 2.2, tool: "marker" }, { roughness: 1.6 }), { speed: 1800 });
 
-    // title and tagline, wrapped inside the left column so nothing crosses the laptop
-    const role = sk.label(identity.title.toUpperCase(), 94, 296, 18, { color: INK, width: 1.4 });
-    d.draw([sk.highlight(94, 296, role.width, 18)], { speed: 2200, noPencil: true });
+    // title and tagline, wrapped inside the left column so nothing crosses the drawing
+    const role = sk.label(identity.title.toUpperCase(), 94, 300, 16, { color: INK, width: 1.3 });
+    d.draw([sk.highlight(94, 300, role.width, 16)], { speed: 2200, noPencil: true });
     d.write(role.strokes, { speed: 1100 });
-    d.write(sk.paragraph(identity.tagline, 94, 340, 19, 560, { color: INK }).strokes, { speed: 1500, gap: 0.004 });
+    d.write(sk.paragraph(identity.tagline, 94, 342, 18, 560, { color: INK }).strokes, { speed: 1500, gap: 0.004 });
     d.reveal(revealables(section), "-=0.2");
     d.reveal(section.querySelectorAll(".strip"), "<");
 

@@ -28,6 +28,7 @@ npm run preview
 
 ## Edit content
 
+- Projects come from `src/content.ts` (`projects[]`); each needs a matching `<article id="p-<id>">` in `index.html` and, optionally, a diagram in `src/sections/projects.ts`.
 - `src/content.ts` — identity, about, projects, experience, skills, education, contact. Fields marked `TODO` are not verified yet; blank fields are not rendered.
 - `index.html` — the accessible HTML text of every section (what search engines and screen readers read). Keep it in sync with `content.ts`.
 - Photo: put `portrait.jpg` in `public/` (3:4). It is sketched, then revealed. Without the file a monogram medallion is drawn.

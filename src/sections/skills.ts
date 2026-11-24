@@ -27,8 +27,9 @@ export const skillsScene = () =>
 
     // six panels, each: icon, category label, items as handwritten list, connected to a central "SYSTEM" node
     const cx = 600, cy = 455;
-    d.draw(sk.circle(cx, cy, 90, { color: INK, tool: "ink", width: 2 }, { roughness: 1.2 }), { speed: 1200 });
-    d.write(sk.label("SYSTEM", cx, cy + 5, 14, { color: INK }, "center").strokes, { speed: 900 });
+    d.draw(sk.circle(cx, cy, 112, { color: INK, tool: "ink", width: 2 }, { roughness: 1.2 }), { speed: 1200 });
+    d.draw(sk.circle(cx, cy, 96, { color: GRAPHITE, width: 0.8 }, { roughness: 0.4 }), { speed: 2400, noPencil: true });
+    d.write(sk.label("SYSTEM", cx, cy + 5, 13, { color: INK }, "center").strokes, { speed: 900 });
 
     const cols = section.querySelectorAll<HTMLElement>(".skill");
     const slots: [number, number][] = [[230, 262], [600, 236], [970, 262], [230, 626], [600, 672], [970, 626]];

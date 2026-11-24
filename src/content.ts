@@ -4,11 +4,12 @@
  */
 
 export const identity = {
-  name: "VINEET",
+  name: "Vineet Sharma",
+  welcome: "Welcome",
   fullName: "Vineet Sharma",
   title: "Software Developer | Python Programmer",
   tagline: "Building software, automation systems, and practical engineering solutions.",
-  location: "India",
+  location: "Faridabad, India",
 };
 
 export const about = {
@@ -45,7 +46,7 @@ export type Project = {
   /** Optional screenshots under /public, e.g. "/shots/erp-1.png". Revealed with a sketch-to-image effect. */
   images?: string[];
   links?: { label: string; href: string }[];
-  diagram?: "erp" | "calculator" | "automation";
+  diagram?: "erp" | "calculator" | "automation" | "cios";
 };
 
 export const projects: Project[] = [
@@ -72,6 +73,32 @@ export const projects: Project[] = [
     images: ["/shots/erp-1.png", "/shots/erp-2.png"], // add the files under public/shots; missing files are skipped
     links: [],  // TODO add live / GitHub links if public
     diagram: "erp",
+  },
+  {
+    id: "cios",
+    name: "CIOS — Crime Intelligence OS",
+    problem: "Investigators and crime analysts had to piece evidence together across disconnected tools and generic chat assistants.",
+    contribution: "Full-stack build: Next.js command-center frontend, FastAPI backend with a Firestore-synchronised SQLite cache, graph and spatial analytics, and an explainable multi-agent SQL copilot.",
+    stack: ["Next.js", "TypeScript", "FastAPI", "Python", "SQLite", "NetworkX", "scikit-learn", "Leaflet"],
+    integrations: ["Firebase Auth", "Cloud Firestore"],
+    features: [
+      "Four-pane investigation workspace: entity graph (Louvain communities, PageRank), tactical crime map (DBSCAN hotspots, timeline playback), fused event timeline, AI copilot",
+      "What-if arrest simulations that recalculate graph metrics live",
+      "Financial loop tracker for circular UPI transfers",
+      "Witness statement OCR / NER ingestion bound to cases; immutable audit log",
+    ],
+    nodes: {
+      "FRONTEND": "Next.js app-router command center: graph explorer, Leaflet map, timeline stream, copilot.",
+      "FASTAPI": "Python backend that answers the UI and runs the analytics.",
+      "SQLITE CACHE": "Local relational cache seeded from Firestore on startup; writes propagate back in real time.",
+      "FIRESTORE": "Source of truth in Cloud Firestore, with Firebase Auth for operator sign-in.",
+      "ANALYTICS": "NetworkX graph metrics and scikit-learn DBSCAN spatial clustering.",
+      "COPILOT": "Planner agent turns questions into SQL, shows the query, confidence and evidence.",
+    },
+    demo: "https://ciso-5ad2c.web.app",
+    source: "https://github.com/itsvineetwork-oss/ciso",
+    images: ["/shots/cios-1.png"],
+    diagram: "cios",
   },
   {
     id: "calculators",
