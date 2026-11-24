@@ -3,7 +3,7 @@ import { INK, GRAPHITE, RED } from "../engine/sketch";
 import { education } from "../content";
 
 export const educationScene = () =>
-  makeScene("education", [1200, 520], (sk, d, section) => {
+  makeScene("education", [1200, 560], (sk, d, section) => {
     const h = sk.text("Education", 70, 110, 64, { color: INK, width: 2.4 }, "scriptc", 3);
     d.write(h.strokes, { speed: 800 });
     d.draw(sk.line(70, 128, 70 + h.width, 124, { color: RED, width: 2, tool: "marker" }, { roughness: 2 }), { speed: 1800 });
@@ -27,8 +27,9 @@ export const educationScene = () =>
     education.forEach((e, i) => {
       const y = 440 + i * 60;
       d.write(sk.text(e.degree, 90, y, 30, { color: INK, width: 1.6 }, "scriptc", 2).strokes, { speed: 950, gap: 0.012 });
-      const meta = [e.institution, e.period].filter(Boolean).join("  ·  ");
+      const meta = [e.institution, e.period].filter(Boolean).join("  -  ");
       if (meta) d.write(sk.label(meta.toUpperCase(), 92, y + 30, 12, { color: GRAPHITE }).strokes, { speed: 900 });
+      d.write(sk.bullets(e.notes, 92, y + (meta ? 66 : 44), 16, 900, { color: INK }).strokes, { speed: 1700, gap: 0.003 });
     });
     d.reveal(revealables(section), "-=0.2");
   });

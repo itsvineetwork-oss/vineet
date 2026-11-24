@@ -42,7 +42,7 @@ let current: Scene = scenes[0];
 
 function applyMotion() {
   document.body.classList.toggle("no-motion", !motion);
-  motionBtn.textContent = `Animations: ${motion ? "on" : "off"}`;
+  motionBtn.textContent = `Motion: ${motion ? "on" : "off"}`;
   motionBtn.setAttribute("aria-pressed", String(!motion));
   if (!motion) scenes.forEach((s) => s.finish());
 }

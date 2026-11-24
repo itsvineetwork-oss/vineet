@@ -1,7 +1,7 @@
 import rough from "roughjs";
 import type { RoughSVG } from "roughjs/bin/svg";
 import type { Options } from "roughjs/bin/core";
-import { layoutText, type FontName } from "./hershey";
+import { layoutText, measure, type FontName } from "./hershey";
 
 const NS = "http://www.w3.org/2000/svg";
 
@@ -139,6 +139,41 @@ export class Sketcher {
   /** Technical lettering (simplex sans), for labels and annotations. */
   label(str: string, x: number, y: number, size = 14, st: StrokeStyle = {}, align: "left" | "center" | "right" = "left") {
     return this.text(str, x, y, size, { tool: "pencil", width: Math.max(1, size / 14), ...st }, "futural", 1, align);
+  }
+
+  /** Body text in technical lettering, wrapped to `maxWidth`. Returns strokes line by line and the height used. */
+  paragraph(str: string, x: number, y: number, size: number, maxWidth: number, st: StrokeStyle = {}, font: FontName = "futural", lineHeight = 1.55) {
+    const words = str.split(/\s+/);
+    const lines: string[] = [];
+    let line = "";
+    for (const w of words) {
+      const test = line ? `${line} ${w}` : w;
+      if (measure(test, size, font, 1) > maxWidth && line) { lines.push(line); line = w; } else line = test;
+    }
+    if (line) lines.push(line);
+    const strokes: Stroke[] = [];
+    lines.forEach((l, i) => strokes.push(...this.text(l, x, y + i * size * lineHeight, size, { tool: "pencil", width: Math.max(1, size / 14), ...st }, font, 1).strokes));
+    return { strokes, lines: lines.length, height: lines.length * size * lineHeight };
+  }
+
+  /** Bulleted lines: a short red dash, then wrapped text. */
+  bullets(items: string[], x: number, y: number, size: number, maxWidth: number, st: StrokeStyle = {}) {
+    const strokes: Stroke[] = [];
+    let cy = y;
+    for (const it of items) {
+      strokes.push(...this.line(x, cy - size * 0.35, x + size * 0.8, cy - size * 0.35, { color: RED, width: 1.4 }));
+      const p = this.paragraph(it, x + size * 1.4, cy, size, maxWidth - size * 1.4, st);
+      strokes.push(...p.strokes);
+      cy += p.height + size * 0.3;
+    }
+    return { strokes, height: cy - y };
+  }
+
+  /** Small boxed tag, like a stamp on a drawing. */
+  tag(str: string, x: number, y: number, size = 12, st: StrokeStyle = { color: GRAPHITE }) {
+    const w = measure(str, size, "futural", 1) + size * 1.2;
+    const strokes = [...this.rect(x, y - size * 1.3, w, size * 1.9, st, { roughness: 0.8 }), ...this.label(str, x + size * 0.6, y, size, st).strokes];
+    return { strokes, width: w };
   }
 
   /** Dimension line with ticks, like an architectural drawing. */

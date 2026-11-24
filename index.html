@@ -29,7 +29,7 @@
     </nav>
     <div class="tools">
       <button id="finish" type="button" title="Finish drawing this section">Finish</button>
-      <button id="motion" type="button" aria-pressed="false" title="Turn drawing animations off">Animations: on</button>
+      <button id="motion" type="button" aria-pressed="false" title="Turn drawing animations off">Motion: on</button>
       <button id="sound" type="button" aria-pressed="false" title="Pencil sound">Sound: off</button>
     </div>
   </header>
@@ -47,7 +47,7 @@
     <section id="about" class="page" aria-labelledby="about-h">
       <h2 id="about-h" class="sr-only">About</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy">
+      <div class="copy sr-only">
         <p class="lead" data-reveal>I am a software developer and Python programmer. I build ERP systems, engineering calculators and automation tools that people use every day at work.</p>
         <h3 data-reveal>How I approach engineering problems</h3>
         <ul>
@@ -64,8 +64,8 @@
       <div class="copy copy-projects">
         <article class="project" id="p-erp">
           <svg class="stage" aria-hidden="true" focusable="false"></svg>
-          <h3 data-reveal>PremnathRail ERP</h3>
-          <dl>
+          <h3 class="sr-only" data-reveal>PremnathRail ERP</h3>
+          <dl class="sr-only">
             <dt data-reveal>Problem</dt><dd data-reveal>Day-to-day operations ran across spreadsheets, documents and email, with no single system of record.</dd>
             <dt data-reveal>My contribution</dt><dd data-reveal>Design and development of the ERP: data model, API, backend services and the web frontend.</dd>
             <dt data-reveal>Stack</dt><dd data-reveal>Next.js · React · TypeScript · FastAPI · SQLAlchemy · PostgreSQL · Docker</dd>
@@ -75,23 +75,23 @@
         </article>
         <article class="project" id="p-calculators">
           <svg class="stage" aria-hidden="true" focusable="false"></svg>
-          <h3 data-reveal>Python Engineering Calculators</h3>
-          <dl>
+          <h3 class="sr-only" data-reveal>Python Engineering Calculators</h3>
+          <dl class="sr-only">
             <dt data-reveal>Problem</dt><dd data-reveal>Engineering calculations were repeated by hand, with inconsistent inputs and no record of results.</dd>
             <dt data-reveal>My contribution</dt><dd data-reveal>Python tools that take validated inputs, run the calculation and produce a clear, repeatable output.</dd>
             <dt data-reveal>Stack</dt><dd data-reveal>Python</dd>
-            <dt data-reveal>Links</dt><dd data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub</a></dd>
           </dl>
+          <p class="plinks" data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub ↗</a></p>
         </article>
         <article class="project" id="p-automation">
           <svg class="stage" aria-hidden="true" focusable="false"></svg>
-          <h3 data-reveal>Automation Projects</h3>
-          <dl>
+          <h3 class="sr-only" data-reveal>Automation Projects</h3>
+          <dl class="sr-only">
             <dt data-reveal>Problem</dt><dd data-reveal>Recurring tasks such as reports, data transfers and document generation took hours each week.</dd>
             <dt data-reveal>My contribution</dt><dd data-reveal>Scripts and small services that run these tasks on a schedule or on demand.</dd>
             <dt data-reveal>Stack</dt><dd data-reveal>Python · REST APIs · PostgreSQL</dd>
-            <dt data-reveal>Links</dt><dd data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub</a></dd>
           </dl>
+          <p class="plinks" data-reveal><a href="https://github.com/itsvineetwork-oss" target="_blank" rel="noopener">GitHub ↗</a></p>
         </article>
       </div>
     </section>
@@ -99,7 +99,7 @@
     <section id="experience" class="page" aria-labelledby="experience-h">
       <h2 id="experience-h" class="sr-only">Experience</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy">
+      <div class="copy sr-only">
         <div class="job">
           <h3 data-reveal>Software Developer · Premnath Rail</h3>
           <p class="meta" data-reveal>Present</p>
@@ -115,7 +115,7 @@
     <section id="skills" class="page" aria-labelledby="skills-h">
       <h2 id="skills-h" class="sr-only">Skills</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy copy-skills">
+      <div class="copy copy-skills sr-only">
         <div class="skill"><h3 data-reveal>Programming</h3><p data-reveal>Python, JavaScript, TypeScript, C</p></div>
         <div class="skill"><h3 data-reveal>Backend</h3><p data-reveal>FastAPI, REST APIs, SQLAlchemy</p></div>
         <div class="skill"><h3 data-reveal>Frontend</h3><p data-reveal>HTML, CSS, JavaScript, Next.js, React</p></div>
@@ -128,7 +128,7 @@
     <section id="education" class="page" aria-labelledby="education-h">
       <h2 id="education-h" class="sr-only">Education</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
-      <div class="copy">
+      <div class="copy sr-only">
         <h3 data-reveal>BCA — Bachelor of Computer Applications</h3>
         <ul>
           <li data-reveal>Programming fundamentals, data structures, databases.</li>
@@ -141,7 +141,7 @@
       <h2 id="contact-h" class="sr-only">Contact</h2>
       <svg class="stage" aria-hidden="true" focusable="false"></svg>
       <div class="copy copy-contact">
-        <p class="lead" data-reveal>Open to software and automation work. The fastest way to reach me is email.</p>
+        <p class="sr-only">Open to software and automation work. The fastest way to reach me is email.</p>
         <ul class="links" id="contact-links"></ul>
       </div>
     </section>
